@@ -256,7 +256,7 @@ dialog::backdrop{background:rgba(8,10,20,.72)}
   <span id="dbInfo">Databáze karet: načítám…</span>
   <button id="refreshBtn" type="button">Aktualizovat databázi karet</button>
   <span>Tvoje kolekce je uložená jen v tomto prohlížeči – zálohuj ji exportem (záložka Kolekce).</span>
-  <span>Data a obrázky: Riftcodex / Riot Games. Neoficiální fanouškovská aplikace.</span>
+  <span>Data a obrázky: Riftcodex, Piltover Archive / Riot Games. Neoficiální fanouškovská aplikace.</span>
 </footer>
 
 <dialog id="detail" aria-label="Detail karty"></dialog>
@@ -264,10 +264,12 @@ dialog::backdrop{background:rgba(8,10,20,.72)}
 <script>
 /* ===== Nastavení ===== */
 const API = 'https://api.riftcodex.com/cards';
+const EXTRA_URL = 'piltover.json';       // karty z Piltover Archive (sety, které Riftcodex nemá) – stahuje je GitHub
 const CARDS_KEY = 'rb_cards_v1';          // databáze karet (oddělená od kolekce)
+const DB_VERSION = 2;
 const PREFS_KEY = 'rb_prefs_v1';
-const REFRESH_DAYS = 7;                   // jak často se databáze sama obnoví
-const SET_ORDER = ['OGN','OGS','SFD','UNL','VEN','RAD'];
+const REFRESH_DAYS = 2;                   // jak často se databáze sama obnoví
+const SET_ORDER = ['OGN','OGS','SFD','UNL','VEN','RAD','W26','PR','OPP','JDG'];
 const DOMAIN_COLORS = {Fury:'#d8443c',Calm:'#3fa45b',Mind:'#3d7fd9',Body:'#e08a2c',Chaos:'#8c52c9',Order:'#d6b236',Colorless:'#8a8f9c'};
 const DOMAIN_ORDER = ['Fury','Calm','Mind','Body','Chaos','Order','Colorless'];
 const TYPE_ORDER = ['Legend','Unit','Spell','Gear','Rune','Battlefield','Token'];
@@ -276,6 +278,7 @@ const COST_CHIPS = ['0','1','2','3','4','5','6','7','8+'];
 
 /* ===== Stav ===== */
 let CARDS = [];
+let EXTRA = {n:0, sets:[]};
 let filtered = [];
 let shown = 0;
 const F = {q:'', sets:new Set(), doms:new Set(), types:new Set(), rars:new Set(), energy:new Set(), might:new Set(), tag:''};
@@ -356,7 +359,22 @@ async function downloadAll(onProgress){
   }
   const seen = new Set(), out = [];
   for(const c of items){ if(c && c.id && !seen.has(c.id)){ seen.add(c.id); out.push(slim(c)); } }
-  return out;
+  // Doplnění z Piltover Archive: sety, které tam jsou, se berou odtud (a z Riftcodexu se vynechají, ať nejsou dvakrát)
+  const extra = await getExtra();
+  if(extra.cards.length){
+    const own = new Set([...extra.sets, ...extra.cards.map(c=>c.set)]);
+    return {cards: out.filter(c=>!own.has(c.set)).concat(extra.cards), extra: extra.cards.length, extraSets: [...new Set(extra.cards.map(c=>c.setLabel))]};
+  }
+  return {cards: out, extra: 0, extraSets: []};
+}
+async function getExtra(){
+  try{
+    const r = await fetch(EXTRA_URL, {cache:'no-cache'});
+    if(!r.ok) return {cards:[], sets:[]};
+    const j = await r.json();
+    const cards = (Array.isArray(j.cards) ? j.cards : []).filter(c => c && c.id && c.name && c.set);
+    return {cards, sets: (j.sets||[]).map(s=>s.id)};
+  }catch(e){ return {cards:[], sets:[]}; }   // soubor zatím není (nebo je aplikace otevřená z počítače) – nevadí
 }
 
 function showStatus(html){ const s=$('status'); s.innerHTML=html; s.hidden=false; }
@@ -365,10 +383,10 @@ function hideStatus(){ $('status').hidden=true; }
 async function refreshDB(silent){
   if(!silent) showStatus('<b>Stahuji databázi karet</b>Poprvé to chvilku trvá, pak už se karty načítají hned.<div class="bar"><i id="pbar"></i></div>');
   try{
-    const cards = await downloadAll((d,t)=>{ const b=$('pbar'); if(b) b.style.width = Math.round(d/t*100)+'%'; });
-    if(!cards.length) throw new Error('prázdná odpověď');
-    CARDS = cards;
-    const ok = save(CARDS_KEY, {at:Date.now(), cards});
+    const res = await downloadAll((d,t)=>{ const b=$('pbar'); if(b) b.style.width = Math.round(d/t*100)+'%'; });
+    if(!res.cards.length) throw new Error('prázdná odpověď');
+    CARDS = res.cards; EXTRA = {n:res.extra, sets:res.extraSets};
+    const ok = save(CARDS_KEY, {v:DB_VERSION, at:Date.now(), cards:CARDS, extra:EXTRA});
     hideStatus(); setupFilters(); apply();
     if(!$('viewColl').hidden) renderColl();
     updateInfo(Date.now(), ok);
@@ -382,6 +400,7 @@ function updateInfo(at, saved=true, failed=false){
   const d = at ? new Date(at).toLocaleDateString('cs-CZ') : '–';
   const sets = new Set(CARDS.map(c=>c.set)).size;
   $('dbInfo').textContent = `Databáze karet: ${CARDS.length} karet v ${sets} setech, aktualizováno ${d}` +
+    (EXTRA.n ? ` (z toho ${EXTRA.n} z Piltover Archive: ${EXTRA.sets.join(', ')})` : '') +
     (saved ? '' : ' (nepodařilo se uložit do prohlížeče, příště se stáhne znovu)') +
     (failed ? ' (poslední aktualizace se nezdařila)' : '');
 }
@@ -514,7 +533,7 @@ $('grid').addEventListener('click', e=>{
 
 /* ===== Detail karty ===== */
 let cur = -1, curCard = null;
-function baseName(n){ return n.replace(/\s*\((?:Signature|Alternate Art|Showcase|Overnumbered|Promo)[^)]*\)\s*$/i,'').trim(); }
+function baseName(n){ return n.replace(/\s*\([^)]*\)\s*$/,'').trim(); }
 function openDetail(i, card){
   cur = i; curCard = card || filtered[i]; const c = curCard; if(!c) return;
   const stat = (v,l) => `<div class="stat"><b>${v===null||v===undefined?'–':esc(v)}</b><span>${l}</span></div>`;
@@ -692,8 +711,8 @@ $('variants').checked = !!prefs.variants;
 $('quick').checked = !!prefs.quick;
 const cached = load(CARDS_KEY);
 if(cached && Array.isArray(cached.cards) && cached.cards.length){
-  CARDS = cached.cards; setupFilters(); apply(); updateInfo(cached.at);
-  if(Date.now() - (cached.at||0) > REFRESH_DAYS*864e5) refreshDB(true);   // tichá aktualizace na pozadí
+  CARDS = cached.cards; EXTRA = cached.extra || EXTRA; setupFilters(); apply(); updateInfo(cached.at);
+  if(cached.v !== DB_VERSION || Date.now() - (cached.at||0) > REFRESH_DAYS*864e5) refreshDB(true);   // tichá aktualizace na pozadí
 } else {
   refreshDB(false);
 }
