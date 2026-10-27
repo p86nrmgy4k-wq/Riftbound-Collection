@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Riftbound knihovna</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eceef3; --panel:#ffffff; --panel2:#f5f6f9; --line:#d6dae3;
+  --text:#1c2133; --muted:#5d6479; --accent:#0f8a92; --accentText:#ffffff;
+  --gold:#a8801f; --shadow:0 1px 2px rgba(20,25,45,.08),0 6px 18px rgba(20,25,45,.08);
+  color-scheme:light;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#141829; --panel:#1d2238; --panel2:#252b45; --line:#343b5c;
+    --text:#e8eaf3; --muted:#9aa1bb; --accent:#46c7cf; --accentText:#0d1424;
+    --gold:#d9b45a; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141829; --panel:#1d2238; --panel2:#252b45; --line:#343b5c;
+  --text:#e8eaf3; --muted:#9aa1bb; --accent:#46c7cf; --accentText:#0d1424;
+  --gold:#d9b45a; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:16px/1.45 var(--body);
+  padding-bottom:env(safe-area-inset-bottom,0px)}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Hlavička */
+.top{position:sticky;top:0;z-index:20;display:flex;gap:10px;align-items:center;
+  padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;background:var(--panel);
+  border-bottom:1px solid var(--line)}
+.brand{font:700 1.45rem/1 var(--display);letter-spacing:.01em;white-space:nowrap}
+.brand small{display:block;font:500 .78rem/1.2 var(--body);color:var(--muted);letter-spacing:0}
+.search{flex:1;min-width:0;position:relative}
+.search input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}
+.iconbtn{border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:9px 12px;white-space:nowrap}
+.badge{display:inline-block;min-width:1.4em;padding:0 .35em;margin-left:4px;border-radius:99px;background:var(--accent);color:var(--accentText);font-size:.8rem;font-weight:600;text-align:center}
+.badge:empty{display:none}
+#filtersBtn{display:none}
+
+/* Rozvržení */
+.layout{display:grid;grid-template-columns:270px 1fr;gap:0;max-width:1600px;margin:0 auto}
+aside{position:sticky;top:64px;align-self:start;max-height:calc(100vh - 64px);overflow:auto;
+  padding:16px;border-right:1px solid var(--line)}
+main{padding:16px;min-width:0}
+.fgroup{margin-bottom:18px}
+.fgroup h3{margin:0 0 8px;font:600 1.05rem/1.2 var(--display);color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:4px 11px;font-size:.9rem;line-height:1.5;display:inline-flex;align-items:center;gap:6px}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accentText)}
+.chip .dot{width:10px;height:10px;border-radius:50%;flex:none}
+.chip.num{min-width:38px;justify-content:center;font-family:var(--display);font-weight:600;font-size:1rem}
+.tagin{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.reset{width:100%;border:1px dashed var(--line);background:none;border-radius:8px;padding:8px;color:var(--muted)}
+.closeFilters{display:none}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-bottom:14px}
+.count{font:600 1.15rem/1 var(--display);margin-right:auto}
+.toolbar select{padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.toolbar label{display:inline-flex;gap:6px;align-items:center;font-size:.95rem;color:var(--muted)}
+
+/* Mřížka karet */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px}
+.tile{position:relative;border:0;padding:0;background:none;border-radius:11px;aspect-ratio:744/1039;overflow:hidden;box-shadow:var(--shadow);transition:transform .15s ease}
+.tile:hover{transform:translateY(-3px)}
+.tile img{width:100%;height:100%;object-fit:contain;display:block;background:var(--panel2)}
+.tile .ph{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:10px;text-align:center;background:var(--panel2);font:600 1.05rem/1.2 var(--display)}
+.tile .ph span{font:400 .8rem/1.3 var(--body);color:var(--muted);margin-top:4px}
+.tile .flag{position:absolute;left:6px;top:6px;background:rgba(10,14,28,.78);color:#fff;font-size:.72rem;padding:1px 7px;border-radius:99px}
+.empty,.status{padding:40px 16px;text-align:center;color:var(--muted)}
+.status b{display:block;color:var(--text);font:600 1.3rem/1.3 var(--display);margin-bottom:6px}
+.status .bar{height:6px;max-width:320px;margin:14px auto 0;background:var(--panel2);border-radius:99px;overflow:hidden}
+.status .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+.primary{border:0;background:var(--accent);color:var(--accentText);border-radius:10px;padding:10px 16px;font-weight:600;margin-top:12px}
+
+footer{max-width:1600px;margin:0 auto;padding:18px 16px 28px;color:var(--muted);font-size:.85rem;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+footer button{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:5px 10px;font-size:.85rem}
+
+/* Detail karty */
+dialog{border:0;padding:0;background:var(--panel);color:var(--text);border-radius:16px;width:min(980px,96vw);max-height:92vh;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+dialog::backdrop{background:rgba(8,10,20,.72)}
+.dwrap{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);max-height:92vh}
+.dimg{background:var(--panel2);display:flex;align-items:center;justify-content:center;padding:18px}
+.dimg img{max-width:100%;max-height:calc(92vh - 36px);border-radius:14px;display:block}
+.dimg.land img{transform:none}
+.dinfo{padding:22px 22px 18px;overflow:auto}
+.dinfo h2{margin:0 0 2px;font:700 2rem/1.05 var(--display)}
+.typeline{color:var(--muted);margin-bottom:12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.stat{background:var(--panel2);border-radius:10px;padding:8px 10px}
+.stat b{display:block;font:700 1.6rem/1 var(--display)}
+.stat span{font-size:.8rem;color:var(--muted)}
+.rtext{white-space:pre-line;margin:12px 0;padding:12px 14px;border-left:3px solid var(--accent);background:var(--panel2);border-radius:0 10px 10px 0}
+.flavour{font-style:italic;color:var(--muted);margin:10px 0}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:.92rem;margin-top:12px}
+.meta dt{color:var(--muted)}
+.meta dd{margin:0}
+.rar{color:var(--gold);font-weight:600}
+.versions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.versions button{width:64px;aspect-ratio:744/1039;padding:0;border:2px solid transparent;border-radius:6px;overflow:hidden;background:var(--panel2)}
+.versions button[aria-current="true"]{border-color:var(--accent)}
+.versions img{width:100%;height:100%;object-fit:cover;display:block}
+.dnav{display:flex;gap:8px;margin-top:18px}
+.dnav button{flex:1;border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:9px}
+.dclose{position:absolute;right:10px;top:10px;width:38px;height:38px;border-radius:50%;border:0;background:rgba(10,14,28,.7);color:#fff;font-size:1.3rem;line-height:1}
+
+[hidden]{display:none!important}
+
+/* Záložky a přepínače */
+.tabs{display:flex;gap:3px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:3px;flex:none}
+.tabs button{border:0;background:none;border-radius:7px;padding:6px 12px;font-weight:600;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--panel);color:var(--text);box-shadow:var(--shadow)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:var(--panel);padding:6px 11px;font-size:.9rem}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accentText)}
+
+/* Kolekce na kartách */
+.card{display:flex;flex-direction:column;gap:5px;min-width:0}
+.tile.unowned img{filter:grayscale(.85);opacity:.5}
+.own{position:absolute;right:6px;bottom:6px;display:flex;gap:4px}
+.own span{background:rgba(10,14,28,.82);color:#fff;font:700 .9rem/1 var(--display);padding:4px 7px;border-radius:99px}
+.own .fo{background:linear-gradient(135deg,#c9a2ff,#6fd3ff,#ffd76f);color:#141829}
+.qc{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.qc div{display:flex;align-items:center;justify-content:space-between;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.qc button{border:0;background:none;width:30px;height:30px;font-size:1.1rem;line-height:1}
+.qc b{font:700 1rem/1 var(--display);white-space:nowrap}
+.qc small{color:var(--muted);font:500 .75rem var(--body)}
+
+/* Vlastnictví v detailu */
+.ownbox{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.ownrow{background:var(--panel2);border-radius:10px;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ownrow span{font-size:.85rem;color:var(--muted)}
+.stepper{display:flex;align-items:center;gap:6px}
+.stepper button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--panel);font-size:1.2rem;line-height:1}
+.stepper b{min-width:1.6em;text-align:center;font:700 1.5rem/1 var(--display)}
+
+/* Přehled kolekce */
+#viewColl{max-width:1100px;margin:0 auto;padding:16px}
+#viewColl h2{font:700 1.6rem/1.1 var(--display);margin:0 0 10px}
+.summary{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;flex:1 1 140px}
+.kpi b{display:block;font:700 1.9rem/1 var(--display)}
+.kpi span{color:var(--muted);font-size:.85rem}
+.sets{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.setcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.setcard h3{margin:0;font:700 1.35rem/1.1 var(--display)}
+.setcard .sub{color:var(--muted);font-size:.85rem;margin-bottom:8px}
+.prog{height:10px;background:var(--panel2);border-radius:99px;overflow:hidden;margin:4px 0 8px}
+.prog i{display:block;height:100%;background:var(--accent)}
+.prog.alt i{background:var(--gold)}
+.prow{display:flex;justify-content:space-between;gap:10px;font-size:.92rem}
+.prow b{font-family:var(--display);font-size:1.05rem}
+.acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--panel2);border-radius:9px;padding:8px 13px;font-size:.92rem}
+.btn.main{background:var(--accent);border-color:var(--accent);color:var(--accentText);font-weight:600}
+.btn.danger{color:#c43c3c}
+.databox{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:24px}
+.databox p{color:var(--muted);margin:0 0 4px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:60;box-shadow:var(--shadow);max-width:90vw;text-align:center}
+
+@media (max-width:560px){
+  .brand{display:none}
+  .tabs button{padding:6px 9px}
+}
+@media (max-width:820px){
+  .qc{grid-template-columns:1fr}
+  .qc button{width:28px;height:28px}
+  .layout{grid-template-columns:1fr}
+  #filtersBtn{display:inline-block}
+  .brand small{display:none}
+  aside{position:fixed;inset:0;z-index:40;max-height:none;background:var(--bg);border:0;
+    padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-100%);transition:transform .2s ease;visibility:hidden}
+  aside.open{transform:none;visibility:visible}
+  .closeFilters{display:block;position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));border:0;border-radius:12px;padding:13px;background:var(--accent);color:var(--accentText);font-weight:600;font-size:1.05rem}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:9px}
+  .tile{border-radius:7px}
+  .dwrap{grid-template-columns:1fr;overflow:auto}
+  .dimg img{max-height:58vh}
+  .dinfo{overflow:visible}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">Riftbound<small>knihovna karet</small></div>
+  <nav class="tabs" role="tablist">
+    <button type="button" role="tab" id="tabCards" aria-selected="true">Karty</button>
+    <button type="button" role="tab" id="tabColl" aria-selected="false">Kolekce</button>
+  </nav>
+  <div class="search"><input id="q" type="search" placeholder="Hledat název nebo text karty" autocomplete="off" aria-label="Hledat"></div>
+  <button class="iconbtn" id="filtersBtn" type="button">Filtry<span class="badge" id="fbadge"></span></button>
+  <button class="iconbtn" id="themeBtn" type="button" title="Přepnout světlý / tmavý režim" aria-label="Přepnout režim">◐</button>
+</header>
+
+<div class="layout" id="viewCards">
+  <aside id="filters" aria-label="Filtry">
+    <div class="fgroup"><h3>Set</h3><div class="chips" id="fSet"></div></div>
+    <div class="fgroup"><h3>Doména</h3><div class="chips" id="fDom"></div></div>
+    <div class="fgroup"><h3>Typ karty</h3><div class="chips" id="fType"></div></div>
+    <div class="fgroup"><h3>Cena (energie)</h3><div class="chips" id="fEnergy"></div></div>
+    <div class="fgroup"><h3>Síla (might)</h3><div class="chips" id="fMight"></div></div>
+    <div class="fgroup"><h3>Vzácnost</h3><div class="chips" id="fRar"></div></div>
+    <div class="fgroup"><h3>Champion / tag</h3>
+      <input class="tagin" id="fTag" list="tagList" placeholder="např. Jinx" autocomplete="off">
+      <datalist id="tagList"></datalist>
+    </div>
+    <button class="reset" id="resetBtn" type="button">Zrušit všechny filtry</button>
+    <button class="closeFilters" id="closeFilters" type="button">Zobrazit karty</button>
+  </aside>
+
+  <main>
+    <div class="toolbar">
+      <div class="count" id="count"></div>
+      <div class="seg" id="ownSeg" aria-label="Které karty zobrazit">
+        <button type="button" data-own="all" aria-pressed="true">Všechny</button>
+        <button type="button" data-own="mine" aria-pressed="false">Jen moje</button>
+        <button type="button" data-own="missing" aria-pressed="false">Chybí mi</button>
+      </div>
+      <label><input type="checkbox" id="quick"> Rychlé zadávání</label>
+      <label><input type="checkbox" id="variants"> Alternativní verze</label>
+      <select id="sort" aria-label="Řazení">
+        <option value="num">Řadit: číslo karty</option>
+        <option value="owned">Řadit: počet kusů</option>
+        <option value="name">Řadit: název</option>
+        <option value="energy">Řadit: cena</option>
+        <option value="might">Řadit: síla</option>
+        <option value="newest">Řadit: nejnovější set</option>
+      </select>
+    </div>
+    <div id="status" class="status" hidden></div>
+    <div class="grid" id="grid"></div>
+    <div id="sentinel" style="height:1px"></div>
+  </main>
+</div>
+
+<section id="viewColl" hidden aria-label="Moje kolekce"></section>
+<input type="file" id="importFile" accept=".json,application/json" hidden>
+
+<footer>
+  <span id="dbInfo">Databáze karet: načítám…</span>
+  <button id="refreshBtn" type="button">Aktualizovat databázi karet</button>
+  <span>Tvoje kolekce je uložená jen v tomto prohlížeči – zálohuj ji exportem (záložka Kolekce).</span>
+  <span>Data a obrázky: Riftcodex / Riot Games. Neoficiální fanouškovská aplikace.</span>
+</footer>
+
+<dialog id="detail" aria-label="Detail karty"></dialog>
+
+<script>
+/* ===== Nastavení ===== */
+const API = 'https://api.riftcodex.com/cards';
+const CARDS_KEY = 'rb_cards_v1';          // databáze karet (oddělená od kolekce)
+const PREFS_KEY = 'rb_prefs_v1';
+const REFRESH_DAYS = 7;                   // jak často se databáze sama obnoví
+const SET_ORDER = ['OGN','OGS','SFD','UNL','VEN','RAD'];
+const DOMAIN_COLORS = {Fury:'#d8443c',Calm:'#3fa45b',Mind:'#3d7fd9',Body:'#e08a2c',Chaos:'#8c52c9',Order:'#d6b236',Colorless:'#8a8f9c'};
+const DOMAIN_ORDER = ['Fury','Calm','Mind','Body','Chaos','Order','Colorless'];
+const TYPE_ORDER = ['Legend','Unit','Spell','Gear','Rune','Battlefield','Token'];
+const RAR_ORDER = ['Common','Uncommon','Rare','Epic','Showcase','Promo'];
+const COST_CHIPS = ['0','1','2','3','4','5','6','7','8+'];
+
+/* ===== Stav ===== */
+let CARDS = [];
+let filtered = [];
+let shown = 0;
+const F = {q:'', sets:new Set(), doms:new Set(), types:new Set(), rars:new Set(), energy:new Set(), might:new Set(), tag:''};
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ===== Úložiště (bezpečně) ===== */
+function load(key){ try{ return JSON.parse(localStorage.getItem(key)); }catch(e){ return null; } }
+function save(key,val){ try{ localStorage.setItem(key, JSON.stringify(val)); return true; }catch(e){ return false; } }
+
+/* ===== Moje kolekce (oddělená od databáze karet) ===== */
+const COLL_KEY = 'rb_collection_v1';     // { v:1, cards:{ idKarty:{n:normální, f:foil} } }
+let COLL = (load(COLL_KEY)||{}).cards || {};
+F.own = 'all';
+function own(id){ const o = COLL[id]; return {n:o?.n||0, f:o?.f||0}; }
+function total(id){ const o = own(id); return o.n + o.f; }
+function hasAny(){ for(const k in COLL) return true; return false; }
+function saveColl(){ if(!save(COLL_KEY, {v:1, cards:COLL})) toast('Pozor: kolekci se nepodařilo uložit do prohlížeče.'); }
+function setOwn(id, kind, delta){
+  const wasEmpty = !hasAny();
+  const o = own(id);
+  o[kind] = Math.max(0, Math.min(99, o[kind] + delta));
+  if(!o.n && !o.f) delete COLL[id]; else COLL[id] = o;
+  saveColl();
+  if(wasEmpty !== !hasAny()) document.querySelectorAll('#grid .card').forEach(paintCard);
+  else document.querySelectorAll(`#grid .card[data-id="${CSS.escape(id)}"]`).forEach(paintCard);
+  if($('detail').open && curCard && curCard.id===id){ $('dN').textContent = own(id).n; $('dF').textContent = own(id).f; }
+  updateCount();
+}
+let toastT;
+function toast(msg){
+  let t = document.querySelector('.toast');
+  if(!t){ t = document.createElement('div'); t.className='toast'; t.setAttribute('role','status'); document.body.appendChild(t); }
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toastT); toastT = setTimeout(()=>{ t.hidden = true; }, 3500);
+}
+
+/* ===== Režim světlý / tmavý ===== */
+const prefs = load(PREFS_KEY) || {};
+function applyTheme(){ if(prefs.theme) document.documentElement.dataset.theme = prefs.theme; else delete document.documentElement.dataset.theme; }
+applyTheme();
+$('themeBtn').onclick = () => {
+  const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  prefs.theme = dark ? 'light' : 'dark'; save(PREFS_KEY, prefs); applyTheme();
+};
+
+/* ===== Stažení databáze karet ===== */
+function slim(c){
+  const cl = c.classification||{}, at = c.attributes||{}, md = c.metadata||{};
+  return {
+    id:c.id, name:c.name||'', rid:c.riftbound_id||'', num:c.collector_number ?? 0,
+    set:(c.set?.set_id||'?').toUpperCase(), setLabel:c.set?.label||c.set?.set_id||'?',
+    type:cl.type||'Jiné', sup:cl.supertype||'', rar:cl.rarity||'', dom:cl.domain||[],
+    e:at.energy, m:at.might, p:at.power,
+    text:c.text?.plain||'', fl:c.text?.flavour||'',
+    img:c.media?.image_url||'', art:c.media?.artist||'',
+    tags:c.tags||[], land:c.orientation==='landscape',
+    alt:!!md.alternate_art, sig:!!md.signature, over:!!md.overnumbered
+  };
+}
+async function getJSON(url){
+  const r = await fetch(url, {headers:{'Accept':'application/json'}});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  return r.json();
+}
+async function downloadAll(onProgress){
+  const size = 100;
+  const first = await getJSON(`${API}?size=${size}&page=1`);
+  let items = first.items || [];
+  const pages = first.pages || 1;
+  let done = 1; onProgress(done, pages);
+  const rest = []; for(let p=2;p<=pages;p++) rest.push(p);
+  while(rest.length){
+    const batch = rest.splice(0,4);
+    const res = await Promise.all(batch.map(p => getJSON(`${API}?size=${size}&page=${p}`)));
+    res.forEach(r => { items = items.concat(r.items||[]); });
+    done += batch.length; onProgress(done, pages);
+  }
+  const seen = new Set(), out = [];
+  for(const c of items){ if(c && c.id && !seen.has(c.id)){ seen.add(c.id); out.push(slim(c)); } }
+  return out;
+}
+
+function showStatus(html){ const s=$('status'); s.innerHTML=html; s.hidden=false; }
+function hideStatus(){ $('status').hidden=true; }
+
+async function refreshDB(silent){
+  if(!silent) showStatus('<b>Stahuji databázi karet</b>Poprvé to chvilku trvá, pak už se karty načítají hned.<div class="bar"><i id="pbar"></i></div>');
+  try{
+    const cards = await downloadAll((d,t)=>{ const b=$('pbar'); if(b) b.style.width = Math.round(d/t*100)+'%'; });
+    if(!cards.length) throw new Error('prázdná odpověď');
+    CARDS = cards;
+    const ok = save(CARDS_KEY, {at:Date.now(), cards});
+    hideStatus(); setupFilters(); apply();
+    if(!$('viewColl').hidden) renderColl();
+    updateInfo(Date.now(), ok);
+  }catch(err){
+    if(silent || CARDS.length) { updateInfo(load(CARDS_KEY)?.at, true, true); return; }
+    showStatus(`<b>Karty se nepodařilo stáhnout</b>Zdroj dat (Riftcodex) teď neodpovídá nebo jsi offline. Zkontroluj připojení a zkus to znovu.<br><button class="primary" id="retry">Zkusit znovu</button><br><small>Chyba: ${esc(err.message)}</small>`);
+    $('retry').onclick = () => refreshDB(false);
+  }
+}
+function updateInfo(at, saved=true, failed=false){
+  const d = at ? new Date(at).toLocaleDateString('cs-CZ') : '–';
+  const sets = new Set(CARDS.map(c=>c.set)).size;
+  $('dbInfo').textContent = `Databáze karet: ${CARDS.length} karet v ${sets} setech, aktualizováno ${d}` +
+    (saved ? '' : ' (nepodařilo se uložit do prohlížeče, příště se stáhne znovu)') +
+    (failed ? ' (poslední aktualizace se nezdařila)' : '');
+}
+$('refreshBtn').onclick = () => refreshDB(false);
+
+/* ===== Filtry ===== */
+function setIdx(s){ const i = SET_ORDER.indexOf(s); return i<0 ? 100 : i; }
+function ordered(values, order){ return [...values].sort((a,b)=>{ const ia=order.indexOf(a), ib=order.indexOf(b); return (ia<0?99:ia)-(ib<0?99:ib) || String(a).localeCompare(String(b)); }); }
+function chip(label, value, set, extra=''){
+  const b = document.createElement('button');
+  b.type='button'; b.className='chip'+(extra?' '+extra:''); b.setAttribute('aria-pressed', set.has(value));
+  b.innerHTML = label;
+  b.onclick = () => { set.has(value) ? set.delete(value) : set.add(value); b.setAttribute('aria-pressed', set.has(value)); apply(); };
+  return b;
+}
+function fill(id, items){ const el=$(id); el.innerHTML=''; items.forEach(i=>el.appendChild(i)); }
+
+function setupFilters(){
+  const sets = new Map(); CARDS.forEach(c=>sets.set(c.set, c.setLabel));
+  fill('fSet', [...sets.keys()].sort((a,b)=>setIdx(a)-setIdx(b)||a.localeCompare(b)).map(s=>chip(esc(sets.get(s)), s, F.sets)));
+  const doms = new Set(); CARDS.forEach(c=>c.dom.forEach(d=>doms.add(d)));
+  fill('fDom', ordered(doms, DOMAIN_ORDER).map(d=>chip(`<span class="dot" style="background:${DOMAIN_COLORS[d]||'#888'}"></span>${esc(d)}`, d, F.doms)));
+  fill('fType', ordered(new Set(CARDS.map(c=>c.type)), TYPE_ORDER).map(t=>chip(esc(t), t, F.types)));
+  fill('fRar', ordered(new Set(CARDS.map(c=>c.rar).filter(Boolean)), RAR_ORDER).map(r=>chip(esc(r), r, F.rars)));
+  fill('fEnergy', COST_CHIPS.map(v=>chip(v, v, F.energy, 'num')));
+  fill('fMight', COST_CHIPS.map(v=>chip(v, v, F.might, 'num')));
+  const tags = new Set(); CARDS.forEach(c=>c.tags.forEach(t=>tags.add(t)));
+  $('tagList').innerHTML = [...tags].sort().map(t=>`<option value="${esc(t)}">`).join('');
+}
+function costKey(v){ if(v===null||v===undefined) return null; return v>=8 ? '8+' : String(v); }
+
+function matches(c){
+  const tot = total(c.id);
+  if(F.own==='mine'){ if(!tot) return false; }                 // moje karty ukaž vždy, i alternativní verze
+  else {
+    if(!$('variants').checked && (c.alt || c.sig || c.over)) return false;
+    if(F.own==='missing' && tot) return false;
+  }
+  if(F.sets.size && !F.sets.has(c.set)) return false;
+  if(F.doms.size && !c.dom.some(d=>F.doms.has(d))) return false;
+  if(F.types.size && !F.types.has(c.type)) return false;
+  if(F.rars.size && !F.rars.has(c.rar)) return false;
+  if(F.energy.size && !F.energy.has(costKey(c.e))) return false;
+  if(F.might.size && !F.might.has(costKey(c.m))) return false;
+  if(F.tag){ const t=F.tag.toLowerCase(); if(!c.tags.some(x=>x.toLowerCase().includes(t))) return false; }
+  if(F.q){
+    const hay = (c.name+' '+c.text+' '+c.tags.join(' ')+' '+c.sup).toLowerCase();
+    if(!F.q.split(/\s+/).every(w=>hay.includes(w))) return false;
+  }
+  return true;
+}
+function sorter(mode){
+  const byNum = (a,b)=> setIdx(a.set)-setIdx(b.set) || a.set.localeCompare(b.set) || a.num-b.num || a.name.localeCompare(b.name);
+  const n = v => (v===null||v===undefined) ? 99 : v;
+  return {
+    num: byNum,
+    owned: (a,b)=> total(b.id)-total(a.id) || byNum(a,b),
+    name: (a,b)=> a.name.localeCompare(b.name,'cs') || byNum(a,b),
+    energy: (a,b)=> n(a.e)-n(b.e) || a.name.localeCompare(b.name,'cs'),
+    might: (a,b)=> n(b.m===null||b.m===undefined?-1:b.m)-n(a.m===null||a.m===undefined?-1:a.m) || a.name.localeCompare(b.name,'cs'),
+    newest: (a,b)=> setIdx(b.set)-setIdx(a.set) || a.num-b.num
+  }[mode] || byNum;
+}
+
+function apply(){
+  F.q = $('q').value.trim().toLowerCase();
+  F.tag = $('fTag').value.trim();
+  filtered = CARDS.filter(matches).sort(sorter($('sort').value));
+  const active = F.sets.size+F.doms.size+F.types.size+F.rars.size+F.energy.size+F.might.size+(F.tag?1:0);
+  $('fbadge').textContent = active || '';
+  updateCount();
+  $('grid').innerHTML = ''; shown = 0;
+  if(CARDS.length && !filtered.length){
+    const msg = (F.own==='mine' && !hasAny())
+      ? 'Zatím nemáš v kolekci žádnou kartu. Přepni na „Všechny“ a přidávej karty v detailu karty nebo přes „Rychlé zadávání“.'
+      : 'Žádná karta neodpovídá filtrům. Zkus ubrat filtr nebo změnit hledaný text.';
+    $('grid').innerHTML = `<div class="empty" style="grid-column:1/-1">${msg}</div>`;
+  }
+  renderMore();
+  prefs.sort = $('sort').value; prefs.variants = $('variants').checked; prefs.quick = $('quick').checked; save(PREFS_KEY, prefs);
+}
+function updateCount(){
+  if(!CARDS.length){ $('count').textContent=''; return; }
+  let txt = `${filtered.length} ${plural(filtered.length,'karta','karty','karet')}`;
+  if(F.own==='mine'){ const k = filtered.reduce((s,c)=>s+total(c.id),0); txt += ` · ${k} ${plural(k,'kus','kusy','kusů')}`; }
+  $('count').textContent = txt;
+}
+function plural(n,a,b,c){ return n===1?a:(n>=2&&n<=4?b:c); }
+
+/* ===== Vykreslení mřížky (postupně, ať je to rychlé) ===== */
+function ownBadge(id){ const o = own(id); return (o.n?`<span title="Normální kusy">×${o.n}</span>`:'') + (o.f?`<span class="fo" title="Foil kusy">✦${o.f}</span>`:''); }
+function qcHTML(id){
+  const o = own(id);
+  return `<div class="qc">
+    <div><button type="button" data-act="n-1" aria-label="Odebrat kus">−</button><b data-k="n">${o.n}<small> ks</small></b><button type="button" data-act="n+1" aria-label="Přidat kus">+</button></div>
+    <div><button type="button" data-act="f-1" aria-label="Odebrat foil">−</button><b data-k="f">${o.f}<small> ✦</small></b><button type="button" data-act="f+1" aria-label="Přidat foil">+</button></div>
+  </div>`;
+}
+function tileHTML(c, i){
+  const flag = c.sig ? 'Podpis' : c.alt ? 'Alt. art' : c.over ? 'Showcase' : '';
+  const dim = hasAny() && !total(c.id);
+  return `<div class="card" data-id="${esc(c.id)}">
+   <button class="tile${dim?' unowned':''}" type="button" data-i="${i}" aria-label="${esc(c.name)}">
+    ${c.img ? `<img src="${esc(c.img)}" alt="${esc(c.name)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ph',innerHTML:this.alt}))">`
+            : `<div class="ph">${esc(c.name)}<span>${esc(c.type)}</span></div>`}
+    ${flag && ($('variants').checked || F.own==='mine') ? `<span class="flag">${flag}</span>` : ''}
+    <span class="own">${ownBadge(c.id)}</span>
+   </button>
+   ${$('quick').checked ? qcHTML(c.id) : ''}
+  </div>`;
+}
+function paintCard(el){
+  const id = el.dataset.id, o = own(id);
+  el.querySelector('.own').innerHTML = ownBadge(id);
+  el.querySelector('.tile').classList.toggle('unowned', hasAny() && !(o.n+o.f));
+  el.querySelectorAll('.qc b').forEach(b => { b.firstChild.nodeValue = o[b.dataset.k]; });
+}
+function renderMore(){
+  if(shown >= filtered.length) return;
+  const next = filtered.slice(shown, shown+60);
+  $('grid').insertAdjacentHTML('beforeend', next.map((c,k)=>tileHTML(c, shown+k)).join(''));
+  shown += next.length;
+}
+new IntersectionObserver(e=>{ if(e[0].isIntersecting) renderMore(); }, {rootMargin:'800px'}).observe($('sentinel'));
+$('grid').addEventListener('click', e=>{
+  const a = e.target.closest('[data-act]');
+  if(a){ setOwn(a.closest('.card').dataset.id, a.dataset.act[0], +a.dataset.act.slice(1)); return; }
+  const t = e.target.closest('.tile'); if(t) openDetail(+t.dataset.i);
+});
+
+/* ===== Detail karty ===== */
+let cur = -1, curCard = null;
+function baseName(n){ return n.replace(/\s*\((?:Signature|Alternate Art|Showcase|Overnumbered|Promo)[^)]*\)\s*$/i,'').trim(); }
+function openDetail(i, card){
+  cur = i; curCard = card || filtered[i]; const c = curCard; if(!c) return;
+  const stat = (v,l) => `<div class="stat"><b>${v===null||v===undefined?'–':esc(v)}</b><span>${l}</span></div>`;
+  const doms = c.dom.map(d=>`<span class="chip" style="pointer-events:none"><span class="dot" style="background:${DOMAIN_COLORS[d]||'#888'}"></span>${esc(d)}</span>`).join(' ');
+  const versions = CARDS.filter(x=>baseName(x.name)===baseName(c.name)).sort(sorter('num'));
+  const d = $('detail');
+  d.innerHTML = `<div class="dwrap">
+    <div class="dimg${c.land?' land':''}">${c.img?`<img src="${esc(c.img)}" alt="${esc(c.name)}">`:''}</div>
+    <div class="dinfo">
+      <h2>${esc(c.name)}</h2>
+      <div class="typeline">${esc([c.sup,c.type].filter(Boolean).join(' '))}</div>
+      <div class="chips">${doms}</div>
+      <div class="ownbox">
+        <div class="ownrow"><span>Mám kusů</span><div class="stepper"><button type="button" data-act="n-1" aria-label="Odebrat kus">−</button><b id="dN">${own(c.id).n}</b><button type="button" data-act="n+1" aria-label="Přidat kus">+</button></div></div>
+        <div class="ownrow"><span>Foil ✦</span><div class="stepper"><button type="button" data-act="f-1" aria-label="Odebrat foil">−</button><b id="dF">${own(c.id).f}</b><button type="button" data-act="f+1" aria-label="Přidat foil">+</button></div></div>
+      </div>
+      ${(c.e!=null||c.m!=null||c.p!=null) ? `<div class="stats">${stat(c.e,'Energie (cena)')}${stat(c.p,'Power (runy)')}${stat(c.m,'Síla (might)')}</div>` : ''}
+      ${c.text?`<div class="rtext">${esc(c.text)}</div>`:''}
+      ${c.fl?`<p class="flavour">${esc(c.fl)}</p>`:''}
+      <dl class="meta">
+        <dt>Set</dt><dd>${esc(c.setLabel)} (${esc(c.set)})</dd>
+        <dt>Číslo</dt><dd>${esc(c.rid || c.num)}</dd>
+        ${c.rar?`<dt>Vzácnost</dt><dd class="rar">${esc(c.rar)}</dd>`:''}
+        ${c.tags.length?`<dt>Tagy</dt><dd>${esc(c.tags.join(', '))}</dd>`:''}
+        ${c.art?`<dt>Ilustrace</dt><dd>${esc(c.art)}</dd>`:''}
+      </dl>
+      ${versions.length>1?`<p style="margin:16px 0 0;color:var(--muted);font-size:.9rem">Verze této karty</p><div class="versions">${versions.map(v=>`<button type="button" data-id="${esc(v.id)}" aria-current="${v.id===c.id}" title="${esc(v.name)}">${v.img?`<img src="${esc(v.img)}" alt="" loading="lazy">`:''}</button>`).join('')}</div>`:''}
+      <div class="dnav"><button type="button" id="dPrev">‹ Předchozí</button><button type="button" id="dNext">Další ›</button></div>
+    </div></div>
+    <button class="dclose" type="button" id="dClose" aria-label="Zavřít">×</button>`;
+  $('dClose').onclick = () => d.close();
+  $('dPrev').onclick = () => step(-1);
+  $('dNext').onclick = () => step(1);
+  $('dPrev').disabled = cur<=0; $('dNext').disabled = cur<0 || cur>=filtered.length-1;
+  d.querySelectorAll('.ownbox [data-act]').forEach(b=>b.onclick=()=>setOwn(c.id, b.dataset.act[0], +b.dataset.act.slice(1)));
+  d.querySelectorAll('.versions button').forEach(b=>b.onclick=()=>{
+    const v = CARDS.find(x=>x.id===b.dataset.id); const fi = filtered.indexOf(v);
+    openDetail(fi, v);
+  });
+  if(!d.open) d.showModal();
+}
+function step(k){ const n=cur+k; if(n>=0 && n<filtered.length) openDetail(n); }
+$('detail').addEventListener('click', e=>{ if(e.target===$('detail')) $('detail').close(); });
+document.addEventListener('keydown', e=>{ if(!$('detail').open) return; if(e.key==='ArrowLeft') step(-1); if(e.key==='ArrowRight') step(1); });
+
+/* ===== Přehled kolekce ===== */
+const pct = (a,b) => b ? Math.round(a/b*100) : 0;
+function isVariant(c){ return c.alt || c.sig || c.over; }
+function renderColl(){
+  const sets = new Map();
+  for(const c of CARDS){
+    if(!sets.has(c.set)) sets.set(c.set, {label:c.setLabel, base:0, baseOwn:0, vars:0, varsOwn:0, copies:0, foils:0});
+    const s = sets.get(c.set), o = own(c.id), has = o.n+o.f>0;
+    if(c.type==='Token') continue;
+    if(isVariant(c)){ s.vars++; if(has) s.varsOwn++; } else { s.base++; if(has) s.baseOwn++; }
+    s.copies += o.n+o.f; s.foils += o.f;
+  }
+  const all = [...sets.values()];
+  const sum = k => all.reduce((x,s)=>x+s[k],0);
+  const uniq = Object.keys(COLL).length;
+  const last = prefs.lastExport ? new Date(prefs.lastExport).toLocaleDateString('cs-CZ') : 'zatím nikdy';
+  const order = [...sets.keys()].sort((a,b)=>setIdx(a)-setIdx(b)||a.localeCompare(b));
+  $('viewColl').innerHTML = `
+    <h2>Moje kolekce</h2>
+    <div class="summary">
+      <div class="kpi"><b>${sum('copies')}</b><span>kusů karet celkem</span></div>
+      <div class="kpi"><b>${uniq}</b><span>různých karet</span></div>
+      <div class="kpi"><b>${sum('foils')}</b><span>foil kusů</span></div>
+      <div class="kpi"><b>${pct(sum('baseOwn'), sum('base'))} %</b><span>všech základních karet</span></div>
+    </div>
+    ${CARDS.length ? '' : '<p class="empty">Databáze karet se ještě načítá…</p>'}
+    <div class="sets">${order.map(k=>{ const s = sets.get(k); return `
+      <div class="setcard">
+        <h3>${esc(s.label)}</h3>
+        <div class="sub">${esc(k)} · ${s.copies} ${plural(s.copies,'kus','kusy','kusů')}${s.foils?` · ${s.foils} foil`:''}</div>
+        <div class="prow"><span>Základní karty</span><b>${s.baseOwn} / ${s.base} · ${pct(s.baseOwn,s.base)} %</b></div>
+        <div class="prog"><i style="width:${pct(s.baseOwn,s.base)}%"></i></div>
+        ${s.vars ? `<div class="prow"><span>Alternativní verze</span><b>${s.varsOwn} / ${s.vars} · ${pct(s.varsOwn,s.vars)} %</b></div>
+        <div class="prog alt"><i style="width:${pct(s.varsOwn,s.vars)}%"></i></div>` : ''}
+        <div class="acts">
+          <button type="button" class="btn main" data-set="${esc(k)}" data-show="missing">Co mi chybí (${s.base-s.baseOwn})</button>
+          <button type="button" class="btn" data-set="${esc(k)}" data-show="mine">Co mám</button>
+        </div>
+      </div>`; }).join('')}</div>
+    <div class="databox">
+      <h2>Záloha a přenos</h2>
+      <p>Kolekce je uložená jen v tomhle prohlížeči na tomhle zařízení. Když vymažeš data prohlížeče, přijdeš o ni. Proto si ji občas stáhni jako soubor – a ten pak můžeš nahrát i na jiném zařízení.</p>
+      <p>Poslední export: <b>${last}</b></p>
+      <div class="acts">
+        <button type="button" class="btn main" id="expBtn">Stáhnout zálohu (JSON)</button>
+        <button type="button" class="btn" id="impBtn">Nahrát ze souboru</button>
+        <button type="button" class="btn danger" id="clrBtn">Smazat kolekci</button>
+      </div>
+    </div>`;
+  $('viewColl').querySelectorAll('[data-show]').forEach(b=>b.onclick=()=>{
+    F.sets.clear(); F.sets.add(b.dataset.set);
+    setOwnMode(b.dataset.show);
+    setupFilters(); showView('cards');
+  });
+  $('expBtn').onclick = exportColl;
+  $('impBtn').onclick = () => { $('importFile').value=''; $('importFile').click(); };
+  $('clrBtn').onclick = () => {
+    if(!hasAny()) return toast('Kolekce je už prázdná.');
+    if(!confirm('Opravdu smazat celou kolekci? Tohle nejde vrátit. Pokud si nejsi jistý, stáhni si nejdřív zálohu.')) return;
+    COLL = {}; saveColl(); renderColl(); toast('Kolekce smazána.');
+  };
+}
+
+/* ===== Export / import ===== */
+function exportColl(){
+  const byId = new Map(CARDS.map(c=>[c.id,c]));
+  const cards = Object.entries(COLL).map(([id,o])=>{ const c = byId.get(id); return {id, rid:c?.rid||'', name:c?.name||'', set:c?.set||'', n:o.n||0, f:o.f||0}; });
+  const data = {app:'riftbound-kolekce', version:1, exported:new Date().toISOString(), cards};
+  const blob = new Blob([JSON.stringify(data, null, 1)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `riftbound-kolekce-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  prefs.lastExport = Date.now(); save(PREFS_KEY, prefs);
+  renderColl(); toast(`Záloha stažena (${cards.length} ${plural(cards.length,'karta','karty','karet')}).`);
+}
+$('importFile').addEventListener('change', async e=>{
+  const file = e.target.files[0]; if(!file) return;
+  let data;
+  try{ data = JSON.parse(await file.text()); }catch(err){ return toast('Soubor se nedá přečíst. Je to záloha z této aplikace?'); }
+  const list = Array.isArray(data?.cards) ? data.cards : null;
+  if(!list) return toast('V souboru není kolekce z této aplikace.');
+  const ids = new Set(CARDS.map(c=>c.id));
+  const byRid = new Map(CARDS.filter(c=>c.rid).map(c=>[c.rid+'|'+c.name, c.id]));
+  const next = {}; let unknown = 0;
+  for(const x of list){
+    let id = (ids.has(x?.id) || !CARDS.length) ? x?.id : byRid.get(x?.rid+'|'+x?.name);
+    if(!id){ unknown++; continue; }
+    const n = Math.max(0, Math.min(99, parseInt(x.n)||0)), f = Math.max(0, Math.min(99, parseInt(x.f)||0));
+    if(n || f) next[id] = {n:(next[id]?.n||0)+n, f:(next[id]?.f||0)+f};
+  }
+  const cnt = Object.keys(next).length;
+  if(!confirm(`Soubor obsahuje ${cnt} různých karet.\n\nImport NAHRADÍ tvou současnou kolekci (${Object.keys(COLL).length} různých karet). Pokračovat?`)) return;
+  COLL = next; saveColl(); renderColl();
+  toast(`Hotovo: nahráno ${cnt} ${plural(cnt,'karta','karty','karet')}.` + (unknown ? ` ${unknown} ${plural(unknown,'kartu','karty','karet')} se nepodařilo najít v databázi.` : ''));
+});
+
+/* ===== Záložky a režimy ===== */
+function showView(v){
+  $('viewCards').hidden = v!=='cards';
+  $('viewColl').hidden = v!=='coll';
+  $('filtersBtn').hidden = v!=='cards';
+  $('tabCards').setAttribute('aria-selected', v==='cards');
+  $('tabColl').setAttribute('aria-selected', v==='coll');
+  if(v==='coll') renderColl(); else apply();
+  window.scrollTo(0,0);
+}
+function setOwnMode(m){
+  F.own = m;
+  $('ownSeg').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.own===m));
+}
+$('tabCards').onclick = () => showView('cards');
+$('tabColl').onclick = () => showView('coll');
+$('ownSeg').addEventListener('click', e=>{ const b = e.target.closest('[data-own]'); if(b){ setOwnMode(b.dataset.own); apply(); } });
+$('quick').onchange = apply;
+$('q').addEventListener('focus', ()=>{ if($('viewCards').hidden) showView('cards'); });
+
+/* ===== Ovládání ===== */
+let qt; $('q').addEventListener('input', ()=>{ clearTimeout(qt); qt=setTimeout(apply,180); });
+$('fTag').addEventListener('input', ()=>{ clearTimeout(qt); qt=setTimeout(apply,180); });
+$('sort').onchange = apply; $('variants').onchange = apply;
+$('resetBtn').onclick = () => { [F.sets,F.doms,F.types,F.rars,F.energy,F.might].forEach(s=>s.clear()); $('fTag').value=''; setupFilters(); apply(); };
+$('filtersBtn').onclick = () => $('filters').classList.add('open');
+$('closeFilters').onclick = () => $('filters').classList.remove('open');
+
+/* ===== Start ===== */
+if(prefs.sort) $('sort').value = prefs.sort;
+$('variants').checked = !!prefs.variants;
+$('quick').checked = !!prefs.quick;
+const cached = load(CARDS_KEY);
+if(cached && Array.isArray(cached.cards) && cached.cards.length){
+  CARDS = cached.cards; setupFilters(); apply(); updateInfo(cached.at);
+  if(Date.now() - (cached.at||0) > REFRESH_DAYS*864e5) refreshDB(true);   // tichá aktualizace na pozadí
+} else {
+  refreshDB(false);
+}
+</script>
+</body>
+</html>
