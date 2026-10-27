@@ -275,7 +275,7 @@ dialog::backdrop{background:rgba(8,10,20,.72)}
 const API = 'https://api.riftcodex.com/cards';
 const EXTRA_URL = 'piltover.json';       // karty z Piltover Archive (sety, které Riftcodex nemá) – stahuje je GitHub
 const CARDS_KEY = 'rb_cards_v1';          // databáze karet (oddělená od kolekce)
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 const PREFS_KEY = 'rb_prefs_v1';
 const REFRESH_DAYS = 2;                   // jak často se databáze sama obnoví
 const SET_ORDER = ['OGN','OGS','SFD','UNL','VEN','RAD','W26','PR','OPP','JDG'];
@@ -288,6 +288,7 @@ const COST_CHIPS = ['0','1','2','3','4','5','6','7','8+'];
 /* ===== Stav ===== */
 let CARDS = [];
 let EXTRA = {n:0, sets:[]};
+let ALIAS = {};
 let filtered = [];
 let shown = 0;
 const F = {q:'', sets:new Set(), doms:new Set(), types:new Set(), rars:new Set(), energy:new Set(), might:new Set(), tag:''};
@@ -345,8 +346,45 @@ function slim(c){
     text:c.text?.plain||'', fl:c.text?.flavour||'',
     img:c.media?.image_url||'', art:c.media?.artist||'',
     tags:c.tags||[], land:c.orientation==='landscape',
-    alt:!!md.alternate_art, sig:!!md.signature, over:!!md.overnumbered
+    ...ridFlags(c.riftbound_id, md)
   };
+}
+// Druh verze se pozná i z čísla karty: „ven-042a-166“ = alternativní verze, „unl-229*-219“ = podpis, číslo nad počtem karet v setu = showcase
+const RID_RE = /^([a-z0-9]+)-(\d+)([a-z]*)(\*?)-(\d+)$/i;
+function ridFlags(rid, md){
+  const m = RID_RE.exec(rid||'');
+  return {
+    alt: !!md.alternate_art || !!(m && m[3]),
+    sig: !!md.signature || !!(m && m[4]),
+    over: !!md.overnumbered || !!(m && +m[2] > +m[5])
+  };
+}
+// Riftcodex má některé karty uložené dvakrát (stejné číslo karty i obrázek). Necháme jen jednu
+// a zapamatujeme si, kterou kartu nahradila, aby se ti nic neztratilo z kolekce.
+function dedupe(cards){
+  const best = new Map(), alias = {};
+  const score = c => (c.alt||c.sig||c.over ? 2 : 0) + (/\(/.test(c.name) ? 1 : 0);
+  for(const c of cards){
+    const key = c.rid ? c.set+'|'+c.rid+'|'+c.img : c.id;
+    const prev = best.get(key);
+    if(!prev){ best.set(key, c); continue; }
+    const keep = (score(c) > score(prev) || (score(c) === score(prev) && c.id > prev.id)) ? c : prev;
+    const drop = keep === c ? prev : c;
+    best.set(key, keep); alias[drop.id] = keep.id;
+  }
+  for(const k in alias){ let t = alias[k]; while(alias[t]) t = alias[t]; alias[k] = t; }
+  return {cards: [...best.values()], alias};
+}
+function migrateColl(alias){
+  if(!alias) return;
+  let changed = false;
+  for(const id of Object.keys(COLL)){
+    const to = alias[id]; if(!to) continue;
+    const a = COLL[id], b = COLL[to] || {n:0, f:0};
+    COLL[to] = {n: Math.max(a.n||0, b.n||0), f: Math.max(a.f||0, b.f||0)};
+    delete COLL[id]; changed = true;
+  }
+  if(changed) saveColl();
 }
 async function getJSON(url){
   const r = await fetch(url, {headers:{'Accept':'application/json'}});
@@ -368,6 +406,7 @@ async function downloadAll(onProgress){
   }
   const seen = new Set(), out = [];
   for(const c of items){ if(c && c.id && !seen.has(c.id)){ seen.add(c.id); out.push(slim(c)); } }
+  const dd = dedupe(out); out.length = 0; out.push(...dd.cards); ALIAS = dd.alias;
   // Doplnění z Piltover Archive: sety, které tam jsou, se berou odtud (a z Riftcodexu se vynechají, ať nejsou dvakrát)
   const extra = await getExtra();
   if(extra.cards.length){
@@ -395,7 +434,8 @@ async function refreshDB(silent){
     const res = await downloadAll((d,t)=>{ const b=$('pbar'); if(b) b.style.width = Math.round(d/t*100)+'%'; });
     if(!res.cards.length) throw new Error('prázdná odpověď');
     CARDS = res.cards; EXTRA = {n:res.extra, sets:res.extraSets};
-    const ok = save(CARDS_KEY, {v:DB_VERSION, at:Date.now(), cards:CARDS, extra:EXTRA});
+    migrateColl(ALIAS);
+    const ok = save(CARDS_KEY, {v:DB_VERSION, at:Date.now(), cards:CARDS, extra:EXTRA, alias:ALIAS});
     hideStatus(); setupFilters(); apply();
     if(!$('viewColl').hidden) renderColl();
     updateInfo(Date.now(), ok);
@@ -720,7 +760,7 @@ $('variants').checked = !!prefs.variants;
 $('quick').checked = !!prefs.quick;
 const cached = load(CARDS_KEY);
 if(cached && Array.isArray(cached.cards) && cached.cards.length){
-  CARDS = cached.cards; EXTRA = cached.extra || EXTRA; setupFilters(); apply(); updateInfo(cached.at);
+  CARDS = cached.cards; EXTRA = cached.extra || EXTRA; migrateColl(cached.alias); setupFilters(); apply(); updateInfo(cached.at);
   if(cached.v !== DB_VERSION || Date.now() - (cached.at||0) > REFRESH_DAYS*864e5) refreshDB(true);   // tichá aktualizace na pozadí
 } else {
   refreshDB(false);
