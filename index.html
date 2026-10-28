@@ -65,6 +65,14 @@ button{cursor:pointer}
 .colls{display:flex;flex-direction:column;gap:8px;margin:10px 0 4px}
 .collrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
 .collrow.active{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.collrow{cursor:pointer}
+.collrow:not(.active):hover{border-color:color-mix(in srgb,var(--accent) 50%,var(--line))}
+.collrow{flex-wrap:nowrap}
+.collrow .nm{min-width:0}
+.rowbtns{display:flex;gap:6px;flex:none}
+.rowbtns button{width:38px;height:38px;padding:0;border-radius:50%;font-size:1rem;display:flex;align-items:center;justify-content:center}
+.collrow .radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex:none;box-sizing:border-box}
+.collrow.active .radio{border:6px solid var(--accent)}
 .collrow .nm{font:700 1.15rem/1.1 var(--display);margin-right:auto}
 .collrow .nm small{display:block;font:500 .82rem/1.3 var(--body);color:var(--muted)}
 .collrow .tag{font:600 .75rem/1 var(--body);background:var(--accent);color:var(--accentText);border-radius:99px;padding:3px 8px;margin-left:6px;vertical-align:middle}
@@ -182,9 +190,18 @@ body.locked{overflow:hidden}
 button.status{cursor:pointer}
 .deckcard{position:relative}
 .deckcard.invalid{border-color:color-mix(in srgb,#c9822a 60%,var(--line))}
-.badbadge{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;background:#c9822a;color:#fff;font:700 .95rem/24px var(--body);text-align:center}
+.colltag{align-self:flex-start;font:600 .78rem/1 var(--body);padding:4px 9px;border-radius:99px;background:var(--panel2);border:1px solid var(--line);color:var(--muted);margin:2px 0}
+.colltag.other{background:color-mix(in srgb,var(--gold) 20%,var(--panel));border-color:var(--gold);color:var(--text)}
+.badbadge{display:inline-block;width:22px;height:22px;border-radius:50%;background:#c9822a;color:#fff;font:700 .9rem/22px var(--body);text-align:center;vertical-align:2px}
+.deckcard{cursor:pointer;padding-right:56px}
+.deckbtns{position:absolute;top:8px;right:8px;flex-direction:column}
+.deckbtns button{border:1px solid var(--line);background:var(--panel2)}
 .ib{display:inline-flex;width:20px;height:20px;border-radius:50%;background:rgba(10,14,28,.8);color:#fff;font:700 .8rem/1 var(--body);align-items:center;justify-content:center}
 .card{position:relative}
+.card.maxed .tile::after{content:'';position:absolute;inset:0;background:rgba(36,110,215,.55);border-radius:inherit;pointer-events:none}
+.card.maxed .tile img{filter:saturate(.6)}
+.maxlbl{display:none}
+.card.maxed .maxlbl{display:block;position:absolute;left:6px;right:6px;top:42%;text-align:center;color:#fff;font:700 .95rem/1.15 var(--display);text-shadow:0 1px 4px rgba(0,0,0,.6);pointer-events:none;z-index:1}
 .indeck{position:absolute;left:6px;bottom:6px;background:var(--accent);color:var(--accentText);font:700 1rem/1 var(--display);padding:5px 9px;border-radius:99px;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.35)}
 .infobtn{position:absolute;right:6px;top:6px;width:32px;height:32px;border-radius:50%;border:0;background:rgba(10,14,28,.82);color:#fff;font:700 .95rem/1 var(--body);display:none}
 body.editing .infobtn{display:flex;align-items:center;justify-content:center}
@@ -337,7 +354,7 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
   .closeFilters{display:block;position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:41;border:0;border-radius:12px;padding:14px;background:var(--accent);color:var(--accentText);font-weight:600;font-size:1.05rem;box-shadow:0 -12px 24px var(--bg)}
   .grid{grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:9px}
   .tile{border-radius:7px}
-  dialog{width:100%;max-width:100%;height:100%;height:100dvh;max-height:100dvh;margin:0;border-radius:0;
+  #detail{width:100%;max-width:100%;height:100%;height:100dvh;max-height:100dvh;margin:0;border-radius:0;
     overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
   .dwrap{display:block;max-height:none;overflow:visible}
   .dimg{padding:calc(68px + env(safe-area-inset-top,0px)) 16px 14px}
@@ -502,6 +519,7 @@ function renderCollUI(){
   if(other) $('backMain').onclick = () => switchColl(LIB.main);
 }
 function setOwn(id, kind, delta){
+  if(typeof OWNMAP !== 'undefined') OWNMAP = null;
   const wasEmpty = !hasAny();
   const o = own(id);
   o[kind] = Math.max(0, Math.min(99, o[kind] + delta));
@@ -744,6 +762,7 @@ function sorter(mode){
 }
 
 function apply(){
+  OWNMAP = null;
   F.q = $('q').value.trim().toLowerCase();
   F.tag = $('fTag').value.trim();
   filtered = CARDS.filter(matches).sort(sorter($('sort').value));
@@ -783,14 +802,14 @@ function qcHTML(id){
 function tileHTML(c, i){
   const flag = c.sig ? 'Podpis' : c.alt ? 'Alt. art' : c.over ? 'Showcase' : '';
   const dim = hasAny() && !total(c.id);
-  return `<div class="card" data-id="${esc(c.id)}">
+  return `<div class="card${EDIT && curDeck() && isMaxed(curDeck(), c) ? ' maxed' : ''}" data-id="${esc(c.id)}">
    <button class="tile${dim?' unowned':''}" type="button" data-i="${i}" aria-label="${esc(c.name)}">
     ${c.img ? `<img src="${esc(c.img)}" alt="${esc(c.name)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ph',innerHTML:this.alt}))">`
             : `<div class="ph">${esc(c.name)}<span>${esc(c.type)}</span></div>`}
     ${flag && ($('variants').checked || F.own==='mine' || F.own==='theirs') ? `<span class="flag">${flag}</span>` : ''}
     <span class="own">${ownBadge(c.id)}</span>
    </button>
-   ${EDIT ? `<span class="indeck"${deckCount(curDeck(), c.id)?'':' hidden'}>${deckCount(curDeck(), c.id)?'×'+deckCount(curDeck(), c.id):''}</span><button type="button" class="infobtn" data-info="${i}" aria-label="Detail karty">i</button>` : ''}
+   ${EDIT ? `<span class="maxlbl">Všechny tvoje kusy</span><span class="indeck"${deckCount(curDeck(), c.id)?'':' hidden'}>${deckCount(curDeck(), c.id)?'×'+deckCount(curDeck(), c.id):''}</span><button type="button" class="infobtn" data-info="${i}" aria-label="Detail karty">i</button>` : ''}
    ${$('quick').checked && !EDIT ? qcHTML(c.id) : ''}
   </div>`;
 }
@@ -916,12 +935,11 @@ function renderColl(){
       <h2>Kolekce</h2>
       <p>Můžeš mít víc kolekcí – svoji a třeba sestřinu nahranou ze souboru. Přepínáním se nic nesmaže.</p>
       <div class="colls">${ids.map(id=>{ const st = collStats(LIB.list[id].cards); return `
-        <div class="collrow${id===LIB.active?' active':''}">
+        <div class="collrow${id===LIB.active?' active':''}" data-sw="${esc(id)}" role="button" tabindex="0" aria-pressed="${id===LIB.active}" title="${id===LIB.active?'Právě zobrazená kolekce':'Klepnutím přepneš na tuto kolekci'}">
+          <span class="radio" aria-hidden="true"></span>
           <div class="nm">${esc(collName(id))}${id===LIB.main?'<span class="tag">moje</span>':''}
-            <small>${st.k} ${plural(st.k,'kus','kusy','kusů')} · ${st.u} ${plural(st.u,'různá karta','různé karty','různých karet')}${id===LIB.active?' · právě zobrazená':''}</small></div>
-          ${id!==LIB.active?`<button type="button" data-sw="${esc(id)}">Zobrazit</button>`:''}
-          <button type="button" data-ren="${esc(id)}">Přejmenovat</button>
-          ${id!==LIB.main?`<button type="button" data-del="${esc(id)}" class="btn danger">Smazat</button>`:''}
+            <small>${st.k} ${plural(st.k,'kus','kusy','kusů')} · ${st.u} ${plural(st.u,'různá karta','různé karty','různých karet')}${id===LIB.active?' · <b>zobrazená</b>':''}</small></div>
+          <span class="rowbtns"><button type="button" data-ren="${esc(id)}" aria-label="Přejmenovat" title="Přejmenovat">✎</button>${id!==LIB.main?`<button type="button" data-del="${esc(id)}" class="danger" aria-label="Smazat kolekci" title="Smazat kolekci">🗑</button>`:''}</span>
         </div>`; }).join('')}</div>
       <div class="acts">
         <button type="button" class="btn main" id="impNewBtn">Nahrát kolekci ze souboru jako novou</button>
@@ -967,7 +985,10 @@ function renderColl(){
     setOwnMode(b.dataset.show);
     setupFilters(); showView('cards');
   });
-  V.querySelectorAll('[data-sw]').forEach(b=>b.onclick=()=>switchColl(b.dataset.sw));
+  V.querySelectorAll('[data-sw]').forEach(r=>{
+    const go = e => { if(e.target.closest('button')) return; if(r.dataset.sw!==LIB.active){ switchColl(r.dataset.sw); toast(`Zobrazena kolekce „${collName(LIB.active)}“.`); } };
+    r.onclick = go; r.onkeydown = e => { if(e.key==='Enter' || e.key===' '){ e.preventDefault(); go(e); } };
+  });
   V.querySelectorAll('[data-ren]').forEach(b=>b.onclick=()=>{
     const id = b.dataset.ren, nm = prompt('Nový název kolekce:', collName(id));
     if(nm && nm.trim()){ LIB.list[id].name = nm.trim().slice(0,40); saveLib(); renderCollUI(); renderColl(); }
@@ -1061,9 +1082,9 @@ function setOwnMode(m){
   F.own = m;
   $('ownSeg').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.own===m));
 }
-$('tabCards').onclick = () => { if(EDIT) exitEdit(false); showView('cards'); };
-$('tabColl').onclick = () => showView('coll');
-$('tabDecks').onclick = () => showView('decks');
+$('tabCards').onclick = () => requestExit(()=>showView('cards'));
+$('tabColl').onclick = () => requestExit(()=>showView('coll'));
+$('tabDecks').onclick = () => requestExit(()=>showView('decks'));
 $('ownSeg').addEventListener('click', e=>{ const b = e.target.closest('[data-own]'); if(b){ setOwnMode(b.dataset.own); apply(); } });
 $('quick').onchange = apply;
 $('q').addEventListener('focus', ()=>{ if($('viewCards').hidden) showView('cards'); });
@@ -1111,6 +1132,11 @@ function legalFor(c, L){
 function deckCount(d, id){ return (d.main[id]||0) + (d.side[id]||0) + (d.runes[id]||0) + (d.bfs[id]||0) + (d.legend===id?1:0); }
 function nameCopies(d, key){ let n=0; for(const sec of ['main','side']) for(const id in d[sec]){ const c = cardById(id); if(c && nameKey(c.name)===key) n += d[sec][id]; } return n; }
 function sigCount(d){ let n=0; for(const sec of ['main','side']) for(const id in d[sec]){ if(isSig(cardById(id))) n += d[sec][id]; } return n; }
+// Kolik kusů karty (podle jména, všechny verze) je v balíčku a kolik jich má kolekce balíčku
+function usedByName(d, key){ let n = d.legend && nameKey(cardById(d.legend)?.name)===key ? 1 : 0; for(const sec of ['main','side','runes','bfs']) for(const id in d[sec]){ if(nameKey(cardById(id)?.name)===key) n += d[sec][id]; } return n; }
+let OWNMAP = null;
+function ownMap(){ return OWNMAP || (OWNMAP = ownedByName(curDeck())); }
+function isMaxed(d, c){ const key = nameKey(c.name), have = ownMap().get(key) || 0; return have > 0 && usedByName(d, key) >= have; }
 function sectionOf(c){ return c.type==='Legend' ? 'legend' : c.type==='Battlefield' ? 'bfs' : c.type==='Rune' ? 'runes' : 'main'; }
 
 function addToDeck(c, forceSide){
@@ -1127,6 +1153,7 @@ function addToDeck(c, forceSide){
     autoChamp(d); touch(d); toast(`Legenda: ${c.name}`); apply(); return true;
   }
   if(!L){ toast('Nejdřív vyber legendu.'); return false; }
+  if(isMaxed(d, c)){ const have = ownMap().get(nameKey(c.name)); toast(`Všechny své kusy (${have}) karty ${baseName(c.name)} už máš v balíčku.`); return false; }
   if(c.type==='Token') warn.push('tokeny do balíčku nepatří');
   if(sec==='bfs'){
     if(sumObj(d.bfs) >= RULES.bfs) warn.push(`battlefieldů má být ${RULES.bfs}`);
@@ -1165,7 +1192,7 @@ function autoChamp(d){
   const id = Object.keys(d.main).find(id=>{ const c = cardById(id); return isChampUnit(c) && tagMatch(c, L); });
   if(id) d.champ = id;
 }
-function touch(d){ d.updated = Date.now(); saveDecks(); refreshDeckUI(); }
+function touch(d){ d.updated = Date.now(); saveDecks(); OWNMAP = null; refreshDeckUI(); }
 
 /* --- Kontrola pravidel --- */
 function validate(d){
@@ -1330,42 +1357,79 @@ function renderDecks(){
     </div>
     ${ids.length ? '' : `<div class="empty">Zatím nemáš žádný balíček. Vytvoř nový – nejdřív vybereš legendu a pak klepáním na karty skládáš balíček.</div>`}
     <div class="decks">${ids.map(id=>{ const d = DECKS.list[id], L = cardById(d.legend), v = validate(d), miss = missingFor(d).reduce((a,b)=>a+b.lack,0); return `
-      <button type="button" class="deckcard${v.legal?'':' invalid'}" data-deck="${esc(id)}">${v.legal?'':'<span class="badbadge" title="Balíček porušuje pravidla nebo není kompletní">!</span>'}
+      <div class="deckcard${v.legal?'':' invalid'}" data-deck="${esc(id)}" role="button" tabindex="0" aria-label="Upravit balíček ${esc(d.name)}">
+        <span class="rowbtns deckbtns"><button type="button" data-dren="${esc(id)}" aria-label="Přejmenovat balíček" title="Přejmenovat">✎</button><button type="button" data-ddel="${esc(id)}" class="danger" aria-label="Smazat balíček" title="Smazat">🗑</button></span>
         ${legendThumb(L)}
         <span class="dc-body">
-          <b>${esc(d.name)}</b>
-          <small>${L ? esc(L.name) : 'bez legendy'}${deckCollId(d)!==LIB.main ? ` · pro kolekci <b>${esc(collName(deckCollId(d)))}</b>` : ''}</small>
+          <b>${v.legal?'':'<span class="badbadge" title="Balíček porušuje pravidla nebo není kompletní">!</span> '}${esc(d.name)}</b>
+          <small>${L ? esc(L.name) : 'bez legendy'}</small>
+          <span class="colltag${deckCollId(d)!==LIB.main?' other':''}">Kolekce: ${esc(collName(deckCollId(d)))}</span>
           <span class="dc-dom">${(L?.dom||[]).map(x=>`<span class="dot" style="background:${DOMAIN_COLORS[x]||'#888'}"></span>${esc(x)}`).join(' ')}</span>
           <span class="dc-stat ${v.legal?'good':'warn'}">${v.legal ? `✓ Podle pravidel · ${v.main}/${RULES.main}` : `! ${esc(v.checks.find(x=>!x.good)?.text || 'Neúplný')}`}${!v.legal && v.checks.filter(x=>!x.good).length>1 ? ` (+${v.checks.filter(x=>!x.good).length-1})` : ''}</span>
           <span class="dc-stat ${miss?'warn':'good'}">${miss ? `Chybí ti ${miss} ${plural(miss,'karta','karty','karet')}` : '✓ Máš všechny karty'}</span>
         </span>
-      </button>`; }).join('')}</div>`;
+      </div>`; }).join('')}</div>`;
   $('newDeckBtn').onclick = () => {
     const nm = prompt('Název balíčku:', `Balíček ${ids.length+1}`); if(!nm || !nm.trim()) return;
-    enterEdit(newDeck(nm.trim().slice(0,40)));
+    enterEdit(newDeck(nm.trim().slice(0,40)), true);
   };
   $('impDeckBtn').onclick = openImport;
-  $('viewDecks').querySelectorAll('[data-deck]').forEach(b=>b.onclick=()=>enterEdit(b.dataset.deck));
+  $('viewDecks').querySelectorAll('[data-deck]').forEach(b=>{
+    b.onclick = e => { if(e.target.closest('button')) return; enterEdit(b.dataset.deck); };
+    b.onkeydown = e => { if((e.key==='Enter'||e.key===' ') && e.target===b){ e.preventDefault(); enterEdit(b.dataset.deck); } };
+  });
+  $('viewDecks').querySelectorAll('[data-dren]').forEach(b=>b.onclick=()=>{ const d = DECKS.list[b.dataset.dren]; const nm = prompt('Nový název balíčku:', d.name); if(nm && nm.trim()){ d.name = nm.trim().slice(0,40); d.updated = Date.now(); saveDecks(); renderDecks(); } });
+  $('viewDecks').querySelectorAll('[data-ddel]').forEach(b=>b.onclick=()=>{ const d = DECKS.list[b.dataset.ddel]; if(!confirm(`Smazat balíček „${d.name}“? Tohle nejde vrátit.`)) return; delete DECKS.list[d.id]; saveDecks(); renderDecks(); toast('Balíček smazán.'); });
 }
 
 /* --- Režim úprav: mřížka karet + panel balíčku --- */
-function enterEdit(id){
+const snapOf = d => { const x = JSON.parse(JSON.stringify(d)); delete x.updated; return JSON.stringify(x); };
+function enterEdit(id, isNew){
   if(!DECKS.list[id]) return;
-  EDIT = id; TO_SIDE = false; prefs.editDeck = id; save(PREFS_KEY, prefs);
+  const restoring = prefs.editDeck===id && prefs.editSnap;
+  EDIT = id; TO_SIDE = false; prefs.editDeck = id;
+  if(!restoring){ prefs.editSnap = snapOf(DECKS.list[id]); prefs.editNew = !!isNew; }
+  save(PREFS_KEY, prefs);
   const dc = deckCollId(DECKS.list[id]); if(LIB.active !== dc){ LIB.active = dc; COLL = LIB.list[dc].cards; saveLib(); renderCollUI(); }
   document.body.classList.add('editing');
   $('sort').value = 'energy';
   showView('cards');
 }
 function exitEdit(goDecks=true){
-  EDIT = null; prefs.editDeck = null; save(PREFS_KEY, prefs);
+  EDIT = null; prefs.editDeck = null; prefs.editSnap = null; prefs.editNew = false; save(PREFS_KEY, prefs);
   document.body.classList.remove('editing'); $('deckPanel').classList.remove('expanded'); document.body.classList.remove('locked');
   if(goDecks) showView('decks');
+}
+// Zavření úprav: když se něco změnilo, zeptej se, jestli uložit, nebo vrátit balíček do stavu před úpravou
+function deckChanged(){ const d = curDeck(); return !!d && (prefs.editNew || snapOf(d) !== prefs.editSnap); }
+function requestExit(after){
+  if(!EDIT){ after(); return; }
+  if(!deckChanged()){ exitEdit(false); after(); return; }
+  const d = curDeck(), dlg = $('deckIO'), isNew = prefs.editNew;
+  dlg.innerHTML = `<div class="io">
+    <h2>${isNew ? 'Uložit nový balíček?' : 'Uložit změny?'}</h2>
+    <p class="muted">${isNew ? `Balíček „${esc(d.name)}“ je nový.` : `V balíčku „${esc(d.name)}“ máš neuložené změny.`}</p>
+    <div class="acts">
+      <button type="button" class="btn main" id="exSave">${isNew ? 'Uložit balíček' : 'Uložit změny'}</button>
+      <button type="button" class="btn danger" id="exDrop">${isNew ? 'Zahodit balíček' : 'Neukládat (vrátit původní)'}</button>
+      <button type="button" class="btn" id="exBack">Pokračovat v úpravách</button>
+    </div>
+  </div>`;
+  $('exSave').onclick = () => { dlg.close(); exitEdit(false); after(); toast('Balíček uložen.'); };
+  $('exDrop').onclick = () => {
+    const id = EDIT;
+    if(isNew) delete DECKS.list[id];
+    else { const old = JSON.parse(prefs.editSnap); old.updated = DECKS.list[id].updated; DECKS.list[id] = old; }
+    saveDecks(); dlg.close(); exitEdit(false); after(); toast(isNew ? 'Balíček zahozen.' : 'Změny zahozeny.');
+  };
+  $('exBack').onclick = () => dlg.close();
+  dlg.showModal(); document.body.classList.add('locked');
 }
 function refreshDeckUI(){
   if(!EDIT) return;
   renderDeckPanel();
   document.querySelectorAll('#grid .card').forEach(el=>{
+    const c = cardById(el.dataset.id); if(c) el.classList.toggle('maxed', isMaxed(curDeck(), c));
     const n = deckCount(curDeck(), el.dataset.id), b = el.querySelector('.indeck');
     if(b){ b.textContent = n ? `×${n}` : ''; b.hidden = !n; }
   });
@@ -1381,7 +1445,7 @@ function renderEditBar(){
        <label title="Ukázat jen karty, které do balíčku s touto legendou patří"><input type="checkbox" id="legalOnly" ${F.legal?'checked':''}> Jen pro legendu</label>
        <button type="button" id="editDone">Hotovo</button>`
     : `<b class="eb-name">✎ ${esc(d.name)}</b><span>Vyber legendu</span><button type="button" id="editDone">Hotovo</button>`;
-  $('editDone').onclick = () => exitEdit(true);
+  $('editDone').onclick = () => requestExit(()=>showView('decks'));
   if($('legalOnly')) $('legalOnly').onchange = e => { F.legal = e.target.checked; apply(); };
 }
 function curveHTML(d){
@@ -1464,7 +1528,7 @@ function renderDeckPanel(){
   P.scrollTop = keepScroll;
   $('dpBar').onclick = () => { P.classList.add('expanded'); P.scrollTop = 0; document.body.classList.add('locked'); };
   $('dpClose').onclick = () => { P.classList.remove('expanded'); document.body.classList.remove('locked'); };
-  $('dpDone').onclick = () => exitEdit(true);
+  $('dpDone').onclick = () => requestExit(()=>showView('decks'));
   if($('dpToChecks')) $('dpToChecks').onclick = () => $('dpChecks').scrollIntoView({behavior:'smooth', block:'start'});
   $('dpName').onclick = () => { const nm = prompt('Název balíčku:', d.name); if(nm && nm.trim()){ d.name = nm.trim().slice(0,40); touch(d); renderEditBar(); } };
   P.querySelectorAll('[data-target]').forEach(b=>b.onclick=()=>{ TO_SIDE = b.dataset.target==='side'; renderDeckPanel(); });
@@ -1474,7 +1538,7 @@ function renderDeckPanel(){
   P.querySelectorAll('[data-info]').forEach(b=>b.onclick=()=>openDetail(-1, cardById(b.dataset.info)));
   $('dpExport').onclick = () => openExport(d);
   if($('dpColl')) $('dpColl').onchange = e => { d.coll = e.target.value; if(LIB.active !== d.coll) switchColl(d.coll); touch(d); };
-  $('dpDup').onclick = () => { const id = newDeck(d.name + ' (kopie)'); Object.assign(DECKS.list[id], JSON.parse(JSON.stringify({legend:d.legend, champ:d.champ, main:d.main, side:d.side, runes:d.runes, bfs:d.bfs}))); saveDecks(); enterEdit(id); toast('Balíček zduplikován.'); };
+  $('dpDup').onclick = () => { const id = newDeck(d.name + ' (kopie)'); Object.assign(DECKS.list[id], JSON.parse(JSON.stringify({legend:d.legend, champ:d.champ, main:d.main, side:d.side, runes:d.runes, bfs:d.bfs}))); saveDecks(); exitEdit(false); enterEdit(id, true); toast('Balíček zduplikován – původní zůstal uložený.'); };
   $('dpDel').onclick = () => { if(!confirm(`Smazat balíček „${d.name}“?`)) return; delete DECKS.list[d.id]; saveDecks(); exitEdit(true); toast('Balíček smazán.'); };
 }
 
@@ -1520,7 +1584,7 @@ function openImport(){
     if(!CARDS.length){ $('ioErr').hidden=false; $('ioErr').textContent='Databáze karet se ještě načítá, zkus to za chvilku.'; return; }
     const r = importDeck($('ioIn').value, $('ioName').value.trim().slice(0,40));
     if(r.error){ $('ioErr').hidden=false; $('ioErr').textContent=r.error; return; }
-    dlg.close(); enterEdit(r.id);
+    dlg.close(); enterEdit(r.id, true);
     toast(r.unknown.length ? `Importováno. Nenašel jsem: ${r.unknown.slice(0,4).join(', ')}${r.unknown.length>4?'…':''}` : 'Balíček importován.');
   };
   dlg.showModal(); document.body.classList.add('locked');
