@@ -4,6 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Riftbound knihovna</title>
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#141829">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Riftbound">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
@@ -40,12 +49,26 @@ button{cursor:pointer}
 
 /* Hlavička */
 .top{position:sticky;top:0;z-index:20;display:flex;gap:10px;align-items:center;
-  padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;background:var(--panel);
+  padding:calc(14px + env(safe-area-inset-top,0px)) 16px 12px;background:var(--panel);
   border-bottom:1px solid var(--line)}
 .brand{font:700 1.45rem/1 var(--display);letter-spacing:.01em;white-space:nowrap}
 .brand small{display:block;font:500 .78rem/1.2 var(--body);color:var(--muted);letter-spacing:0}
 .search{flex:1;min-width:0;position:relative}
-.search input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}
+.search input{width:100%;padding:10px 40px 10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel2)}
+.search input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
+.qclear{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:30px;height:30px;border:0;border-radius:50%;background:var(--line);color:var(--text);font-size:1.15rem;line-height:1;display:flex;align-items:center;justify-content:center}
+.collbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.collbar select{padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);font-weight:600;max-width:60vw}
+.banner{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:color-mix(in srgb,var(--gold) 18%,var(--panel));border:1px solid var(--gold);border-radius:12px;padding:9px 14px;margin-bottom:14px}
+.banner b{font-family:var(--display);font-size:1.1rem}
+.banner button{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 11px}
+.colls{display:flex;flex-direction:column;gap:8px;margin:10px 0 4px}
+.collrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.collrow.active{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.collrow .nm{font:700 1.15rem/1.1 var(--display);margin-right:auto}
+.collrow .nm small{display:block;font:500 .82rem/1.3 var(--body);color:var(--muted)}
+.collrow .tag{font:600 .75rem/1 var(--body);background:var(--accent);color:var(--accentText);border-radius:99px;padding:3px 8px;margin-left:6px;vertical-align:middle}
+.collrow button{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 10px;font-size:.88rem}
 .iconbtn{border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:9px 12px;white-space:nowrap}
 .badge{display:inline-block;min-width:1.4em;padding:0 .35em;margin-left:4px;border-radius:99px;background:var(--accent);color:var(--accentText);font-size:.8rem;font-weight:600;text-align:center}
 .badge:empty{display:none}
@@ -115,6 +138,14 @@ dialog::backdrop{background:rgba(8,10,20,.72)}
 .versions img{width:100%;height:100%;object-fit:cover;display:block}
 .dnav{display:flex;gap:8px;margin-top:18px}
 .dnav button{flex:1;border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:9px}
+.fhead,.dbottom{display:none}
+.fhead h2{margin:0;font:700 1.5rem/1 var(--display)}
+.fhead button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--panel);font-size:1.4rem;line-height:1}
+.dbottom{width:100%;margin-top:10px;border:0;border-radius:10px;padding:12px;background:var(--accent);color:var(--accentText);font-weight:600}
+.dinfo{min-width:0}
+.dinfo h2,.rtext,.meta dd{overflow-wrap:anywhere}
+.ownrow span{white-space:nowrap}
+body.locked{overflow:hidden}
 .dclose{position:absolute;right:10px;top:10px;width:38px;height:38px;border-radius:50%;border:0;background:rgba(10,14,28,.7);color:#fff;font-size:1.3rem;line-height:1}
 
 [hidden]{display:none!important}
@@ -173,8 +204,11 @@ dialog::backdrop{background:rgba(8,10,20,.72)}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:60;box-shadow:var(--shadow);max-width:90vw;text-align:center}
 
 @media (max-width:560px){
+  .ownbox{grid-template-columns:1fr}
   .brand{display:none}
   .tabs button{padding:6px 9px}
+  .top{gap:6px}
+  #themeBtn{display:none}
 }
 @media (max-width:820px){
   .qc{grid-template-columns:1fr}
@@ -182,15 +216,24 @@ dialog::backdrop{background:rgba(8,10,20,.72)}
   .layout{grid-template-columns:1fr}
   #filtersBtn{display:inline-block}
   .brand small{display:none}
-  aside{position:fixed;inset:0;z-index:40;max-height:none;background:var(--bg);border:0;
-    padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-100%);transition:transform .2s ease;visibility:hidden}
-  aside.open{transform:none;visibility:visible}
-  .closeFilters{display:block;position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));border:0;border-radius:12px;padding:13px;background:var(--accent);color:var(--accentText);font-weight:600;font-size:1.05rem}
+  /* Filtry na mobilu: celá obrazovka, posouvá se jen obsah, tlačítko dole nic nezakrývá */
+  aside{position:fixed;top:0;left:0;right:0;bottom:0;height:100%;height:100dvh;z-index:40;max-height:none;background:var(--bg);border:0;
+    overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+    padding:calc(20px + env(safe-area-inset-top,0px)) 16px calc(110px + env(safe-area-inset-bottom,0px));display:none}
+  aside.open{display:block}
+  .fhead{display:flex !important;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .closeFilters{display:block;position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:41;border:0;border-radius:12px;padding:14px;background:var(--accent);color:var(--accentText);font-weight:600;font-size:1.05rem;box-shadow:0 -12px 24px var(--bg)}
   .grid{grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:9px}
   .tile{border-radius:7px}
-  .dwrap{grid-template-columns:1fr;overflow:auto}
-  .dimg img{max-height:58vh}
-  .dinfo{overflow:visible}
+  dialog{width:100%;max-width:100%;height:100%;height:100dvh;max-height:100dvh;margin:0;border-radius:0;
+    overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  .dwrap{display:block;max-height:none;overflow:visible}
+  .dimg{padding:calc(68px + env(safe-area-inset-top,0px)) 16px 14px}
+  .dimg img{max-height:52vh;max-width:100%}
+  .dinfo{overflow:visible;padding:18px 16px calc(28px + env(safe-area-inset-bottom,0px))}
+  .dclose{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:14px;width:46px;height:46px;font-size:1.6rem;z-index:5;background:rgba(10,14,28,.85);box-shadow:0 2px 10px rgba(0,0,0,.35)}
+  .dinfo h2{font-size:1.7rem}
+  .dbottom{display:block !important}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -203,13 +246,14 @@ dialog::backdrop{background:rgba(8,10,20,.72)}
     <button type="button" role="tab" id="tabCards" aria-selected="true">Karty</button>
     <button type="button" role="tab" id="tabColl" aria-selected="false">Kolekce</button>
   </nav>
-  <div class="search"><input id="q" type="search" placeholder="Hledat název nebo text karty" autocomplete="off" aria-label="Hledat"></div>
+  <div class="search"><input id="q" type="search" placeholder="Hledat název nebo text karty" autocomplete="off" aria-label="Hledat"><button type="button" class="qclear" id="qClear" aria-label="Smazat hledání" hidden>×</button></div>
   <button class="iconbtn" id="filtersBtn" type="button">Filtry<span class="badge" id="fbadge"></span></button>
   <button class="iconbtn" id="themeBtn" type="button" title="Přepnout světlý / tmavý režim" aria-label="Přepnout režim">◐</button>
 </header>
 
 <div class="layout" id="viewCards">
   <aside id="filters" aria-label="Filtry">
+    <div class="fhead"><h2>Filtry</h2><button type="button" id="closeFilters2" aria-label="Zavřít filtry">×</button></div>
     <div class="fgroup"><h3>Set</h3><div class="chips" id="fSet"></div></div>
     <div class="fgroup"><h3>Doména</h3><div class="chips" id="fDom"></div></div>
     <div class="fgroup"><h3>Typ karty</h3><div class="chips" id="fType"></div></div>
@@ -225,12 +269,15 @@ dialog::backdrop{background:rgba(8,10,20,.72)}
   </aside>
 
   <main>
+    <div class="banner" id="otherBanner" hidden></div>
     <div class="toolbar">
       <div class="count" id="count"></div>
+      <div class="collbar"><label for="collSel" style="color:var(--muted)">Kolekce</label><select id="collSel" aria-label="Kolekce"></select></div>
       <div class="seg" id="ownSeg" aria-label="Které karty zobrazit">
         <button type="button" data-own="all" aria-pressed="true">Všechny</button>
-        <button type="button" data-own="mine" aria-pressed="false">Jen moje</button>
-        <button type="button" data-own="missing" aria-pressed="false">Chybí mi</button>
+        <button type="button" data-own="mine" aria-pressed="false">Jen v kolekci</button>
+        <button type="button" data-own="missing" aria-pressed="false">Chybí</button>
+        <button type="button" data-own="theirs" aria-pressed="false" hidden>Má, já ne</button>
       </div>
       <label><input type="checkbox" id="quick"> Rychlé zadávání</label>
       <label><input type="checkbox" id="variants"> Alternativní verze</label>
@@ -249,13 +296,14 @@ dialog::backdrop{background:rgba(8,10,20,.72)}
   </main>
 </div>
 
-<section id="viewColl" hidden aria-label="Moje kolekce"></section>
+<section id="viewColl" hidden aria-label="Kolekce"></section>
 <input type="file" id="importFile" accept=".json,application/json" hidden>
 
 <footer>
   <span id="dbInfo">Databáze karet: načítám…</span>
   <button id="refreshBtn" type="button">Aktualizovat databázi karet</button>
-  <span>Tvoje kolekce je uložená jen v tomto prohlížeči – zálohuj ji exportem (záložka Kolekce).</span>
+  <button id="themeBtn2" type="button">Světlý / tmavý režim</button>
+  <span>Kolekce jsou uložené jen v tomto prohlížeči – zálohuj je exportem (záložka Kolekce).</span>
   <span>Data a obrázky: Riftcodex, Piltover Archive / Riot Games. Neoficiální fanouškovská aplikace.</span>
 </footer>
 
@@ -266,7 +314,7 @@ dialog::backdrop{background:rgba(8,10,20,.72)}
 const API = 'https://api.riftcodex.com/cards';
 const EXTRA_URL = 'piltover.json';       // karty z Piltover Archive (sety, které Riftcodex nemá) – stahuje je GitHub
 const CARDS_KEY = 'rb_cards_v1';          // databáze karet (oddělená od kolekce)
-const DB_VERSION = 2;
+const DB_VERSION = 4;
 const PREFS_KEY = 'rb_prefs_v1';
 const REFRESH_DAYS = 2;                   // jak často se databáze sama obnoví
 const SET_ORDER = ['OGN','OGS','SFD','UNL','VEN','RAD','W26','PR','OPP','JDG'];
@@ -279,6 +327,7 @@ const COST_CHIPS = ['0','1','2','3','4','5','6','7','8+'];
 /* ===== Stav ===== */
 let CARDS = [];
 let EXTRA = {n:0, sets:[]};
+let ALIAS = {};
 let filtered = [];
 let shown = 0;
 const F = {q:'', sets:new Set(), doms:new Set(), types:new Set(), rars:new Set(), energy:new Set(), might:new Set(), tag:''};
@@ -289,14 +338,48 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 function load(key){ try{ return JSON.parse(localStorage.getItem(key)); }catch(e){ return null; } }
 function save(key,val){ try{ localStorage.setItem(key, JSON.stringify(val)); return true; }catch(e){ return false; } }
 
-/* ===== Moje kolekce (oddělená od databáze karet) ===== */
-const COLL_KEY = 'rb_collection_v1';     // { v:1, cards:{ idKarty:{n:normální, f:foil} } }
-let COLL = (load(COLL_KEY)||{}).cards || {};
+/* ===== Kolekce (oddělené od databáze karet) ===== */
+// Víc kolekcí: tvoje hlavní + třeba sestřina nahraná ze souboru. Každá: { name, cards:{ idKarty:{n:normální, f:foil} } }
+const COLL_KEY = 'rb_collection_v1';     // původní jediná kolekce – zůstává jako záloha, už se do ní nezapisuje
+const LIB_KEY = 'rb_collections_v1';
+let LIB = load(LIB_KEY);
+if(!LIB || !LIB.list || !LIB.list[LIB.active]){
+  const old = (load(COLL_KEY)||{}).cards || {};
+  LIB = {v:1, main:'main', active:'main', list:{ main:{name:'Moje kolekce', cards:old} }};
+  save(LIB_KEY, LIB);
+}
+if(!LIB.list[LIB.main]) LIB.main = Object.keys(LIB.list)[0];
+let COLL = LIB.list[LIB.active].cards;
+const MAIN = () => LIB.list[LIB.main].cards;
+const isMainActive = () => LIB.active === LIB.main;
 F.own = 'all';
+function mainTotal(id){ const o = MAIN()[id]; return (o?.n||0) + (o?.f||0); }
 function own(id){ const o = COLL[id]; return {n:o?.n||0, f:o?.f||0}; }
 function total(id){ const o = own(id); return o.n + o.f; }
 function hasAny(){ for(const k in COLL) return true; return false; }
-function saveColl(){ if(!save(COLL_KEY, {v:1, cards:COLL})) toast('Pozor: kolekci se nepodařilo uložit do prohlížeče.'); }
+function saveColl(){ LIB.list[LIB.active].cards = COLL; saveLib(); }
+function saveLib(){ if(!save(LIB_KEY, LIB)) toast('Pozor: kolekci se nepodařilo uložit do prohlížeče.'); }
+function newCollId(){ return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function collName(id){ return LIB.list[id]?.name || 'Kolekce'; }
+function collStats(cards){ let k=0, u=0; for(const id in cards){ u++; k += (cards[id].n||0) + (cards[id].f||0); } return {u, k}; }
+function switchColl(id){
+  if(!LIB.list[id]) return;
+  LIB.active = id; COLL = LIB.list[id].cards; saveLib();
+  if(F.own==='theirs' && isMainActive()) setOwnMode('all');
+  renderCollUI();
+  if(!$('viewColl').hidden) renderColl(); else apply();
+}
+function renderCollUI(){
+  const ids = Object.keys(LIB.list);
+  $('collSel').innerHTML = ids.map(id => `<option value="${esc(id)}"${id===LIB.active?' selected':''}>${esc(collName(id))}${id===LIB.main?' (moje)':''}</option>`).join('');
+  $('collSel').closest('.collbar').hidden = ids.length < 2;
+  const other = !isMainActive();
+  $('ownSeg').querySelector('[data-own="theirs"]').hidden = !other;
+  const b = $('otherBanner');
+  b.hidden = !other;
+  if(other) b.innerHTML = `<span>Prohlížíš kolekci <b>${esc(collName(LIB.active))}</b>. Změny počtů se ukládají do ní, ne do tvé.</span><button type="button" id="backMain">Zpět na moji kolekci</button>`;
+  if(other) $('backMain').onclick = () => switchColl(LIB.main);
+}
 function setOwn(id, kind, delta){
   const wasEmpty = !hasAny();
   const o = own(id);
@@ -320,7 +403,7 @@ function toast(msg){
 const prefs = load(PREFS_KEY) || {};
 function applyTheme(){ if(prefs.theme) document.documentElement.dataset.theme = prefs.theme; else delete document.documentElement.dataset.theme; }
 applyTheme();
-$('themeBtn').onclick = () => {
+$('themeBtn').onclick = $('themeBtn2').onclick = () => {
   const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
   prefs.theme = dark ? 'light' : 'dark'; save(PREFS_KEY, prefs); applyTheme();
 };
@@ -336,8 +419,51 @@ function slim(c){
     text:c.text?.plain||'', fl:c.text?.flavour||'',
     img:c.media?.image_url||'', art:c.media?.artist||'',
     tags:c.tags||[], land:c.orientation==='landscape',
-    alt:!!md.alternate_art, sig:!!md.signature, over:!!md.overnumbered
+    ...ridFlags(c.riftbound_id, md)
   };
+}
+// Druh verze se pozná i z čísla karty: „ven-042a-166“ = alternativní verze, „unl-229*-219“ = podpis, číslo nad počtem karet v setu = showcase
+const RID_RE = /^([a-z0-9]+)-(\d+)([a-z]*)(\*?)-(\d+)$/i;
+function ridFlags(rid, md){
+  const m = RID_RE.exec(rid||'');
+  return {
+    alt: !!md.alternate_art || !!(m && m[3]),
+    sig: !!md.signature || !!(m && m[4]),
+    over: !!md.overnumbered || !!(m && +m[2] > +m[5])
+  };
+}
+// Riftcodex má některé karty uložené dvakrát (stejné číslo karty i obrázek). Necháme jen jednu
+// a zapamatujeme si, kterou kartu nahradila, aby se ti nic neztratilo z kolekce.
+function dedupe(cards){
+  const best = new Map(), alias = {};
+  const score = c => (c.alt||c.sig||c.over ? 2 : 0) + (/\(/.test(c.name) ? 1 : 0);
+  for(const c of cards){
+    const key = c.rid ? c.set+'|'+c.rid+'|'+c.img : c.id;
+    const prev = best.get(key);
+    if(!prev){ best.set(key, c); continue; }
+    const keep = (score(c) > score(prev) || (score(c) === score(prev) && c.id > prev.id)) ? c : prev;
+    const drop = keep === c ? prev : c;
+    best.set(key, keep); alias[drop.id] = keep.id;
+  }
+  for(const k in alias){ let t = alias[k]; while(alias[t]) t = alias[t]; alias[k] = t; }
+  return {cards: [...best.values()], alias};
+}
+// Tokeny mají v datech typ Unit/Gear a supertyp Token – v aplikaci z nich děláme vlastní typ „Token“
+function norm(c){ if(c.sup==='Token' && c.type!=='Token'){ c.sup = c.type; c.type = 'Token'; } return c; }
+function migrateColl(alias){
+  if(!alias) return;
+  let changed = false;
+  for(const key of Object.keys(LIB.list)){
+    const cards = LIB.list[key].cards;
+    for(const id of Object.keys(cards)){
+      const to = alias[id]; if(!to) continue;
+      const a = cards[id], b = cards[to] || {n:0, f:0};
+      cards[to] = {n: Math.max(a.n||0, b.n||0), f: Math.max(a.f||0, b.f||0)};
+      delete cards[id]; changed = true;
+    }
+  }
+  COLL = LIB.list[LIB.active].cards;
+  if(changed) saveLib();
 }
 async function getJSON(url){
   const r = await fetch(url, {headers:{'Accept':'application/json'}});
@@ -359,11 +485,22 @@ async function downloadAll(onProgress){
   }
   const seen = new Set(), out = [];
   for(const c of items){ if(c && c.id && !seen.has(c.id)){ seen.add(c.id); out.push(slim(c)); } }
+  const dd = dedupe(out); out.length = 0; out.push(...dd.cards.map(norm)); ALIAS = dd.alias;
   // Doplnění z Piltover Archive: sety, které tam jsou, se berou odtud (a z Riftcodexu se vynechají, ať nejsou dvakrát)
   const extra = await getExtra();
   if(extra.cards.length){
-    const own = new Set([...extra.sets, ...extra.cards.map(c=>c.set)]);
-    return {cards: out.filter(c=>!own.has(c.set)).concat(extra.cards), extra: extra.cards.length, extraSets: [...new Set(extra.cards.map(c=>c.setLabel))]};
+    // Celé sety (Radiance…) se berou z Piltover Archive; z ostatních setů odtud bereme jen tokeny
+    const own = new Set(extra.sets.length ? extra.sets : extra.cards.map(c=>c.set));
+    // Tokeny z Riftcodexu, které má i Piltover Archive (stejný set a číslo), nahradíme – a převedeme i počty v kolekcích
+    const tokKey = rid => String(rid||'').toLowerCase().split('-').slice(0,2).join('-');
+    const paTok = new Map(extra.cards.filter(c=>c.type==='Token').map(c=>[tokKey(c.rid), c.id]));
+    const rest = out.filter(c=>{
+      if(own.has(c.set)) return false;
+      if(c.type==='Token'){ const to = paTok.get(tokKey(c.rid)); if(to){ ALIAS[c.id] = to; return false; } }
+      return true;
+    });
+    const extraSetCards = extra.cards.filter(c=>own.has(c.set));
+    return {cards: rest.concat(extra.cards), extra: extraSetCards.length, extraSets: [...new Set(extraSetCards.map(c=>c.setLabel))]};
   }
   return {cards: out, extra: 0, extraSets: []};
 }
@@ -372,7 +509,7 @@ async function getExtra(){
     const r = await fetch(EXTRA_URL, {cache:'no-cache'});
     if(!r.ok) return {cards:[], sets:[]};
     const j = await r.json();
-    const cards = (Array.isArray(j.cards) ? j.cards : []).filter(c => c && c.id && c.name && c.set);
+    const cards = (Array.isArray(j.cards) ? j.cards : []).filter(c => c && c.id && c.name && c.set).map(norm);
     return {cards, sets: (j.sets||[]).map(s=>s.id)};
   }catch(e){ return {cards:[], sets:[]}; }   // soubor zatím není (nebo je aplikace otevřená z počítače) – nevadí
 }
@@ -386,7 +523,8 @@ async function refreshDB(silent){
     const res = await downloadAll((d,t)=>{ const b=$('pbar'); if(b) b.style.width = Math.round(d/t*100)+'%'; });
     if(!res.cards.length) throw new Error('prázdná odpověď');
     CARDS = res.cards; EXTRA = {n:res.extra, sets:res.extraSets};
-    const ok = save(CARDS_KEY, {v:DB_VERSION, at:Date.now(), cards:CARDS, extra:EXTRA});
+    migrateColl(ALIAS);
+    const ok = save(CARDS_KEY, {v:DB_VERSION, at:Date.now(), cards:CARDS, extra:EXTRA, alias:ALIAS});
     hideStatus(); setupFilters(); apply();
     if(!$('viewColl').hidden) renderColl();
     updateInfo(Date.now(), ok);
@@ -434,7 +572,8 @@ function costKey(v){ if(v===null||v===undefined) return null; return v>=8 ? '8+'
 
 function matches(c){
   const tot = total(c.id);
-  if(F.own==='mine'){ if(!tot) return false; }                 // moje karty ukaž vždy, i alternativní verze
+  if(F.own==='mine'){ if(!tot) return false; }                 // karty z kolekce ukaž vždy, i alternativní verze
+  else if(F.own==='theirs'){ if(!tot || mainTotal(c.id)) return false; }   // tahle kolekce má, moje ne
   else {
     if(!$('variants').checked && (c.alt || c.sig || c.over)) return false;
     if(F.own==='missing' && tot) return false;
@@ -452,6 +591,8 @@ function matches(c){
   }
   return true;
 }
+const GROUP_LAST = {Legend:1, Battlefield:2, Rune:3, Token:4};
+const grp = c => GROUP_LAST[c.type] || 0;
 function sorter(mode){
   const byNum = (a,b)=> setIdx(a.set)-setIdx(b.set) || a.set.localeCompare(b.set) || a.num-b.num || a.name.localeCompare(b.name);
   const n = v => (v===null||v===undefined) ? 99 : v;
@@ -459,7 +600,7 @@ function sorter(mode){
     num: byNum,
     owned: (a,b)=> total(b.id)-total(a.id) || byNum(a,b),
     name: (a,b)=> a.name.localeCompare(b.name,'cs') || byNum(a,b),
-    energy: (a,b)=> n(a.e)-n(b.e) || a.name.localeCompare(b.name,'cs'),
+    energy: (a,b)=> grp(a)-grp(b) || n(a.e)-n(b.e) || a.name.localeCompare(b.name,'cs') || byNum(a,b),
     might: (a,b)=> n(b.m===null||b.m===undefined?-1:b.m)-n(a.m===null||a.m===undefined?-1:a.m) || a.name.localeCompare(b.name,'cs'),
     newest: (a,b)=> setIdx(b.set)-setIdx(a.set) || a.num-b.num
   }[mode] || byNum;
@@ -474,8 +615,9 @@ function apply(){
   updateCount();
   $('grid').innerHTML = ''; shown = 0;
   if(CARDS.length && !filtered.length){
-    const msg = (F.own==='mine' && !hasAny())
-      ? 'Zatím nemáš v kolekci žádnou kartu. Přepni na „Všechny“ a přidávej karty v detailu karty nebo přes „Rychlé zadávání“.'
+    const msg = ((F.own==='mine' || F.own==='theirs') && !hasAny())
+      ? `Kolekce „${esc(collName(LIB.active))}“ je zatím prázdná. Přepni na „Všechny“ a přidávej karty v detailu karty nebo přes „Rychlé zadávání“.`
+      : F.own==='theirs' ? 'Tahle kolekce nemá žádnou kartu, která by chyběla tobě.'
       : 'Žádná karta neodpovídá filtrům. Zkus ubrat filtr nebo změnit hledaný text.';
     $('grid').innerHTML = `<div class="empty" style="grid-column:1/-1">${msg}</div>`;
   }
@@ -485,8 +627,9 @@ function apply(){
 function updateCount(){
   if(!CARDS.length){ $('count').textContent=''; return; }
   let txt = `${filtered.length} ${plural(filtered.length,'karta','karty','karet')}`;
-  if(F.own==='mine'){ const k = filtered.reduce((s,c)=>s+total(c.id),0); txt += ` · ${k} ${plural(k,'kus','kusy','kusů')}`; }
+  if(F.own==='mine' || F.own==='theirs'){ const k = filtered.reduce((s,c)=>s+total(c.id),0); txt += ` · ${k} ${plural(k,'kus','kusy','kusů')}`; }
   $('count').textContent = txt;
+  $('closeFilters').textContent = `Zobrazit ${filtered.length} ${plural(filtered.length,'kartu','karty','karet')}`;
 }
 function plural(n,a,b,c){ return n===1?a:(n>=2&&n<=4?b:c); }
 
@@ -506,7 +649,7 @@ function tileHTML(c, i){
    <button class="tile${dim?' unowned':''}" type="button" data-i="${i}" aria-label="${esc(c.name)}">
     ${c.img ? `<img src="${esc(c.img)}" alt="${esc(c.name)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ph',innerHTML:this.alt}))">`
             : `<div class="ph">${esc(c.name)}<span>${esc(c.type)}</span></div>`}
-    ${flag && ($('variants').checked || F.own==='mine') ? `<span class="flag">${flag}</span>` : ''}
+    ${flag && ($('variants').checked || F.own==='mine' || F.own==='theirs') ? `<span class="flag">${flag}</span>` : ''}
     <span class="own">${ownBadge(c.id)}</span>
    </button>
    ${$('quick').checked ? qcHTML(c.id) : ''}
@@ -562,9 +705,10 @@ function openDetail(i, card){
       </dl>
       ${versions.length>1?`<p style="margin:16px 0 0;color:var(--muted);font-size:.9rem">Verze této karty</p><div class="versions">${versions.map(v=>`<button type="button" data-id="${esc(v.id)}" aria-current="${v.id===c.id}" title="${esc(v.name)}">${v.img?`<img src="${esc(v.img)}" alt="" loading="lazy">`:''}</button>`).join('')}</div>`:''}
       <div class="dnav"><button type="button" id="dPrev">‹ Předchozí</button><button type="button" id="dNext">Další ›</button></div>
+      <button type="button" class="dbottom" id="dClose2">Zavřít</button>
     </div></div>
     <button class="dclose" type="button" id="dClose" aria-label="Zavřít">×</button>`;
-  $('dClose').onclick = () => d.close();
+  $('dClose').onclick = $('dClose2').onclick = () => d.close();
   $('dPrev').onclick = () => step(-1);
   $('dNext').onclick = () => step(1);
   $('dPrev').disabled = cur<=0; $('dNext').disabled = cur<0 || cur>=filtered.length-1;
@@ -573,9 +717,11 @@ function openDetail(i, card){
     const v = CARDS.find(x=>x.id===b.dataset.id); const fi = filtered.indexOf(v);
     openDetail(fi, v);
   });
-  if(!d.open) d.showModal();
+  if(!d.open){ d.showModal(); document.body.classList.add('locked'); }
+  d.scrollTop = 0;
 }
 function step(k){ const n=cur+k; if(n>=0 && n<filtered.length) openDetail(n); }
+$('detail').addEventListener('close', ()=>document.body.classList.remove('locked'));
 $('detail').addEventListener('click', e=>{ if(e.target===$('detail')) $('detail').close(); });
 document.addEventListener('keydown', e=>{ if(!$('detail').open) return; if(e.key==='ArrowLeft') step(-1); if(e.key==='ArrowRight') step(1); });
 
@@ -583,11 +729,11 @@ document.addEventListener('keydown', e=>{ if(!$('detail').open) return; if(e.key
 const pct = (a,b) => b ? Math.round(a/b*100) : 0;
 function isVariant(c){ return c.alt || c.sig || c.over; }
 function renderColl(){
-  const sets = new Map();
+  const sets = new Map(); let tokKinds = 0, tokCopies = 0, tokAll = 0;
   for(const c of CARDS){
-    if(!sets.has(c.set)) sets.set(c.set, {label:c.setLabel, base:0, baseOwn:0, vars:0, varsOwn:0, copies:0, foils:0});
+    if(!sets.has(c.set)) sets.set(c.set, {label:c.setLabel, base:0, baseOwn:0, vars:0, varsOwn:0, copies:0, foils:0, tok:0});
     const s = sets.get(c.set), o = own(c.id), has = o.n+o.f>0;
-    if(c.type==='Token') continue;
+    if(c.type==='Token'){ tokAll++; if(has){ tokKinds++; tokCopies += o.n+o.f; s.tok += o.n+o.f; } continue; }
     if(isVariant(c)){ s.vars++; if(has) s.varsOwn++; } else { s.base++; if(has) s.baseOwn++; }
     s.copies += o.n+o.f; s.foils += o.f;
   }
@@ -596,49 +742,90 @@ function renderColl(){
   const uniq = Object.keys(COLL).length;
   const last = prefs.lastExport ? new Date(prefs.lastExport).toLocaleDateString('cs-CZ') : 'zatím nikdy';
   const order = [...sets.keys()].sort((a,b)=>setIdx(a)-setIdx(b)||a.localeCompare(b));
+  const mine = isMainActive();
+  const who = mine ? 'mi' : '';
+  const ids = Object.keys(LIB.list).sort((a,b)=> (a===LIB.main?-1:b===LIB.main?1:0) || collName(a).localeCompare(collName(b),'cs'));
   $('viewColl').innerHTML = `
-    <h2>Moje kolekce</h2>
+    <div class="databox" style="margin:0 0 20px">
+      <h2>Kolekce</h2>
+      <p>Můžeš mít víc kolekcí – svoji a třeba sestřinu nahranou ze souboru. Přepínáním se nic nesmaže.</p>
+      <div class="colls">${ids.map(id=>{ const st = collStats(LIB.list[id].cards); return `
+        <div class="collrow${id===LIB.active?' active':''}">
+          <div class="nm">${esc(collName(id))}${id===LIB.main?'<span class="tag">moje</span>':''}
+            <small>${st.k} ${plural(st.k,'kus','kusy','kusů')} · ${st.u} ${plural(st.u,'různá karta','různé karty','různých karet')}${id===LIB.active?' · právě zobrazená':''}</small></div>
+          ${id!==LIB.active?`<button type="button" data-sw="${esc(id)}">Zobrazit</button>`:''}
+          <button type="button" data-ren="${esc(id)}">Přejmenovat</button>
+          ${id!==LIB.main?`<button type="button" data-del="${esc(id)}" class="btn danger">Smazat</button>`:''}
+        </div>`; }).join('')}</div>
+      <div class="acts">
+        <button type="button" class="btn main" id="impNewBtn">Nahrát kolekci ze souboru jako novou</button>
+        <button type="button" class="btn" id="newCollBtn">Nová prázdná kolekce</button>
+      </div>
+    </div>
+    <h2>${esc(collName(LIB.active))}</h2>
+    ${mine ? '' : `<div class="banner"><span>Tohle není tvoje kolekce.</span><button type="button" id="theirsBtn">Ukaž karty, které má ona a já ne</button></div>`}
     <div class="summary">
       <div class="kpi"><b>${sum('copies')}</b><span>kusů karet celkem</span></div>
-      <div class="kpi"><b>${uniq}</b><span>různých karet</span></div>
+      <div class="kpi"><b>${uniq}</b><span>různých karet a tokenů</span></div>
       <div class="kpi"><b>${sum('foils')}</b><span>foil kusů</span></div>
       <div class="kpi"><b>${pct(sum('baseOwn'), sum('base'))} %</b><span>všech základních karet</span></div>
+      <div class="kpi"><b>${tokCopies}</b><span>tokenů (${tokKinds} z ${tokAll} druhů)</span></div>
     </div>
     ${CARDS.length ? '' : '<p class="empty">Databáze karet se ještě načítá…</p>'}
     <div class="sets">${order.map(k=>{ const s = sets.get(k); return `
       <div class="setcard">
         <h3>${esc(s.label)}</h3>
-        <div class="sub">${esc(k)} · ${s.copies} ${plural(s.copies,'kus','kusy','kusů')}${s.foils?` · ${s.foils} foil`:''}</div>
+        <div class="sub">${esc(k)} · ${s.copies} ${plural(s.copies,'kus','kusy','kusů')}${s.foils?` · ${s.foils} foil`:''}${s.tok?` · ${s.tok} ${plural(s.tok,'token','tokeny','tokenů')}`:''}</div>
         <div class="prow"><span>Základní karty</span><b>${s.baseOwn} / ${s.base} · ${pct(s.baseOwn,s.base)} %</b></div>
         <div class="prog"><i style="width:${pct(s.baseOwn,s.base)}%"></i></div>
         ${s.vars ? `<div class="prow"><span>Alternativní verze</span><b>${s.varsOwn} / ${s.vars} · ${pct(s.varsOwn,s.vars)} %</b></div>
         <div class="prog alt"><i style="width:${pct(s.varsOwn,s.vars)}%"></i></div>` : ''}
         <div class="acts">
-          <button type="button" class="btn main" data-set="${esc(k)}" data-show="missing">Co mi chybí (${s.base-s.baseOwn})</button>
-          <button type="button" class="btn" data-set="${esc(k)}" data-show="mine">Co mám</button>
+          <button type="button" class="btn main" data-set="${esc(k)}" data-show="missing">Co ${mine?'mi chybí':'jí chybí'} (${s.base-s.baseOwn})</button>
+          <button type="button" class="btn" data-set="${esc(k)}" data-show="mine">Co ${mine?'mám':'má'}</button>
         </div>
       </div>`; }).join('')}</div>
     <div class="databox">
-      <h2>Záloha a přenos</h2>
-      <p>Kolekce je uložená jen v tomhle prohlížeči na tomhle zařízení. Když vymažeš data prohlížeče, přijdeš o ni. Proto si ji občas stáhni jako soubor – a ten pak můžeš nahrát i na jiném zařízení.</p>
+      <h2>Záloha a sdílení</h2>
+      <p>Kolekce jsou uložené jen v tomhle prohlížeči na tomhle zařízení. Občas si je stáhni jako soubor – ten můžeš nahrát na jiném zařízení, nebo ho poslat třeba sestře a ona si ho nahraje jako novou kolekci.</p>
       <p>Poslední export: <b>${last}</b></p>
       <div class="acts">
-        <button type="button" class="btn main" id="expBtn">Stáhnout zálohu (JSON)</button>
-        <button type="button" class="btn" id="impBtn">Nahrát ze souboru</button>
-        <button type="button" class="btn danger" id="clrBtn">Smazat kolekci</button>
+        <button type="button" class="btn main" id="expBtn">Stáhnout „${esc(collName(LIB.active))}“ (JSON)</button>
+        <button type="button" class="btn" id="impBtn">Nahradit tuto kolekci ze souboru</button>
+        <button type="button" class="btn danger" id="clrBtn">Vyprázdnit tuto kolekci</button>
       </div>
     </div>`;
-  $('viewColl').querySelectorAll('[data-show]').forEach(b=>b.onclick=()=>{
+  const V = $('viewColl');
+  V.querySelectorAll('[data-show]').forEach(b=>b.onclick=()=>{
     F.sets.clear(); F.sets.add(b.dataset.set);
     setOwnMode(b.dataset.show);
     setupFilters(); showView('cards');
   });
+  V.querySelectorAll('[data-sw]').forEach(b=>b.onclick=()=>switchColl(b.dataset.sw));
+  V.querySelectorAll('[data-ren]').forEach(b=>b.onclick=()=>{
+    const id = b.dataset.ren, nm = prompt('Nový název kolekce:', collName(id));
+    if(nm && nm.trim()){ LIB.list[id].name = nm.trim().slice(0,40); saveLib(); renderCollUI(); renderColl(); }
+  });
+  V.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{
+    const id = b.dataset.del;
+    if(!confirm(`Smazat kolekci „${collName(id)}“? Tvoje kolekce zůstane, smaže se jen tahle.`)) return;
+    delete LIB.list[id];
+    if(LIB.active===id){ LIB.active = LIB.main; COLL = LIB.list[LIB.main].cards; }
+    saveLib(); renderCollUI(); renderColl(); toast('Kolekce smazána.');
+  });
+  if($('theirsBtn')) $('theirsBtn').onclick = ()=>{ setOwnMode('theirs'); showView('cards'); };
+  $('newCollBtn').onclick = ()=>{
+    const nm = prompt('Název nové kolekce:', 'Nová kolekce'); if(!nm || !nm.trim()) return;
+    const id = newCollId(); LIB.list[id] = {name:nm.trim().slice(0,40), cards:{}}; saveLib(); switchColl(id);
+    toast(`Vytvořena kolekce „${collName(id)}“.`);
+  };
+  $('impNewBtn').onclick = () => pickFile('new');
+  $('impBtn').onclick = () => pickFile('replace');
   $('expBtn').onclick = exportColl;
-  $('impBtn').onclick = () => { $('importFile').value=''; $('importFile').click(); };
   $('clrBtn').onclick = () => {
     if(!hasAny()) return toast('Kolekce je už prázdná.');
-    if(!confirm('Opravdu smazat celou kolekci? Tohle nejde vrátit. Pokud si nejsi jistý, stáhni si nejdřív zálohu.')) return;
-    COLL = {}; saveColl(); renderColl(); toast('Kolekce smazána.');
+    if(!confirm(`Opravdu vyprázdnit kolekci „${collName(LIB.active)}“? Tohle nejde vrátit. Pokud si nejsi jistý, stáhni si nejdřív zálohu.`)) return;
+    COLL = {}; saveColl(); renderColl(); toast('Kolekce vyprázdněna.');
   };
 }
 
@@ -646,16 +833,20 @@ function renderColl(){
 function exportColl(){
   const byId = new Map(CARDS.map(c=>[c.id,c]));
   const cards = Object.entries(COLL).map(([id,o])=>{ const c = byId.get(id); return {id, rid:c?.rid||'', name:c?.name||'', set:c?.set||'', n:o.n||0, f:o.f||0}; });
-  const data = {app:'riftbound-kolekce', version:1, exported:new Date().toISOString(), cards};
+  const name = collName(LIB.active);
+  const data = {app:'riftbound-kolekce', version:1, name, exported:new Date().toISOString(), cards};
   const blob = new Blob([JSON.stringify(data, null, 1)], {type:'application/json'});
   const a = document.createElement('a');
+  const slug = name.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase() || 'kolekce';
   a.href = URL.createObjectURL(blob);
-  a.download = `riftbound-kolekce-${new Date().toISOString().slice(0,10)}.json`;
+  a.download = `riftbound-${slug}-${new Date().toISOString().slice(0,10)}.json`;
   document.body.appendChild(a); a.click();
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
   prefs.lastExport = Date.now(); save(PREFS_KEY, prefs);
-  renderColl(); toast(`Záloha stažena (${cards.length} ${plural(cards.length,'karta','karty','karet')}).`);
+  renderColl(); toast(`Staženo: ${name} (${cards.length} ${plural(cards.length,'karta','karty','karet')}).`);
 }
+let importMode = 'new';
+function pickFile(mode){ importMode = mode; $('importFile').value=''; $('importFile').click(); }
 $('importFile').addEventListener('change', async e=>{
   const file = e.target.files[0]; if(!file) return;
   let data;
@@ -666,15 +857,25 @@ $('importFile').addEventListener('change', async e=>{
   const byRid = new Map(CARDS.filter(c=>c.rid).map(c=>[c.rid+'|'+c.name, c.id]));
   const next = {}; let unknown = 0;
   for(const x of list){
-    let id = (ids.has(x?.id) || !CARDS.length) ? x?.id : byRid.get(x?.rid+'|'+x?.name);
+    let id = (ids.has(x?.id) || !CARDS.length) ? x?.id : (ALIAS[x?.id] || byRid.get(x?.rid+'|'+x?.name));
     if(!id){ unknown++; continue; }
     const n = Math.max(0, Math.min(99, parseInt(x.n)||0)), f = Math.max(0, Math.min(99, parseInt(x.f)||0));
-    if(n || f) next[id] = {n:(next[id]?.n||0)+n, f:(next[id]?.f||0)+f};
+    if(n || f) next[id] = {n:Math.min(99,(next[id]?.n||0)+n), f:Math.min(99,(next[id]?.f||0)+f)};
   }
   const cnt = Object.keys(next).length;
-  if(!confirm(`Soubor obsahuje ${cnt} různých karet.\n\nImport NAHRADÍ tvou současnou kolekci (${Object.keys(COLL).length} různých karet). Pokračovat?`)) return;
-  COLL = next; saveColl(); renderColl();
-  toast(`Hotovo: nahráno ${cnt} ${plural(cnt,'karta','karty','karet')}.` + (unknown ? ` ${unknown} ${plural(unknown,'kartu','karty','karet')} se nepodařilo najít v databázi.` : ''));
+  const note = unknown ? ` ${unknown} ${plural(unknown,'kartu','karty','karet')} se nepodařilo najít v databázi.` : '';
+  if(importMode==='new'){
+    const guess = (typeof data.name==='string' && data.name.trim() && data.name.trim()!=='Moje kolekce') ? data.name.trim() : file.name.replace(/\.json$/i,'').replace(/^riftbound-/,'');
+    const nm = prompt(`Soubor obsahuje ${cnt} ${plural(cnt,'kartu','karty','karet')}. Jak novou kolekci pojmenovat?`, guess);
+    if(!nm || !nm.trim()) return;
+    const id = newCollId(); LIB.list[id] = {name:nm.trim().slice(0,40), cards:next}; saveLib();
+    switchColl(id); renderColl();
+    toast(`Nahráno jako „${collName(id)}“: ${cnt} ${plural(cnt,'karta','karty','karet')}.` + note);
+  } else {
+    if(!confirm(`Soubor obsahuje ${cnt} různých karet.\n\nImport NAHRADÍ kolekci „${collName(LIB.active)}“ (${Object.keys(COLL).length} různých karet). Ostatní kolekce zůstanou. Pokračovat?`)) return;
+    COLL = next; saveColl(); renderColl();
+    toast(`Hotovo: nahráno ${cnt} ${plural(cnt,'karta','karty','karet')}.` + note);
+  }
 });
 
 /* ===== Záložky a režimy ===== */
@@ -698,20 +899,25 @@ $('quick').onchange = apply;
 $('q').addEventListener('focus', ()=>{ if($('viewCards').hidden) showView('cards'); });
 
 /* ===== Ovládání ===== */
-let qt; $('q').addEventListener('input', ()=>{ clearTimeout(qt); qt=setTimeout(apply,180); });
+let qt; $('q').addEventListener('input', ()=>{ $('qClear').hidden = !$('q').value; clearTimeout(qt); qt=setTimeout(apply,180); });
+$('qClear').addEventListener('click', ()=>{ $('q').value=''; $('qClear').hidden = true; clearTimeout(qt); apply(); $('q').focus(); });
+$('collSel').onchange = e => switchColl(e.target.value);
 $('fTag').addEventListener('input', ()=>{ clearTimeout(qt); qt=setTimeout(apply,180); });
 $('sort').onchange = apply; $('variants').onchange = apply;
 $('resetBtn').onclick = () => { [F.sets,F.doms,F.types,F.rars,F.energy,F.might].forEach(s=>s.clear()); $('fTag').value=''; setupFilters(); apply(); };
-$('filtersBtn').onclick = () => $('filters').classList.add('open');
-$('closeFilters').onclick = () => $('filters').classList.remove('open');
+function openFilters(){ $('filters').classList.add('open'); $('filters').scrollTop = 0; document.body.classList.add('locked'); }
+function closeFilters(){ $('filters').classList.remove('open'); document.body.classList.remove('locked'); window.scrollTo(0,0); }
+$('filtersBtn').onclick = openFilters;
+$('closeFilters').onclick = $('closeFilters2').onclick = closeFilters;
 
 /* ===== Start ===== */
 if(prefs.sort) $('sort').value = prefs.sort;
 $('variants').checked = !!prefs.variants;
 $('quick').checked = !!prefs.quick;
+renderCollUI();
 const cached = load(CARDS_KEY);
 if(cached && Array.isArray(cached.cards) && cached.cards.length){
-  CARDS = cached.cards; EXTRA = cached.extra || EXTRA; setupFilters(); apply(); updateInfo(cached.at);
+  CARDS = cached.cards.map(norm); EXTRA = cached.extra || EXTRA; migrateColl(cached.alias); setupFilters(); apply(); updateInfo(cached.at);
   if(cached.v !== DB_VERSION || Date.now() - (cached.at||0) > REFRESH_DAYS*864e5) refreshDB(true);   // tichá aktualizace na pozadí
 } else {
   refreshDB(false);
