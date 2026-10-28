@@ -41,7 +41,7 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0}
-body{background:var(--bg);color:var(--text);font:16px/1.45 var(--body);
+body{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);background:var(--bg);color:var(--text);font:16px/1.45 var(--body);
   padding-bottom:env(safe-area-inset-bottom,0px)}
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer}
@@ -83,7 +83,23 @@ button{cursor:pointer}
 #filtersBtn{display:none}
 
 /* Rozvržení */
-.layout{display:grid;grid-template-columns:270px 1fr;gap:0;max-width:1600px;margin:0 auto}
+.layout{--fw:270px;--pw:360px;display:grid;grid-template-columns:var(--fw) minmax(0,1fr);gap:0;max-width:1600px;margin:0 auto}
+#filters{grid-column:1;grid-row:1} main{grid-column:2;grid-row:1} .deckpanel{grid-column:3;grid-row:1}
+body.nofilters .layout{--fw:0px}
+body.nofilters #filters{display:none}
+body.nopanel .layout{--pw:52px}
+.coltoggle{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 10px;font-size:.9rem;white-space:nowrap}
+.dp-mini{display:none}
+body.nopanel .deckpanel{padding:8px 6px;overflow:hidden}
+body.nopanel .deckpanel .dp-body{display:none}
+body.nopanel .deckpanel .dp-mini{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;border:0;background:none;padding:6px 0;color:var(--text);cursor:pointer}
+.dp-mini b{font:700 1.05rem/1 var(--display)}
+.dp-mini span{writing-mode:vertical-rl;transform:rotate(180deg);font:600 .9rem/1 var(--body);color:var(--muted);white-space:nowrap}
+.dp-mini i{font-style:normal;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--accentText);display:flex;align-items:center;justify-content:center;font-weight:700}
+.dp-collapse{position:absolute;top:10px;right:10px;z-index:2;width:32px;height:32px;padding:0;border:1px solid var(--line);background:var(--panel2);border-radius:50%;font-size:1rem;line-height:1}
+.dp-head{padding-right:34px}
+#hoverPrev{position:fixed;z-index:70;pointer-events:none;width:250px;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.55);display:none}
+#hoverPrev.show{display:block}
 #filters{position:sticky;top:64px;align-self:start;max-height:calc(100vh - 64px);overflow:auto;
   padding:16px;border-right:1px solid var(--line)}
 main{padding:16px;min-width:0}
@@ -208,7 +224,9 @@ body.editing .infobtn{display:flex;align-items:center;justify-content:center}
 body.editing .tile .flag{display:none}
 .deckpanel{display:none}
 body.editing .deckpanel{display:block}
-body.editing .layout{grid-template-columns:250px minmax(0,1fr) 360px}
+body.editing .layout{grid-template-columns:var(--fw) minmax(0,1fr) var(--pw)}
+body.editing .layout{--fw:250px}
+body.editing.nofilters .layout{--fw:0px}
 .deckpanel{position:sticky;top:64px;align-self:start;max-height:calc(100vh - 64px);overflow:auto;border-left:1px solid var(--line);padding:16px;background:var(--panel)}
 .dp-bar,.dp-top{display:none}
 .dp-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
@@ -320,11 +338,15 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
   .top{gap:6px}
   #themeBtn{display:none}
 }
-@media (max-width:820px){
+@media (max-width:820px) and (orientation:portrait), (max-width:600px){
+  .coltoggle,.dp-collapse{display:none}
+  #filters,main,.deckpanel{grid-column:auto;grid-row:auto}
+  body.nofilters #filters.open{display:block}
+  body.nopanel .deckpanel .dp-mini{display:none}
+  body.nopanel .deckpanel{padding:0}
   .qc{grid-template-columns:1fr}
   .qc button{width:28px;height:28px}
-  .layout{grid-template-columns:1fr}
-  body.editing .layout{grid-template-columns:1fr}
+  .layout,body.editing .layout,body.nofilters .layout,body.editing.nofilters .layout{grid-template-columns:1fr}
   .deckpanel{position:fixed;left:0;right:0;bottom:0;top:auto;max-height:none;z-index:30;border:0;border-top:1px solid var(--line);padding:0;box-shadow:0 -8px 24px rgba(0,0,0,.3)}
   .deckpanel .dp-body{display:none}
   .dp-bar{display:flex;width:100%;align-items:center;gap:10px;border:0;background:var(--panel);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));text-align:left}
@@ -364,6 +386,37 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
   .dinfo h2{font-size:1.7rem}
   .dbottom{display:block !important}
 }
+@media (orientation:landscape) and (max-height:520px){
+  .top{padding-top:calc(6px + env(safe-area-inset-top,0px));padding-bottom:6px}
+  .brand{display:none}
+  .tabs button{padding:5px 10px}
+  .search input{padding:7px 36px 7px 10px}
+  .layout{--fw:200px;--pw:270px}
+  body.editing .layout{--fw:190px}
+  body.nofilters .layout,body.editing.nofilters .layout{--fw:0px}
+  body.nopanel .layout{--pw:48px}
+  #filters,.deckpanel{top:52px;max-height:calc(100vh - 52px)}
+  #filters{padding:10px}
+  main{padding:10px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:7px}
+  .tile{border-radius:6px}
+  .indeck{font-size:.85rem;padding:3px 6px}
+  .infobtn{width:26px;height:26px}
+  .deckpanel{padding:10px}
+  .bthumb{width:52px}
+  .dp-head .muted{font-size:.82rem}
+  .dp-head h3{font-size:1.15rem}
+  .drow{grid-template-columns:22px 34px minmax(0,1fr) auto;gap:6px;padding:3px 4px}
+  .thumb{width:34px;height:24px}
+  .cost{width:22px;height:22px;font-size:.85rem}
+  .ctr button{width:24px;height:24px}
+  .drow .nm{font-size:.85rem}
+  .toolbar{gap:6px 10px;margin-bottom:8px}
+  .editbar{margin-bottom:8px}
+  .chip{padding:3px 9px;font-size:.85rem}
+  #detail{max-height:94vh}
+  .dimg img{max-height:calc(94vh - 36px)}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -402,6 +455,7 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
     <div class="editbar" id="editBar" hidden></div>
     <div class="banner" id="otherBanner" hidden></div>
     <div class="toolbar">
+      <button type="button" class="coltoggle" id="colToggle" title="Skrýt/ukázat filtry"></button>
       <div class="count" id="count"></div>
       <div class="collbar"><label for="collSel" style="color:var(--muted)">Kolekce</label><select id="collSel" aria-label="Kolekce"></select></div>
       <div class="seg" id="ownSeg" aria-label="Které karty zobrazit">
@@ -441,6 +495,7 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
 </footer>
 
 <dialog id="detail" aria-label="Detail karty"></dialog>
+<img id="hoverPrev" alt="">
 <dialog id="deckIO" aria-label="Import a export balíčku"></dialog>
 <script>
 /* RiftboundDeckCodes 1.5.0 – (c) 2025 PiltoverArchive, Apache License 2.0 – https://github.com/Piltover-Archive/RiftboundDeckCodes */
@@ -801,7 +856,7 @@ function qcHTML(id){
 }
 function tileHTML(c, i){
   const flag = c.sig ? 'Podpis' : c.alt ? 'Alt. art' : c.over ? 'Showcase' : '';
-  const dim = hasAny() && !total(c.id);
+  const dim = !total(c.id);
   return `<div class="card${EDIT && curDeck() && isMaxed(curDeck(), c) ? ' maxed' : ''}" data-id="${esc(c.id)}">
    <button class="tile${dim?' unowned':''}" type="button" data-i="${i}" aria-label="${esc(c.name)}">
     ${c.img ? `<img src="${esc(c.img)}" alt="${esc(c.name)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ph',innerHTML:this.alt}))">`
@@ -816,7 +871,7 @@ function tileHTML(c, i){
 function paintCard(el){
   const id = el.dataset.id, o = own(id);
   el.querySelector('.own').innerHTML = ownBadge(id);
-  el.querySelector('.tile').classList.toggle('unowned', hasAny() && !(o.n+o.f));
+  el.querySelector('.tile').classList.toggle('unowned', !(o.n+o.f));
   el.querySelectorAll('.qc b').forEach(b => { b.firstChild.nodeValue = o[b.dataset.k]; });
 }
 function renderMore(){
@@ -1488,7 +1543,9 @@ function renderDeckPanel(){
       <span class="dp-ok ${v.legal?'good':'warn'}">${v.legal?'✓':'!'}</span>
       <span class="dp-open">▲</span>
     </button>
+    <button type="button" class="dp-mini" id="dpMini" title="Rozbalit balíček"><i>«</i><b>${v.main}</b><span>${esc(d.name)} · ${v.main}/${RULES.main}</span><b class="${v.legal?'good':'warn'}">${v.legal?'✓':'!'}</b></button>
     <div class="dp-body">
+      <button type="button" class="dp-collapse" id="dpCollapse" title="Zabalit panel do strany" aria-label="Zabalit panel do strany">»</button>
       <div class="dp-top">
         <button type="button" class="dp-back" id="dpClose">‹ Zpět ke kartám</button>
         <button type="button" class="btn main" id="dpDone">Hotovo</button>
@@ -1526,6 +1583,8 @@ function renderDeckPanel(){
       </div>
     </div>`;
   P.scrollTop = keepScroll;
+  $('dpCollapse').onclick = () => setPanel(false);
+  $('dpMini').onclick = () => setPanel(true);
   $('dpBar').onclick = () => { P.classList.add('expanded'); P.scrollTop = 0; document.body.classList.add('locked'); };
   $('dpClose').onclick = () => { P.classList.remove('expanded'); document.body.classList.remove('locked'); };
   $('dpDone').onclick = () => requestExit(()=>showView('decks'));
@@ -1592,10 +1651,32 @@ function openImport(){
 $('deckIO').addEventListener('close', ()=>document.body.classList.remove('locked'));
 $('deckIO').addEventListener('click', e=>{ if(e.target===$('deckIO')) $('deckIO').close(); });
 
+/* ===== Skládací sloupce a náhled karty ===== */
+function setFilters(open){ document.body.classList.toggle('nofilters', !open); prefs.filtersOpen = open; save(PREFS_KEY, prefs); $('colToggle').textContent = open ? '⇤ Skrýt filtry' : 'Filtry ⇥'; }
+function setPanel(open){ document.body.classList.toggle('nopanel', !open); prefs.panelOpen = open; save(PREFS_KEY, prefs); }
+$('colToggle').onclick = () => setFilters(document.body.classList.contains('nofilters'));
+// Najetí myší na kartu v seznamu balíčku ukáže celý obrázek (jen zařízení s myší)
+(()=>{
+  const hp = $('hoverPrev'); if(!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  $('deckPanel').addEventListener('mouseover', e=>{
+    const r = e.target.closest('.drow'); if(!r){ hp.classList.remove('show'); return; }
+    const c = cardById(r.querySelector('[data-info]')?.dataset.info); if(!c || !c.img){ hp.classList.remove('show'); return; }
+    if(hp.dataset.id !== c.id){ hp.src = c.img; hp.dataset.id = c.id; }
+    const pr = $('deckPanel').getBoundingClientRect(), rr = r.getBoundingClientRect();
+    const w = c.land ? 340 : 250, h = c.land ? 244 : 349; hp.style.width = w + 'px';
+    hp.style.left = Math.max(8, pr.left - w - 12) + 'px';
+    hp.style.top = Math.min(window.innerHeight - h - 8, Math.max(8, rr.top + rr.height/2 - h/2)) + 'px';
+    hp.classList.add('show');
+  });
+  $('deckPanel').addEventListener('mouseleave', ()=>hp.classList.remove('show'));
+})();
+
 /* ===== Start ===== */
 if(prefs.sort) $('sort').value = prefs.sort;
 $('variants').checked = !!prefs.variants;
 $('quick').checked = !!prefs.quick;
+setFilters(prefs.filtersOpen ?? (innerWidth >= 1000 || innerHeight > 600));
+setPanel(prefs.panelOpen ?? true);
 renderCollUI();
 const cached = load(CARDS_KEY);
 if(cached && Array.isArray(cached.cards) && cached.cards.length){
