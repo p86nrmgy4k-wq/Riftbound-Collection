@@ -119,6 +119,13 @@ dialog::backdrop{background:rgba(8,10,20,.72)}
 .dimg{background:var(--panel2);display:flex;align-items:center;justify-content:center;padding:18px}
 .dimg img{max-width:100%;max-height:calc(92vh - 36px);border-radius:14px;display:block}
 .dimg.land img{transform:none}
+.dimg{position:relative}
+.navzone{position:absolute;top:0;bottom:0;width:32%;border:0;background:none;padding:0 6px;display:flex;align-items:center;cursor:pointer;color:#fff;-webkit-tap-highlight-color:transparent}
+.navzone.prev{left:0;justify-content:flex-start}
+.navzone.next{right:0;justify-content:flex-end}
+.navzone span{width:30px;height:30px;border-radius:50%;background:rgba(10,14,28,.55);display:flex;align-items:center;justify-content:center;font-size:1.2rem;line-height:1;opacity:.75;transition:opacity .15s}
+.navzone:hover span{opacity:1}
+.navzone[disabled]{display:none}
 .dinfo{padding:22px 22px 18px;overflow:auto}
 .dinfo h2{margin:0 0 2px;font:700 2rem/1.05 var(--display)}
 .typeline{color:var(--muted);margin-bottom:12px}
@@ -166,9 +173,16 @@ body.locked{overflow:hidden}
 .good{color:#2f9a57}.warn{color:#c9822a}
 :root[data-theme="dark"] .good{color:#5fd08c}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .good{color:#5fd08c}}
-.editbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;background:color-mix(in srgb,var(--accent) 14%,var(--panel));border:1px solid var(--accent);border-radius:12px;padding:9px 14px;margin-bottom:14px}
-.editbar button{border:0;background:var(--accent);color:var(--accentText);border-radius:8px;padding:7px 14px;font-weight:600;margin-left:auto}
-.editbar label{display:inline-flex;gap:6px;align-items:center;font-size:.92rem}
+.editbar{display:flex;align-items:center;gap:6px 12px;background:color-mix(in srgb,var(--accent) 12%,var(--panel));border:1px solid var(--accent);border-radius:10px;padding:5px 6px 5px 12px;margin-bottom:12px;font-size:.88rem}
+.editbar .eb-name{font:700 1rem/1.1 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.editbar button{border:0;background:var(--accent);color:var(--accentText);border-radius:7px;padding:5px 12px;font-weight:600;flex:none}
+.editbar label{display:inline-flex;gap:5px;align-items:center;white-space:nowrap;color:var(--muted);flex:none}
+.thumb{width:46px;height:30px;object-fit:cover;object-position:50% 25%;border-radius:4px;background:var(--panel);display:block}
+.status{display:block;width:100%;text-align:left;border-radius:10px;padding:8px 12px;margin:4px 0 10px;font-weight:600;font-size:.92rem;border:1px solid currentColor;background:none}
+button.status{cursor:pointer}
+.deckcard{position:relative}
+.deckcard.invalid{border-color:color-mix(in srgb,#c9822a 60%,var(--line))}
+.badbadge{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;background:#c9822a;color:#fff;font:700 .95rem/24px var(--body);text-align:center}
 .ib{display:inline-flex;width:20px;height:20px;border-radius:50%;background:rgba(10,14,28,.8);color:#fff;font:700 .8rem/1 var(--body);align-items:center;justify-content:center}
 .card{position:relative}
 .indeck{position:absolute;left:6px;bottom:6px;background:var(--accent);color:var(--accentText);font:700 1rem/1 var(--display);padding:5px 9px;border-radius:99px;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.35)}
@@ -195,13 +209,14 @@ body.editing .layout{grid-template-columns:250px minmax(0,1fr) 360px}
 .checks li.warn span{color:#c9822a}
 .deckpanel h4{margin:16px 0 6px;font:700 1.15rem/1 var(--display)}
 .deckpanel h4 small{font:500 .82rem var(--body);color:var(--muted);margin-left:4px}
+.deckpanel h4 small.warn{color:#c9822a;font-weight:700}
 .curve{display:flex;align-items:flex-end;gap:6px;height:120px;padding:4px 2px 0;border-bottom:1px solid var(--line)}
 .cbar{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;position:relative}
 .cbar i{display:block;width:100%;min-height:2px;background:var(--accent);border-radius:4px 4px 0 0}
 .cbar b{font:700 .9rem/1 var(--display);color:var(--text)}
 .cbar span{position:absolute;bottom:-20px;font:600 .82rem/1 var(--body);color:var(--muted)}
 .dp-sum{display:flex;flex-direction:column;gap:4px;margin-top:28px;font-size:.88rem;color:var(--muted)}
-.drow{display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;gap:8px;padding:4px 6px;border-radius:8px;background:var(--panel2);margin-bottom:4px}
+.drow{display:grid;grid-template-columns:26px 46px minmax(0,1fr) auto;align-items:center;gap:8px;padding:4px 6px;border-radius:8px;background:var(--panel2);margin-bottom:4px}
 .drow.lack{box-shadow:inset 3px 0 0 #c9822a}
 .cost{width:26px;height:26px;border-radius:50%;background:#2b5ea8;color:#fff;display:flex;align-items:center;justify-content:center;font:700 .95rem/1 var(--display)}
 .drow .nm{border:0;background:none;padding:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.93rem}
@@ -212,6 +227,7 @@ body.editing .layout{grid-template-columns:250px minmax(0,1fr) 360px}
 .ctr b{min-width:1.2em;text-align:center;font:700 1rem/1 var(--display)}
 .misslist{margin:4px 0 0;padding-left:18px;font-size:.92rem}
 .misslist small{color:var(--muted)}
+.dpcoll{margin-left:4px;padding:4px 8px;border:1px solid var(--line);border-radius:7px;background:var(--panel2)}
 #deckIO{width:min(620px,96vw)}
 .io{padding:20px}
 .io h2{margin:0 0 6px;font:700 1.6rem/1.1 var(--display)}
@@ -308,9 +324,8 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
   .dp-back{border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:10px 14px;font-weight:600}
   body.editing main{padding-bottom:110px}
   body.editing .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
-  .editbar{font-size:.92rem;padding:8px 12px}
+  .editbar{font-size:.85rem}
   body.editing footer{padding-bottom:110px}
-  .editbar button{margin-left:0}
   #filtersBtn{display:inline-block}
   .brand small{display:none}
   /* Filtry na mobilu: celá obrazovka, posouvá se jen obsah, tlačítko dole nic nezakrývá */
@@ -373,8 +388,8 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
       <div class="count" id="count"></div>
       <div class="collbar"><label for="collSel" style="color:var(--muted)">Kolekce</label><select id="collSel" aria-label="Kolekce"></select></div>
       <div class="seg" id="ownSeg" aria-label="Které karty zobrazit">
-        <button type="button" data-own="all" aria-pressed="true">Všechny</button>
-        <button type="button" data-own="mine" aria-pressed="false">Jen v kolekci</button>
+        <button type="button" data-own="all" aria-pressed="true">Všechno</button>
+        <button type="button" data-own="mine" aria-pressed="false">Vlastním</button>
         <button type="button" data-own="missing" aria-pressed="false">Chybí</button>
         <button type="button" data-own="theirs" aria-pressed="false" hidden>Má, já ne</button>
       </div>
@@ -674,7 +689,7 @@ function setupFilters(){
   fill('fSet', [...sets.keys()].sort((a,b)=>setIdx(a)-setIdx(b)||a.localeCompare(b)).map(s=>chip(esc(sets.get(s)), s, F.sets)));
   const doms = new Set(); CARDS.forEach(c=>c.dom.forEach(d=>doms.add(d)));
   fill('fDom', ordered(doms, DOMAIN_ORDER).map(d=>chip(`<span class="dot" style="background:${DOMAIN_COLORS[d]||'#888'}"></span>${esc(d)}`, d, F.doms)));
-  fill('fType', ordered(new Set(CARDS.map(c=>c.type)), TYPE_ORDER).map(t=>chip(esc(t), t, F.types)));
+  fill('fType', ordered(new Set(CARDS.map(c=>c.type)), TYPE_ORDER).map(t=>chip(esc(t), t, F.types)).concat([chip('★ Champion', '@champ', F.types), chip('✦ Signature', '@sig', F.types)]));
   fill('fRar', ordered(new Set(CARDS.map(c=>c.rar).filter(Boolean)), RAR_ORDER).map(r=>chip(esc(r), r, F.rars)));
   fill('fEnergy', COST_CHIPS.map(v=>chip(v, v, F.energy, 'num')));
   fill('fMight', COST_CHIPS.map(v=>chip(v, v, F.might, 'num')));
@@ -702,7 +717,7 @@ function matches(c){
   }
   if(F.sets.size && !F.sets.has(c.set)) return false;
   if(F.doms.size && !c.dom.some(d=>F.doms.has(d))) return false;
-  if(F.types.size && !F.types.has(c.type)) return false;
+  if(F.types.size && !(F.types.has(c.type) || (F.types.has('@champ') && c.sup==='Champion') || (F.types.has('@sig') && /Signature/i.test(c.sup||'')))) return false;
   if(F.rars.size && !F.rars.has(c.rar)) return false;
   if(F.energy.size && !F.energy.has(costKey(c.e))) return false;
   if(F.might.size && !F.might.has(costKey(c.m))) return false;
@@ -738,7 +753,7 @@ function apply(){
   $('grid').innerHTML = ''; shown = 0;
   if(CARDS.length && !filtered.length){
     const msg = ((F.own==='mine' || F.own==='theirs') && !hasAny())
-      ? `Kolekce „${esc(collName(LIB.active))}“ je zatím prázdná. Přepni na „Všechny“ a přidávej karty v detailu karty nebo přes „Rychlé zadávání“.`
+      ? `Kolekce „${esc(collName(LIB.active))}“ je zatím prázdná. Přepni na „Všechno“ a přidávej karty v detailu karty nebo přes „Rychlé zadávání“.`
       : F.own==='theirs' ? 'Tahle kolekce nemá žádnou kartu, která by chyběla tobě.'
       : 'Žádná karta neodpovídá filtrům. Zkus ubrat filtr nebo změnit hledaný text.';
     $('grid').innerHTML = `<div class="empty" style="grid-column:1/-1">${msg}</div>`;
@@ -813,7 +828,10 @@ function openDetail(i, card){
   const versions = CARDS.filter(x=>baseName(x.name)===baseName(c.name)).sort(sorter('num'));
   const d = $('detail');
   d.innerHTML = `<div class="dwrap">
-    <div class="dimg${c.land?' land':''}">${c.img?`<img src="${esc(c.img)}" alt="${esc(c.name)}">`:''}</div>
+    <div class="dimg${c.land?' land':''}">${c.img?`<img src="${esc(c.img)}" alt="${esc(c.name)}">`:`<div class="ph" style="position:static;min-height:240px;width:100%">${esc(c.name)}</div>`}
+      <button type="button" class="navzone prev" id="dPrev" aria-label="Předchozí karta"><span>‹</span></button>
+      <button type="button" class="navzone next" id="dNext" aria-label="Další karta"><span>›</span></button>
+    </div>
     <div class="dinfo">
       <h2>${esc(c.name)}</h2>
       <div class="typeline">${esc([c.sup,c.type].filter(Boolean).join(' '))}</div>
@@ -834,7 +852,6 @@ function openDetail(i, card){
         ${c.art?`<dt>Ilustrace</dt><dd>${esc(c.art)}</dd>`:''}
       </dl>
       ${versions.length>1?`<p style="margin:16px 0 0;color:var(--muted);font-size:.9rem">Verze této karty</p><div class="versions">${versions.map(v=>`<button type="button" data-id="${esc(v.id)}" aria-current="${v.id===c.id}" title="${esc(v.name)}">${v.img?`<img src="${esc(v.img)}" alt="" loading="lazy">`:''}</button>`).join('')}</div>`:''}
-      <div class="dnav"><button type="button" id="dPrev">‹ Předchozí</button><button type="button" id="dNext">Další ›</button></div>
       <button type="button" class="dbottom" id="dClose2">Zavřít</button>
     </div></div>
     <button class="dclose" type="button" id="dClose" aria-label="Zavřít">×</button>`;
@@ -856,7 +873,22 @@ function openDetail(i, card){
 }
 function step(k){ const n=cur+k; if(n>=0 && n<filtered.length) openDetail(n); }
 $('detail').addEventListener('close', ()=>document.body.classList.remove('locked'));
-$('detail').addEventListener('click', e=>{ if(e.target===$('detail')) $('detail').close(); });
+// Klik na pozadí vedle okna: vlevo = předchozí, vpravo = další, jinde zavřít
+$('detail').addEventListener('click', e=>{
+  if(e.target!==$('detail')) return;
+  const r = $('detail').getBoundingClientRect();
+  if(e.clientX < r.left) return step(-1);
+  if(e.clientX > r.right) return step(1);
+  if(e.clientY < r.top || e.clientY > r.bottom) $('detail').close();
+});
+// Swipe na mobilu
+(()=>{ let x0=null, y0=0, t0=0;
+  $('detail').addEventListener('touchstart', e=>{ const t=e.touches[0]; x0=t.clientX; y0=t.clientY; t0=Date.now(); }, {passive:true});
+  $('detail').addEventListener('touchend', e=>{
+    if(x0===null) return; const t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0; x0=null;
+    if(Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)*1.5 && Date.now()-t0 < 800) step(dx < 0 ? 1 : -1);
+  }, {passive:true});
+})();
 document.addEventListener('keydown', e=>{ if(!$('detail').open) return; if(e.key==='ArrowLeft') step(-1); if(e.key==='ArrowRight') step(1); });
 
 /* ===== Přehled kolekce ===== */
@@ -1059,7 +1091,7 @@ let EDIT = null;              // id právě upravovaného balíčku
 let TO_SIDE = false;          // přidávat do sideboardu
 F.legal = true;
 function saveDecks(){ if(!save(DECKS_KEY, DECKS)) toast('Pozor: balíček se nepodařilo uložit.'); }
-function newDeck(name){ const id = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2,5); DECKS.list[id] = {id, name, legend:null, champ:null, main:{}, side:{}, runes:{}, bfs:{}, created:Date.now(), updated:Date.now()}; saveDecks(); return id; }
+function newDeck(name){ const id = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2,5); DECKS.list[id] = {id, name, coll:LIB.active, legend:null, champ:null, main:{}, side:{}, runes:{}, bfs:{}, created:Date.now(), updated:Date.now()}; saveDecks(); return id; }
 const curDeck = () => EDIT && DECKS.list[EDIT];
 let BYID = null, BYID_SRC = null;
 function cardById(id){ if(BYID_SRC !== CARDS){ BYID = new Map(CARDS.map(c=>[c.id,c])); BYID_SRC = CARDS; } return id ? BYID.get(id) : undefined; }
@@ -1082,11 +1114,12 @@ function sigCount(d){ let n=0; for(const sec of ['main','side']) for(const id in
 function sectionOf(c){ return c.type==='Legend' ? 'legend' : c.type==='Battlefield' ? 'bfs' : c.type==='Rune' ? 'runes' : 'main'; }
 
 function addToDeck(c, forceSide){
+  // Pravidla neblokují – kartu vždy přidáme a jen upozorníme, co je špatně (balíček pak má značku „porušuje pravidla“).
   const d = curDeck(); if(!d || !c) return false;
   const L = cardById(d.legend);
   const side = forceSide ?? TO_SIDE;
   const sec = sectionOf(c);
-  if(c.type==='Token'){ toast('Tokeny do balíčku nepatří.'); return false; }
+  const warn = [];
   if(sec==='legend'){
     if(d.legend===c.id){ toast('Tahle legenda už je vybraná.'); return false; }
     d.legend = c.id;
@@ -1094,29 +1127,29 @@ function addToDeck(c, forceSide){
     autoChamp(d); touch(d); toast(`Legenda: ${c.name}`); apply(); return true;
   }
   if(!L){ toast('Nejdřív vyber legendu.'); return false; }
+  if(c.type==='Token') warn.push('tokeny do balíčku nepatří');
   if(sec==='bfs'){
-    if(sumObj(d.bfs) >= RULES.bfs){ toast(`Battlefieldy jsou jen ${RULES.bfs}.`); return false; }
-    if(Object.keys(d.bfs).some(id=>nameKey(cardById(id)?.name)===nameKey(c.name))){ toast('Battlefield se stejným jménem už v balíčku je.'); return false; }
-    d.bfs[c.id] = 1; touch(d); return true;
-  }
-  if(sec==='runes'){
-    if(sumObj(d.runes) >= RULES.runes){ toast(`Run je max. ${RULES.runes}.`); return false; }
-    if(!domainOK(c, L)) toast(`Pozor: ${c.name} není z domén legendy.`);
-    d.runes[c.id] = (d.runes[c.id]||0) + 1; touch(d); return true;
-  }
-  // běžná karta (hlavní balíček nebo sideboard)
-  const key = nameKey(c.name);
-  if(!anyNumber(c) && nameCopies(d, key) >= RULES.copies){ toast(`Max. ${RULES.copies} kopie karty ${baseName(c.name)} (včetně sideboardu).`); return false; }
-  if(isSig(c) && sigCount(d) >= RULES.sig){ toast(`Signature karty jsou max. ${RULES.sig}.`); return false; }
-  if(side){
-    if(sumObj(d.side) >= RULES.side){ toast(`Sideboard má max. ${RULES.side} karet.`); return false; }
-    d.side[c.id] = (d.side[c.id]||0) + 1;
+    if(sumObj(d.bfs) >= RULES.bfs) warn.push(`battlefieldů má být ${RULES.bfs}`);
+    if(Object.keys(d.bfs).some(id=>nameKey(cardById(id)?.name)===nameKey(c.name))) warn.push('battlefieldy mají mít různá jména');
+    d.bfs[c.id] = (d.bfs[c.id]||0) + 1;
+  } else if(sec==='runes'){
+    if(sumObj(d.runes) >= RULES.runes) warn.push(`run má být ${RULES.runes}`);
+    if(!domainOK(c, L)) warn.push('runa není z domén legendy');
+    d.runes[c.id] = (d.runes[c.id]||0) + 1;
   } else {
-    if(sumObj(d.main) >= RULES.main){ toast(`Hlavní balíček má přesně ${RULES.main} karet. Přepni na Sideboard, nebo nějakou kartu odeber.`); return false; }
-    d.main[c.id] = (d.main[c.id]||0) + 1;
-    if(!d.champ && isChampUnit(c) && tagMatch(c, L)){ d.champ = c.id; toast(`Zvolený champion: ${c.name}`); }
+    if(!anyNumber(c) && nameCopies(d, nameKey(c.name)) >= RULES.copies) warn.push(`víc než ${RULES.copies} kopie ${baseName(c.name)}`);
+    if(isSig(c) && sigCount(d) >= RULES.sig) warn.push(`víc než ${RULES.sig} signature karty`);
+    if(side){
+      if(sumObj(d.side) >= RULES.side) warn.push(`sideboard má max. ${RULES.side} karet`);
+      d.side[c.id] = (d.side[c.id]||0) + 1;
+    } else {
+      if(sumObj(d.main) >= RULES.main) warn.push(`hlavní balíček má mít ${RULES.main} karet`);
+      d.main[c.id] = (d.main[c.id]||0) + 1;
+      if(!d.champ && isChampUnit(c) && tagMatch(c, L)){ d.champ = c.id; toast(`Zvolený champion: ${c.name}`); }
+    }
+    if(!legalFor(c, L) && c.type!=='Token') warn.push(isSig(c) && !tagMatch(c, L) ? 'signature karta jiného championa' : 'karta není z domén legendy');
   }
-  if(!legalFor(c, L)) toast(`Pozor: ${c.name} do tohoto balíčku podle pravidel nepatří.`);
+  if(warn.length) toast(`Přidáno, ale pozor: ${warn.join(', ')}.`);
   touch(d); return true;
 }
 function removeFromDeck(sec, id){
@@ -1140,15 +1173,16 @@ function validate(d){
   const main = sumObj(d.main), runes = sumObj(d.runes), bfs = sumObj(d.bfs), side = sumObj(d.side);
   const ok = (good, text) => out.push({good, text});
   ok(!!L, L ? `Legenda: ${L.name}` : 'Vyber legendu');
-  ok(main===RULES.main, `Hlavní balíček ${main}/${RULES.main}`);
+  const diff = (n, want, what) => n===want ? `${what} ${n}/${want}` : n>want ? `${what} ${n}/${want} – o ${n-want} víc` : `${what} ${n}/${want} – chybí ${want-n}`;
+  ok(main===RULES.main, diff(main, RULES.main, 'Hlavní balíček'));
   const C = cardById(d.champ);
   if(L){
     const champOk = C && isChampUnit(C) && tagMatch(C, L) && d.main[d.champ];
     ok(!!champOk, champOk ? `Zvolený champion: ${C.name}` : `Chybí zvolený champion – přidej jednotku ${L.tags.join('/')} (Champion)`);
   }
-  ok(runes===RULES.runes, `Runy ${runes}/${RULES.runes}`);
-  ok(bfs===RULES.bfs, `Battlefieldy ${bfs}/${RULES.bfs}`);
-  if(side) ok(side<=RULES.side, `Sideboard ${side}/${RULES.side}`);
+  ok(runes===RULES.runes, diff(runes, RULES.runes, 'Runy'));
+  ok(bfs===RULES.bfs, diff(bfs, RULES.bfs, 'Battlefieldy'));
+  if(side) ok(side<=RULES.side, side<=RULES.side ? `Sideboard ${side}/${RULES.side}` : `Sideboard ${side}/${RULES.side} – o ${side-RULES.side} víc`);
   // kopie, signature, domény
   const names = new Map(); const badDom = new Set(), badSig = new Set(), tokens = new Set();
   for(const sec of ['main','side','runes']) for(const id in d[sec]){
@@ -1168,8 +1202,10 @@ function validate(d){
   return {checks: out, legal: out.every(x=>x.good), main, runes, bfs, side};
 }
 /* --- Porovnání s kolekcí (podle jména, počítají se všechny verze karty) --- */
-function ownedByName(){
-  const m = new Map(), coll = MAIN();
+// Každý balíček patří ke kolekci, pro kterou se staví (výchozí: tvoje). Smazaná kolekce → tvoje.
+const deckCollId = d => (d && d.coll && LIB.list[d.coll]) ? d.coll : LIB.main;
+function ownedByName(d){
+  const m = new Map(), coll = LIB.list[deckCollId(d)].cards;
   for(const id in coll){ const c = cardById(id); if(!c) continue; const k = nameKey(c.name); m.set(k, (m.get(k)||0) + (coll[id].n||0) + (coll[id].f||0)); }
   return m;
 }
@@ -1178,7 +1214,7 @@ function missingFor(d){
   const addNeed = (id, n) => { const c = cardById(id); if(!c) return; const k = nameKey(c.name); const e = need.get(k) || {n:0, name:baseName(c.name), id}; e.n += n; need.set(k, e); };
   if(d.legend) addNeed(d.legend, 1);
   for(const sec of ['main','side','runes','bfs']) for(const id in d[sec]) addNeed(id, d[sec][id]);
-  const own = ownedByName(), miss = [];
+  const own = ownedByName(d), miss = [];
   for(const [k, e] of need){ const have = own.get(k)||0; if(have < e.n) miss.push({...e, have, lack:e.n-have}); }
   return miss.sort((a,b)=>b.lack-a.lack || a.name.localeCompare(b.name));
 }
@@ -1294,13 +1330,13 @@ function renderDecks(){
     </div>
     ${ids.length ? '' : `<div class="empty">Zatím nemáš žádný balíček. Vytvoř nový – nejdřív vybereš legendu a pak klepáním na karty skládáš balíček.</div>`}
     <div class="decks">${ids.map(id=>{ const d = DECKS.list[id], L = cardById(d.legend), v = validate(d), miss = missingFor(d).reduce((a,b)=>a+b.lack,0); return `
-      <button type="button" class="deckcard" data-deck="${esc(id)}">
+      <button type="button" class="deckcard${v.legal?'':' invalid'}" data-deck="${esc(id)}">${v.legal?'':'<span class="badbadge" title="Balíček porušuje pravidla nebo není kompletní">!</span>'}
         ${legendThumb(L)}
         <span class="dc-body">
           <b>${esc(d.name)}</b>
-          <small>${L ? esc(L.name) : 'bez legendy'}</small>
+          <small>${L ? esc(L.name) : 'bez legendy'}${deckCollId(d)!==LIB.main ? ` · pro kolekci <b>${esc(collName(deckCollId(d)))}</b>` : ''}</small>
           <span class="dc-dom">${(L?.dom||[]).map(x=>`<span class="dot" style="background:${DOMAIN_COLORS[x]||'#888'}"></span>${esc(x)}`).join(' ')}</span>
-          <span class="dc-stat ${v.legal?'good':'warn'}">${v.legal ? '✓ Připravený' : '! Neúplný'} · ${v.main}/${RULES.main}</span>
+          <span class="dc-stat ${v.legal?'good':'warn'}">${v.legal ? `✓ Podle pravidel · ${v.main}/${RULES.main}` : `! ${esc(v.checks.find(x=>!x.good)?.text || 'Neúplný')}`}${!v.legal && v.checks.filter(x=>!x.good).length>1 ? ` (+${v.checks.filter(x=>!x.good).length-1})` : ''}</span>
           <span class="dc-stat ${miss?'warn':'good'}">${miss ? `Chybí ti ${miss} ${plural(miss,'karta','karty','karet')}` : '✓ Máš všechny karty'}</span>
         </span>
       </button>`; }).join('')}</div>`;
@@ -1316,6 +1352,7 @@ function renderDecks(){
 function enterEdit(id){
   if(!DECKS.list[id]) return;
   EDIT = id; TO_SIDE = false; prefs.editDeck = id; save(PREFS_KEY, prefs);
+  const dc = deckCollId(DECKS.list[id]); if(LIB.active !== dc){ LIB.active = dc; COLL = LIB.list[dc].cards; saveLib(); renderCollUI(); }
   document.body.classList.add('editing');
   $('sort').value = 'energy';
   showView('cards');
@@ -1340,10 +1377,10 @@ function renderEditBar(){
   const L = cardById(d.legend);
   bar.hidden = false;
   bar.innerHTML = L
-    ? `<span>Upravuješ <b>${esc(d.name)}</b> – klepnutím na kartu ji přidáš, <span class="ib">i</span> = detail karty.</span>
-       <label><input type="checkbox" id="legalOnly" ${F.legal?'checked':''}> Jen karty pro ${esc(baseName(L.name))}</label>
+    ? `<b class="eb-name">✎ ${esc(d.name)}</b>
+       <label title="Ukázat jen karty, které do balíčku s touto legendou patří"><input type="checkbox" id="legalOnly" ${F.legal?'checked':''}> Jen pro legendu</label>
        <button type="button" id="editDone">Hotovo</button>`
-    : `<span><b>${esc(d.name)}:</b> nejdřív vyber legendu – klepni na ni.</span><button type="button" id="editDone">Hotovo</button>`;
+    : `<b class="eb-name">✎ ${esc(d.name)}</b><span>Vyber legendu</span><button type="button" id="editDone">Hotovo</button>`;
   $('editDone').onclick = () => exitEdit(true);
   if($('legalOnly')) $('legalOnly').onchange = e => { F.legal = e.target.checked; apply(); };
 }
@@ -1359,7 +1396,9 @@ function renderDeckPanel(){
   const d = curDeck(), P = $('deckPanel');
   if(!d){ P.hidden = true; return; }
   P.hidden = false;
-  const L = cardById(d.legend), C = cardById(d.champ), v = validate(d), miss = missingFor(d), own = ownedByName();
+  const keepScroll = P.scrollTop;
+  const L = cardById(d.legend), C = cardById(d.champ), v = validate(d), miss = missingFor(d), own = ownedByName(d);
+  const bad = v.checks.filter(x=>!x.good);
   const types = {}; for(const id in d.main){ const c = cardById(id); if(c) types[c.type] = (types[c.type]||0) + d.main[id]; }
   const doms = {}; for(const id in d.main){ const c = cardById(id); if(c) (c.dom||[]).forEach(x=>doms[x]=(doms[x]||0)+d.main[id]); }
   const need = new Map(); for(const sec of ['main','side']) for(const id in d[sec]){ const k = nameKey(cardById(id)?.name); need.set(k, (need.get(k)||0) + d[sec][id]); }
@@ -1369,12 +1408,13 @@ function renderDeckPanel(){
     const champ = sec==='main' && isChampUnit(c) && tagMatch(c, L);
     return `<div class="drow${lack?' lack':''}">
       <span class="cost" title="Cena">${c.e==null?'·':c.e}</span>
+      ${c.img ? `<img class="thumb" src="${esc(c.img)}" alt="" loading="lazy">` : '<span class="thumb"></span>'}
       <button type="button" class="nm" data-info="${esc(id)}" title="${esc(c.name)}">${d.champ===id?'<span class="star" title="Zvolený champion">★</span> ':''}${esc(baseName(c.name))}${lack?' <small>chybí</small>':''}</button>
       <span class="ctr">${champ && d.champ!==id ? `<button type="button" data-champ="${esc(id)}" title="Nastavit jako zvoleného championa">☆</button>`:''}<button type="button" data-rm="${sec}|${esc(id)}" aria-label="Odebrat">−</button><b>${n}</b><button type="button" data-add="${sec}|${esc(id)}" aria-label="Přidat">+</button></span>
     </div>`;
   };
-  const block = (title, sec, max) => { const ids = sortIds(Object.keys(d[sec])); return `
-    <h4>${title} <small>${sumObj(d[sec])}${max?` / ${max}`:''}</small></h4>
+  const block = (title, sec, max, hideEmpty) => { const ids = sortIds(Object.keys(d[sec])); if(hideEmpty && !ids.length) return ''; const n = sumObj(d[sec]); return `
+    <h4>${title} <small class="${max && n!==max && !(sec==='side' && n<=max) ? 'warn' : ''}">${n}${max?` / ${max}`:''}</small></h4>
     ${ids.length ? ids.map(id=>row(sec, id, d[sec][id])).join('') : '<p class="muted">Zatím prázdné.</p>'}`; };
   const missN = miss.reduce((a,b)=>a+b.lack,0);
   P.innerHTML = `
@@ -1398,7 +1438,13 @@ function renderDeckPanel(){
           ${C ? `<div class="muted">★ Champion: ${esc(baseName(C.name))}</div>` : ''}
         </div>
       </div>
+      ${bad.length ? `<button type="button" class="status warn" id="dpToChecks">! Porušuje pravidla nebo není kompletní (${bad.length}) – zobrazit</button>` : `<div class="status good">✓ Balíček je podle pravidel</div>`}
       <div class="seg dp-seg"><button type="button" data-target="main" aria-pressed="${!TO_SIDE}">Přidávat do balíčku</button><button type="button" data-target="side" aria-pressed="${TO_SIDE}">Do sideboardu</button></div>
+      ${block('Hlavní balíček', 'main', RULES.main)}
+      ${block('Battlefieldy', 'bfs', RULES.bfs)}
+      ${block('Runy', 'runes', RULES.runes)}
+      ${block('Sideboard', 'side', RULES.side, true)}
+      <h4 id="dpChecks">Kontrola pravidel</h4>
       <ul class="checks">${v.checks.map(x=>`<li class="${x.good?'good':'warn'}"><span>${x.good?'✓':'!'}</span>${esc(x.text)}</li>`).join('')}</ul>
       <h4>Křivka cen <small>hlavní balíček</small></h4>
       ${curveHTML(d)}
@@ -1406,11 +1452,8 @@ function renderDeckPanel(){
         <span>${Object.entries(types).sort((a,b)=>b[1]-a[1]).map(([t,n])=>`${esc(t)} ${n}`).join(' · ') || '–'}</span>
         <span>${Object.entries(doms).map(([x,n])=>`<span class="dot" style="background:${DOMAIN_COLORS[x]||'#888'}"></span>${esc(x)} ${n}`).join(' ')}</span>
       </div>
-      ${block('Hlavní balíček', 'main', RULES.main)}
-      ${block('Battlefieldy', 'bfs', RULES.bfs)}
-      ${block('Runy', 'runes', RULES.runes)}
-      ${block('Sideboard', 'side', RULES.side)}
-      <h4>Porovnání s kolekcí <small>${esc(collName(LIB.main))}</small></h4>
+      <h4>Porovnání s kolekcí</h4>
+      ${Object.keys(LIB.list).length > 1 ? `<label class="muted">Balíček stavím pro kolekci: <select id="dpColl" class="dpcoll">${Object.keys(LIB.list).map(id=>`<option value="${esc(id)}"${id===deckCollId(d)?' selected':''}>${esc(collName(id))}${id===LIB.main?' (moje)':''}</option>`).join('')}</select></label>` : ''}
       ${missN ? `<p class="muted">Chybí ti ${missN} ${plural(missN,'karta','karty','karet')}:</p><ul class="misslist">${miss.map(m=>`<li><b>${m.lack}×</b> ${esc(m.name)} <small>(máš ${m.have})</small></li>`).join('')}</ul>` : `<p class="good">✓ Všechny karty máš v kolekci – můžeš ho poskládat.</p>`}
       <div class="acts">
         <button type="button" class="btn main" id="dpExport">Deck kód / seznam</button>
@@ -1418,9 +1461,11 @@ function renderDeckPanel(){
         <button type="button" class="btn danger" id="dpDel">Smazat</button>
       </div>
     </div>`;
+  P.scrollTop = keepScroll;
   $('dpBar').onclick = () => { P.classList.add('expanded'); P.scrollTop = 0; document.body.classList.add('locked'); };
   $('dpClose').onclick = () => { P.classList.remove('expanded'); document.body.classList.remove('locked'); };
   $('dpDone').onclick = () => exitEdit(true);
+  if($('dpToChecks')) $('dpToChecks').onclick = () => $('dpChecks').scrollIntoView({behavior:'smooth', block:'start'});
   $('dpName').onclick = () => { const nm = prompt('Název balíčku:', d.name); if(nm && nm.trim()){ d.name = nm.trim().slice(0,40); touch(d); renderEditBar(); } };
   P.querySelectorAll('[data-target]').forEach(b=>b.onclick=()=>{ TO_SIDE = b.dataset.target==='side'; renderDeckPanel(); });
   P.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{ const [sec,id] = b.dataset.rm.split('|'); removeFromDeck(sec, id); if(sec==='legend') renderEditBar(); });
@@ -1428,6 +1473,7 @@ function renderDeckPanel(){
   P.querySelectorAll('[data-champ]').forEach(b=>b.onclick=()=>{ d.champ = b.dataset.champ; touch(d); });
   P.querySelectorAll('[data-info]').forEach(b=>b.onclick=()=>openDetail(-1, cardById(b.dataset.info)));
   $('dpExport').onclick = () => openExport(d);
+  if($('dpColl')) $('dpColl').onchange = e => { d.coll = e.target.value; if(LIB.active !== d.coll) switchColl(d.coll); touch(d); };
   $('dpDup').onclick = () => { const id = newDeck(d.name + ' (kopie)'); Object.assign(DECKS.list[id], JSON.parse(JSON.stringify({legend:d.legend, champ:d.champ, main:d.main, side:d.side, runes:d.runes, bfs:d.bfs}))); saveDecks(); enterEdit(id); toast('Balíček zduplikován.'); };
   $('dpDel').onclick = () => { if(!confirm(`Smazat balíček „${d.name}“?`)) return; delete DECKS.list[d.id]; saveDecks(); exitEdit(true); toast('Balíček smazán.'); };
 }
