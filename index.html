@@ -272,7 +272,17 @@ body.editing.nofilters .layout{--fw:52px}
 .drow.lack{box-shadow:inset 3px 0 0 #c9822a}
 .cost{width:26px;height:26px;border-radius:50%;background:#2b5ea8;color:#fff;display:flex;align-items:center;justify-content:center;font:700 .95rem/1 var(--display)}
 .drow .nm{border:0;background:none;padding:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.93rem}
-.drow .nm small{color:#c9822a;font-weight:600}
+:root{--t-champ:#b45309;--t-spell:#1d5fbf;--t-gear:#7c5130;--t-sig:#9333ea;--t-unit:var(--text)}
+:root[data-theme="dark"]{--t-champ:#f59e4b;--t-spell:#6cb6ff;--t-gear:#d2a679;--t-sig:#d58cff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--t-champ:#f59e4b;--t-spell:#6cb6ff;--t-gear:#d2a679;--t-sig:#d58cff}}
+.t-champ{color:var(--t-champ)!important;font-weight:700}
+.t-unit{color:var(--t-unit)}
+.t-spell{color:var(--t-spell)!important}
+.t-gear{color:var(--t-gear)!important}
+.t-sig{color:var(--t-sig)!important;font-weight:700}
+.tlegend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.78rem;margin:2px 0 -4px}
+.tlegend span::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor;margin-right:4px;vertical-align:1px}
+.drow .nm small{color:var(--muted);font-weight:500;font-style:italic}
 .star{color:var(--gold)}
 .ctr{display:flex;align-items:center;gap:4px}
 .ctr button{width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:var(--panel);line-height:1}
@@ -309,7 +319,12 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
 .qc{display:grid;grid-template-columns:1fr 1fr;gap:4px}
 .qc div{display:flex;align-items:center;justify-content:space-between;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
 .qc button{border:0;background:none;width:30px;height:30px;font-size:1.1rem;line-height:1}
-.qc b{font:700 1rem/1 var(--display);white-space:nowrap}
+.qc b{font:700 1rem/1 var(--display);white-space:nowrap;cursor:text;padding:4px 2px;border-radius:5px}
+.qc b:hover,.stepper b:hover{background:var(--panel2)}
+.stepper b{cursor:text;border-radius:6px;padding:2px 4px}
+.numin{width:3.2em;padding:3px 4px;border:2px solid var(--accent);border-radius:6px;background:var(--panel);color:var(--text);font:700 1rem/1 var(--display);text-align:center;-moz-appearance:textfield}
+.numin::-webkit-outer-spin-button,.numin::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.stepper .numin{font-size:1.3rem;width:2.6em}
 .qc small{color:var(--muted);font:500 .75rem var(--body)}
 
 /* Vlastnictví v detailu */
@@ -444,8 +459,8 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
 <header class="top">
   <div class="brand">Riftbound<small>knihovna karet</small></div>
   <nav class="tabs" role="tablist">
-    <button type="button" role="tab" id="tabCards" aria-selected="true">Karty</button>
     <button type="button" role="tab" id="tabColl" aria-selected="false">Kolekce</button>
+    <button type="button" role="tab" id="tabCards" aria-selected="true">Karty</button>
     <button type="button" role="tab" id="tabDecks" aria-selected="false">Balíčky</button>
   </nav>
   <div class="search"><input id="q" type="search" placeholder="Hledat název nebo text karty" autocomplete="off" aria-label="Hledat"><button type="button" class="qclear" id="qClear" aria-label="Smazat hledání" hidden>×</button></div>
@@ -902,7 +917,26 @@ function renderMore(){
   shown += next.length;
 }
 new IntersectionObserver(e=>{ if(e[0].isIntersecting) renderMore(); }, {rootMargin:'800px'}).observe($('sentinel'));
+// Klepnutí na číslo počtu kusů = napsat počet přímo
+function editCount(b, id, kind, restore){
+  if(b.querySelector('input')) return;
+  const cur = own(id)[kind];
+  b.innerHTML = `<input class="numin" type="number" inputmode="numeric" pattern="[0-9]*" min="0" max="99" value="${cur}" aria-label="Počet kusů">`;
+  const inp = b.querySelector('input'); inp.focus(); inp.select();
+  let done = false;
+  const finish = ok => {
+    if(done) return; done = true;
+    const v = Math.max(0, Math.min(99, parseInt(inp.value, 10)));
+    restore(b, cur);
+    if(ok && !isNaN(v) && v !== cur) setOwn(id, kind, v - cur);
+  };
+  inp.addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); finish(true); } if(e.key==='Escape') finish(false); });
+  inp.addEventListener('blur', () => finish(true));
+  inp.addEventListener('click', e => e.stopPropagation());
+}
 $('grid').addEventListener('click', e=>{
+  const num = e.target.closest('.qc b[data-k]');
+  if(num){ const k = num.dataset.k; editCount(num, num.closest('.card').dataset.id, k, (b, v)=>{ b.innerHTML = `${v}<small>${k==='n'?' ks':' ✦'}</small>`; }); return; }
   const a = e.target.closest('[data-act]');
   if(a){ setOwn(a.closest('.card').dataset.id, a.dataset.act[0], +a.dataset.act.slice(1)); return; }
   const inf = e.target.closest('[data-info]'); if(inf){ openDetail(+inf.dataset.info); return; }
@@ -959,6 +993,9 @@ function openDetail(i, card){
     $('dDeckMinus').onclick = () => { const dk = curDeck(), sec = sectionOf(c); if(sec==='legend') return removeFromDeck('legend'); if(TO_SIDE && dk.side[c.id]) removeFromDeck('side', c.id); else if(dk[sec][c.id]) removeFromDeck(sec, c.id); else if(dk.side[c.id]) removeFromDeck('side', c.id); };
   }
   d.querySelectorAll('.ownbox [data-act]').forEach(b=>b.onclick=()=>setOwn(c.id, b.dataset.act[0], +b.dataset.act.slice(1)));
+  $('dN').title = $('dF').title = 'Klepni a napiš počet';
+  $('dN').onclick = () => editCount($('dN'), c.id, 'n', (b, v)=>{ b.textContent = v; });
+  $('dF').onclick = () => editCount($('dF'), c.id, 'f', (b, v)=>{ b.textContent = v; });
   d.querySelectorAll('.versions button').forEach(b=>b.onclick=()=>{
     const v = CARDS.find(x=>x.id===b.dataset.id); const fi = filtered.indexOf(v);
     openDetail(fi, v);
@@ -1512,6 +1549,9 @@ function refreshDeckUI(){
   });
   if($('detail').open && curCard && $('dDeckN')) $('dDeckN').textContent = deckCount(curDeck(), curCard.id);
 }
+// Barva názvu karty v seznamu balíčku podle druhu karty
+function typeClass(c){ if(isSig(c)) return 't-sig'; if(c.sup==='Champion') return 't-champ'; if(/Spell/.test(c.type)) return 't-spell'; if(/Gear/.test(c.type)) return 't-gear'; if(c.type==='Battlefield') return 't-bf'; if(c.type==='Rune') return 't-rune'; return 't-unit'; }
+function typeLabel(c){ return ({'t-sig':'Signature','t-champ':'Champion','t-spell':'Spell','t-gear':'Gear','t-bf':'Battlefield','t-rune':'Runa','t-unit':'Unit'})[typeClass(c)]; }
 function renderEditBar(){
   const d = curDeck(), bar = $('editBar');
   if(!d){ bar.hidden = true; return; }
@@ -1550,7 +1590,7 @@ function renderDeckPanel(){
     return `<div class="drow${lack?' lack':''}">
       <span class="cost" title="Cena">${c.e==null?'·':c.e}</span>
       ${c.img ? `<img class="thumb" src="${esc(c.img)}" alt="" loading="lazy">` : '<span class="thumb"></span>'}
-      <button type="button" class="nm" data-info="${esc(id)}" title="${esc(c.name)}">${d.champ===id?'<span class="star" title="Zvolený champion">★</span> ':''}${esc(baseName(c.name))}${lack?' <small>chybí</small>':''}</button>
+      <button type="button" class="nm ${typeClass(c)}" data-info="${esc(id)}" title="${esc(c.name)} – ${esc(typeLabel(c))}">${d.champ===id?'<span class="star" title="Zvolený champion">★</span> ':''}${esc(baseName(c.name))}${lack?' <small>chybí</small>':''}</button>
       <span class="ctr">${champ && d.champ!==id ? `<button type="button" data-champ="${esc(id)}" title="Nastavit jako zvoleného championa">☆</button>`:''}<button type="button" data-rm="${sec}|${esc(id)}" aria-label="Odebrat">−</button><b>${n}</b><button type="button" data-add="${sec}|${esc(id)}" aria-label="Přidat">+</button></span>
     </div>`;
   };
@@ -1583,6 +1623,7 @@ function renderDeckPanel(){
       </div>
       ${bad.length ? `<button type="button" class="status warn" id="dpToChecks">! Porušuje pravidla nebo není kompletní (${bad.length}) – zobrazit</button>` : `<div class="status good">✓ Balíček je podle pravidel</div>`}
       <div class="seg dp-seg"><button type="button" data-target="main" aria-pressed="${!TO_SIDE}">Přidávat do balíčku</button><button type="button" data-target="side" aria-pressed="${TO_SIDE}">Do sideboardu</button></div>
+      <div class="tlegend"><span class="t-champ">Champion</span><span class="t-unit">Unit</span><span class="t-spell">Spell</span><span class="t-gear">Gear</span><span class="t-sig">Signature</span></div>
       ${block('Hlavní balíček', 'main', RULES.main)}
       ${block('Battlefieldy', 'bfs', RULES.bfs)}
       ${block('Runy', 'runes', RULES.runes)}
