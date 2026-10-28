@@ -76,7 +76,7 @@ button{cursor:pointer}
 
 /* Rozvržení */
 .layout{display:grid;grid-template-columns:270px 1fr;gap:0;max-width:1600px;margin:0 auto}
-aside{position:sticky;top:64px;align-self:start;max-height:calc(100vh - 64px);overflow:auto;
+#filters{position:sticky;top:64px;align-self:start;max-height:calc(100vh - 64px);overflow:auto;
   padding:16px;border-right:1px solid var(--line)}
 main{padding:16px;min-width:0}
 .fgroup{margin-bottom:18px}
@@ -149,6 +149,79 @@ body.locked{overflow:hidden}
 .dclose{position:absolute;right:10px;top:10px;width:38px;height:38px;border-radius:50%;border:0;background:rgba(10,14,28,.7);color:#fff;font-size:1.3rem;line-height:1}
 
 [hidden]{display:none!important}
+/* Balíčky */
+#viewDecks{max-width:1100px;margin:0 auto;padding:16px}
+.deckshead{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.deckshead h2{margin:0;font:700 1.6rem/1.1 var(--display)}
+.decks{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.deckcard{display:flex;gap:14px;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;align-items:center}
+.deckcard:hover{border-color:var(--accent)}
+.lthumb{width:76px;aspect-ratio:744/1039;object-fit:cover;border-radius:8px;flex:none;background:var(--panel2)}
+.dc-body{display:flex;flex-direction:column;gap:3px;min-width:0}
+.dc-body b{font:700 1.25rem/1.1 var(--display)}
+.dc-body small{color:var(--muted)}
+.dc-dom{display:flex;align-items:center;gap:5px;font-size:.85rem;color:var(--muted);flex-wrap:wrap}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle}
+.dc-stat{font-size:.88rem;font-weight:600}
+.good{color:#2f9a57}.warn{color:#c9822a}
+:root[data-theme="dark"] .good{color:#5fd08c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .good{color:#5fd08c}}
+.editbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;background:color-mix(in srgb,var(--accent) 14%,var(--panel));border:1px solid var(--accent);border-radius:12px;padding:9px 14px;margin-bottom:14px}
+.editbar button{border:0;background:var(--accent);color:var(--accentText);border-radius:8px;padding:7px 14px;font-weight:600;margin-left:auto}
+.editbar label{display:inline-flex;gap:6px;align-items:center;font-size:.92rem}
+.ib{display:inline-flex;width:20px;height:20px;border-radius:50%;background:rgba(10,14,28,.8);color:#fff;font:700 .8rem/1 var(--body);align-items:center;justify-content:center}
+.card{position:relative}
+.indeck{position:absolute;left:6px;bottom:6px;background:var(--accent);color:var(--accentText);font:700 1rem/1 var(--display);padding:5px 9px;border-radius:99px;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.infobtn{position:absolute;right:6px;top:6px;width:32px;height:32px;border-radius:50%;border:0;background:rgba(10,14,28,.82);color:#fff;font:700 .95rem/1 var(--body);display:none}
+body.editing .infobtn{display:flex;align-items:center;justify-content:center}
+body.editing .tile .flag{display:none}
+.deckpanel{display:none}
+body.editing .deckpanel{display:block}
+body.editing .layout{grid-template-columns:250px minmax(0,1fr) 360px}
+.deckpanel{position:sticky;top:64px;align-self:start;max-height:calc(100vh - 64px);overflow:auto;border-left:1px solid var(--line);padding:16px;background:var(--panel)}
+.dp-bar,.dp-top{display:none}
+.dp-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
+.bthumb{width:88px;aspect-ratio:744/1039;object-fit:cover;border-radius:8px;flex:none;background:var(--panel2)}
+.dp-head h3{margin:0 0 4px;font:700 1.4rem/1.1 var(--display);cursor:pointer}
+.dp-head h3 small{font-size:.8rem;color:var(--muted)}
+.muted{color:var(--muted);font-size:.9rem;margin:2px 0}
+.link{border:0;background:none;color:var(--accent);padding:0;text-decoration:underline;font-size:.9rem}
+.dp-seg{display:flex;margin:6px 0 12px}
+.dp-seg button{flex:1}
+.checks{list-style:none;padding:0;margin:0 0 14px;display:flex;flex-direction:column;gap:4px;font-size:.92rem}
+.checks li{display:flex;gap:8px;align-items:flex-start}
+.checks li span{font-weight:700;width:16px;flex:none;text-align:center}
+.checks li.good{color:var(--text)} .checks li.good span{color:#2f9a57}
+.checks li.warn span{color:#c9822a}
+.deckpanel h4{margin:16px 0 6px;font:700 1.15rem/1 var(--display)}
+.deckpanel h4 small{font:500 .82rem var(--body);color:var(--muted);margin-left:4px}
+.curve{display:flex;align-items:flex-end;gap:6px;height:120px;padding:4px 2px 0;border-bottom:1px solid var(--line)}
+.cbar{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;position:relative}
+.cbar i{display:block;width:100%;min-height:2px;background:var(--accent);border-radius:4px 4px 0 0}
+.cbar b{font:700 .9rem/1 var(--display);color:var(--text)}
+.cbar span{position:absolute;bottom:-20px;font:600 .82rem/1 var(--body);color:var(--muted)}
+.dp-sum{display:flex;flex-direction:column;gap:4px;margin-top:28px;font-size:.88rem;color:var(--muted)}
+.drow{display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;gap:8px;padding:4px 6px;border-radius:8px;background:var(--panel2);margin-bottom:4px}
+.drow.lack{box-shadow:inset 3px 0 0 #c9822a}
+.cost{width:26px;height:26px;border-radius:50%;background:#2b5ea8;color:#fff;display:flex;align-items:center;justify-content:center;font:700 .95rem/1 var(--display)}
+.drow .nm{border:0;background:none;padding:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.93rem}
+.drow .nm small{color:#c9822a;font-weight:600}
+.star{color:var(--gold)}
+.ctr{display:flex;align-items:center;gap:4px}
+.ctr button{width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:var(--panel);line-height:1}
+.ctr b{min-width:1.2em;text-align:center;font:700 1rem/1 var(--display)}
+.misslist{margin:4px 0 0;padding-left:18px;font-size:.92rem}
+.misslist small{color:var(--muted)}
+#deckIO{width:min(620px,96vw)}
+.io{padding:20px}
+.io h2{margin:0 0 6px;font:700 1.6rem/1.1 var(--display)}
+.iolbl{display:block;margin:14px 0 6px;font-weight:600}
+.io textarea,.io input{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);font:500 .92rem/1.4 ui-monospace,Menlo,Consolas,monospace}
+.io input{font-family:var(--body)}
+.warnp{color:#c9822a;font-size:.9rem}
+a.btn{text-decoration:none;color:inherit;display:inline-block}
+.btn[disabled]{opacity:.5}
+
 
 /* Záložky a přepínače */
 .tabs{display:flex;gap:3px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:3px;flex:none}
@@ -204,6 +277,10 @@ body.locked{overflow:hidden}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:60;box-shadow:var(--shadow);max-width:90vw;text-align:center}
 
 @media (max-width:560px){
+  .top{flex-wrap:wrap}
+  .search{order:3;flex-basis:100%}
+  .tabs{flex:1}
+  .tabs button{flex:1}
   .ownbox{grid-template-columns:1fr}
   .brand{display:none}
   .tabs button{padding:6px 9px}
@@ -214,13 +291,33 @@ body.locked{overflow:hidden}
   .qc{grid-template-columns:1fr}
   .qc button{width:28px;height:28px}
   .layout{grid-template-columns:1fr}
+  body.editing .layout{grid-template-columns:1fr}
+  .deckpanel{position:fixed;left:0;right:0;bottom:0;top:auto;max-height:none;z-index:30;border:0;border-top:1px solid var(--line);padding:0;box-shadow:0 -8px 24px rgba(0,0,0,.3)}
+  .deckpanel .dp-body{display:none}
+  .dp-bar{display:flex;width:100%;align-items:center;gap:10px;border:0;background:var(--panel);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));text-align:left}
+  .mthumb{width:40px;aspect-ratio:744/1039;object-fit:cover;border-radius:5px;flex:none;background:var(--panel2)}
+  .dp-bar-t{display:flex;flex-direction:column;min-width:0;flex:1}
+  .dp-bar-t b{font:700 1.1rem/1.1 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dp-bar-t small{color:var(--muted);font-size:.82rem}
+  .dp-ok{font:700 1.2rem/1 var(--display)}
+  .dp-open{width:36px;height:36px;border-radius:50%;background:var(--accent);color:var(--accentText);display:flex;align-items:center;justify-content:center;font-size:.9rem}
+  .deckpanel.expanded{top:0;height:100%;height:100dvh;align-self:stretch;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(28px + env(safe-area-inset-bottom,0px))}
+  .deckpanel.expanded .dp-body{display:block}
+  .deckpanel.expanded .dp-bar{display:none}
+  .dp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .dp-back{border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:10px 14px;font-weight:600}
+  body.editing main{padding-bottom:110px}
+  body.editing .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+  .editbar{font-size:.92rem;padding:8px 12px}
+  body.editing footer{padding-bottom:110px}
+  .editbar button{margin-left:0}
   #filtersBtn{display:inline-block}
   .brand small{display:none}
   /* Filtry na mobilu: celá obrazovka, posouvá se jen obsah, tlačítko dole nic nezakrývá */
-  aside{position:fixed;top:0;left:0;right:0;bottom:0;height:100%;height:100dvh;z-index:40;max-height:none;background:var(--bg);border:0;
+  #filters{position:fixed;top:0;left:0;right:0;bottom:0;height:100%;height:100dvh;z-index:40;max-height:none;background:var(--bg);border:0;
     overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
     padding:calc(20px + env(safe-area-inset-top,0px)) 16px calc(110px + env(safe-area-inset-bottom,0px));display:none}
-  aside.open{display:block}
+  #filters.open{display:block}
   .fhead{display:flex !important;align-items:center;justify-content:space-between;margin-bottom:14px}
   .closeFilters{display:block;position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:41;border:0;border-radius:12px;padding:14px;background:var(--accent);color:var(--accentText);font-weight:600;font-size:1.05rem;box-shadow:0 -12px 24px var(--bg)}
   .grid{grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:9px}
@@ -245,6 +342,7 @@ body.locked{overflow:hidden}
   <nav class="tabs" role="tablist">
     <button type="button" role="tab" id="tabCards" aria-selected="true">Karty</button>
     <button type="button" role="tab" id="tabColl" aria-selected="false">Kolekce</button>
+    <button type="button" role="tab" id="tabDecks" aria-selected="false">Balíčky</button>
   </nav>
   <div class="search"><input id="q" type="search" placeholder="Hledat název nebo text karty" autocomplete="off" aria-label="Hledat"><button type="button" class="qclear" id="qClear" aria-label="Smazat hledání" hidden>×</button></div>
   <button class="iconbtn" id="filtersBtn" type="button">Filtry<span class="badge" id="fbadge"></span></button>
@@ -269,6 +367,7 @@ body.locked{overflow:hidden}
   </aside>
 
   <main>
+    <div class="editbar" id="editBar" hidden></div>
     <div class="banner" id="otherBanner" hidden></div>
     <div class="toolbar">
       <div class="count" id="count"></div>
@@ -294,9 +393,11 @@ body.locked{overflow:hidden}
     <div class="grid" id="grid"></div>
     <div id="sentinel" style="height:1px"></div>
   </main>
+  <aside class="deckpanel" id="deckPanel" aria-label="Balíček" hidden></aside>
 </div>
 
 <section id="viewColl" hidden aria-label="Kolekce"></section>
+<section id="viewDecks" hidden aria-label="Balíčky"></section>
 <input type="file" id="importFile" accept=".json,application/json" hidden>
 
 <footer>
@@ -308,6 +409,11 @@ body.locked{overflow:hidden}
 </footer>
 
 <dialog id="detail" aria-label="Detail karty"></dialog>
+<dialog id="deckIO" aria-label="Import a export balíčku"></dialog>
+<script>
+/* RiftboundDeckCodes 1.5.0 – (c) 2025 PiltoverArchive, Apache License 2.0 – https://github.com/Piltover-Archive/RiftboundDeckCodes */
+"use strict";var RBCodes=(()=>{var A=Object.defineProperty;var O=Object.getOwnPropertyDescriptor;var j=Object.getOwnPropertyNames;var T=Object.prototype.hasOwnProperty;var W=(s,r)=>{for(var t in r)A(s,t,{get:r[t],enumerable:!0})},F=(s,r,t,n)=>{if(r&&typeof r=="object"||typeof r=="function")for(let e of j(r))!T.call(s,e)&&e!==t&&A(s,e,{get:()=>r[e],enumerable:!(n=O(r,e))||n.enumerable});return s};var _=s=>F(A({},"__esModule",{value:!0}),s);var L={};W(L,{SET_MAP:()=>S,VARIANT_MAP:()=>w,VarintTranslator:()=>d,getCodeFromDeck:()=>M,getDeckFromCode:()=>B});var S={OGN:0,OGS:1,ARC:2,SFD:3,UNL:4,VEN:5,RAD:6},w={"":0,a:1,s:2,"*":2,b:3};var $=class ${constructor(r){this.bytes=new Uint8Array(r)}get length(){return this.bytes.length}PopVarint(){if(this.bytes.length===0)throw new Error("No bytes available to read varint");let r=0,t=0,n=0;for(let e=0;e<this.bytes.length;e++){n++;let u=this.bytes[e]&$.AllButMSB;if(r|=u<<t,(this.bytes[e]&$.JustMSB)!==$.JustMSB)return this.bytes=this.bytes.slice(n),r;t+=7}throw new Error("Byte array did not contain valid varints.")}sliceAndSet(r,t){this.bytes=this.bytes.slice(r,t)}get(r){if(r<0||r>=this.bytes.length)throw new Error(`Index out of bounds: ${r}`);return this.bytes[r]}static GetVarint(r){let t=new Uint8Array(10),n=0;if(r===0)return new Uint8Array([0]);for(;r!==0;){let e=r&this.AllButMSB;r>>>=7,r!==0&&(e|=this.JustMSB),t[n++]=e}return t.slice(0,n)}};$.AllButMSB=127,$.JustMSB=128;var d=$;var v=1,C=6,E="ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";function J(s){let r="",t=0,n=0;for(let e of s)for(t=t<<8|e,n+=8;n>=5;)n-=5,r+=E[t>>n&31];return n>0&&(t<<=5-n,r+=E[t&31]),r}function H(s){let r=[],t=0,n=0;for(let e of s){let u=E.indexOf(e.toUpperCase());if(u===-1)throw new Error(`Invalid character in deck code: '${e}'`);for(t=t<<5|u,n+=5;n>=8;)n-=8,r.push(t>>n&255)}return new Uint8Array(r)}function y(s){var u,a;let r=s.split("-");if(r.length!==2)throw new Error(`Invalid card code format: ${s}. Expected format: SET-NUMBERvariant`);let t=r[0],n=r[1];if(!t||!n)throw new Error(`Invalid card code format: ${s}. Missing set or card number.`);let e=n.match(/^((?:R|SP)?\d+)([a-z*]?)$/);if(!e)throw new Error(`Invalid card code format: ${s}. Expected format: SET-NUMBERvariant`);return{set:t,number:(u=e[1])!=null?u:"",variant:(a=e[2])!=null?a:""}}function k(s,r,t){var e;if(s===2)return r;let n=(e=Object.entries(w).find(([u,a])=>a===s))==null?void 0:e[0];if(n===void 0)throw new Error(`Unknown variant code${t?` in ${t}`:""}: ${s}`);return n}function R(s){let r=new Map;for(let t of s){let{set:n,number:e,variant:u}=y(t.cardCode),a=`${n}-${u}`;if(!r.has(a)){let o=S[n];if(o===void 0)throw new Error(`Unknown set: ${n}. Valid sets: ${Object.keys(S).join(", ")}`);let c=w[u];if(c===void 0)throw new Error(`Unknown variant: '${u}'. Valid variants: ${Object.keys(w).join(", ")}`);r.set(a,{set:o,variant:c,cardNumbers:[]})}r.get(a).cardNumbers.push(e)}return Array.from(r.values()).sort((t,n)=>t.set!==n.set?t.set-n.set:t.variant!==n.variant?t.variant-n.variant:0).map(t=>({...t,cardNumbers:t.cardNumbers.sort((n,e)=>n.localeCompare(e,void 0,{numeric:!0}))}))}function G(s,r=12,t=4){let n=[];for(let e=r;e>=1;e--){let u=s.filter(o=>o.count===e),a=R(u);n.push(...d.GetVarint(a.length));for(let o of a){n.push(...d.GetVarint(o.cardNumbers.length)),n.push(o.set),n.push(o.variant);for(let c of o.cardNumbers)t>=4?c.startsWith("R")?(n.push(1),n.push(...d.GetVarint(parseInt(c.slice(1))))):(n.push(0),n.push(...d.GetVarint(parseInt(c)))):n.push(...d.GetVarint(parseInt(c)))}}return n}function P(s,r=12,t="s",n=4){var u;let e=[];for(let a=r;a>=1;a--){let o=s.PopVarint();for(let c=0;c<o;c++){let g=s.PopVarint(),h=s.get(0),l=s.get(1);s.sliceAndSet(2);let m=(u=Object.entries(S).find(([f,i])=>i===h))==null?void 0:u[0];if(!m)throw new Error(`Unknown set code: ${h}`);let b=k(l,t);for(let f=0;f<g;f++){let i;if(n>=4){let p=s.get(0);s.sliceAndSet(1);let V=s.PopVarint();p===1?i=`R${V.toString().padStart(2,"0")}`:i=V.toString().padStart(3,"0")}else i=s.PopVarint().toString().padStart(3,"0");e.push({cardCode:`${m}-${i}${b}`,count:a})}}}return e}function U(s,r){let t=[],n=Array.from(new Set(s.filter(e=>e.count>=1).map(e=>e.count))).sort((e,u)=>u-e);t.push(...d.GetVarint(n.length));for(let e of n){t.push(...d.GetVarint(e));let u=s.filter(o=>o.count===e),a=R(u);t.push(...d.GetVarint(a.length));for(let o of a){t.push(...d.GetVarint(o.cardNumbers.length)),t.push(o.set),t.push(o.variant);for(let c of o.cardNumbers)r?c.startsWith("SP")?(t.push(2),t.push(...d.GetVarint(parseInt(c.slice(2))))):c.startsWith("R")?(t.push(1),t.push(...d.GetVarint(parseInt(c.slice(1))))):(t.push(0),t.push(...d.GetVarint(parseInt(c)))):t.push(...d.GetVarint(parseInt(c)))}}return t}function D(s,r="s",t=!0){var u;let n=[],e=s.PopVarint();for(let a=0;a<e;a++){let o=s.PopVarint(),c=s.PopVarint();for(let g=0;g<c;g++){let h=s.PopVarint(),l=s.get(0),m=s.get(1);s.sliceAndSet(2);let b=(u=Object.entries(S).find(([i,p])=>p===l))==null?void 0:u[0];if(!b)throw new Error(`Unknown set code: ${l}`);let f=k(m,r);for(let i=0;i<h;i++){let p;if(!t){p=s.PopVarint().toString().padStart(3,"0"),n.push({cardCode:`${b}-${p}${f}`,count:o});continue}let V=s.get(0);s.sliceAndSet(1);let x=s.PopVarint();if(V===2)p=`SP${x}`;else if(V===1)p=`R${x.toString().padStart(2,"0")}`;else if(V===0)p=x.toString().padStart(3,"0");else throw new Error(`Unknown number-prefix flag: ${V}`);n.push({cardCode:`${b}-${p}${f}`,count:o})}}}return n}function I(s,r,t){let{set:n,number:e,variant:u}=y(s),a=S[n];if(a===void 0)throw new Error(`Unknown set in ${t}: ${n}. Valid sets: ${Object.keys(S).join(", ")}`);let o=w[u];if(o===void 0)throw new Error(`Unknown variant in ${t}: '${u}'. Valid variants: ${Object.keys(w).join(", ")}`);let c=[a,o];return r&&e.startsWith("SP")?(c.push(2),c.push(...d.GetVarint(parseInt(e.slice(2))))):r&&e.startsWith("R")?(c.push(1),c.push(...d.GetVarint(parseInt(e.slice(1))))):r?(c.push(0),c.push(...d.GetVarint(parseInt(e)))):c.push(...d.GetVarint(parseInt(e))),c}function N(s,r,t,n){var g;let e=s.get(0),u=s.get(1);s.sliceAndSet(2);let a;if(r){let h=s.get(0);s.sliceAndSet(1);let l=s.PopVarint();if(h===2)a=`SP${l}`;else if(h===1)a=`R${l.toString().padStart(2,"0")}`;else if(h===0)a=l.toString().padStart(3,"0");else throw new Error(`Unknown number-prefix flag in ${n}: ${h}`)}else a=s.PopVarint().toString().padStart(3,"0");let o=(g=Object.entries(S).find(([h,l])=>l===e))==null?void 0:g[0];if(!o)throw new Error(`Unknown set code in ${n}: ${e}`);let c=k(u,t,n);return`${o}-${a}${c}`}function M(s,r=[],t,n=[]){for(let i of[...s,...r])if(!Number.isSafeInteger(i.count)||i.count<1)throw new Error(`Invalid card count for ${i.cardCode}: ${i.count}. Count must be a positive integer.`);for(let i of n)if(typeof i!="string"||i.length===0)throw new Error(`Invalid additional legend: ${i}. Expected a card code string.`);let e=i=>{let{number:p}=y(i);return p.startsWith("R")},u=i=>{let{number:p}=y(i);return p.startsWith("SP")},a=s.some(i=>e(i.cardCode))||r.some(i=>e(i.cardCode))||t!==void 0&&e(t)||n.some(e),o=s.reduce((i,p)=>Math.max(i,p.count),0),c=r.reduce((i,p)=>Math.max(i,p.count),0),g=o>12||c>3,h=s.some(i=>u(i.cardCode))||r.some(i=>u(i.cardCode))||t!==void 0&&u(t)||n.some(u),m=n.length>0?6:g||h?5:a?4:3,b=a||h,f=[];if(f.push(v<<4|m),m>=5?(f.push(b?1:0),f.push(...U(s,b)),f.push(...U(r,b))):(f.push(...G(s,12,m)),f.push(...G(r,3,m))),t?(f.push(1),f.push(...I(t,b,"chosen champion"))):f.push(0),m>=6){f.push(...d.GetVarint(n.length));for(let i of n)f.push(...I(i,b,"additional legend"))}return J(new Uint8Array(f))}function B(s,r){var b;let t=(b=r==null?void 0:r.signedSuffix)!=null?b:"s",n=H(s),e=new d(n),u=e.get(0);e.sliceAndSet(1);let a=u>>4&15,o=u&15;if(a!==v)throw new Error(`Unsupported format: ${a}. Expected format: ${v}`);if(o>C)throw new Error(`Unsupported version: ${o}. Maximum supported version: ${C}`);let c;if(o>=5){let f=e.get(0);if(e.sliceAndSet(1),f>1)throw new Error(`Unsupported deck prefix flag: ${f}`);c=f===1}else c=o>=4;let g,h=[];o>=5?(g=D(e,t,c),h=D(e,t,c)):(g=P(e,12,t,o),o>=2&&(h=P(e,3,t,o)));let l;if(o>=3){let f=e.get(0);e.sliceAndSet(1),f===1&&(l=N(e,c,t,"champion"))}let m;if(o>=6){let f=e.PopVarint();m=[];for(let i=0;i<f;i++)m.push(N(e,c,t,"additional legend"))}return{mainDeck:g,sideboard:h,chosenChampion:l,additionalLegends:m}}return _(L);})();
+</script>
 
 <script>
 /* ===== Nastavení ===== */
@@ -464,6 +570,13 @@ function migrateColl(alias){
   }
   COLL = LIB.list[LIB.active].cards;
   if(changed) saveLib();
+  let dch = false;
+  for(const d of Object.values(DECKS.list)){
+    for(const sec of ['main','side','runes','bfs']) for(const id of Object.keys(d[sec])){ const to = alias[id]; if(to){ d[sec][to] = (d[sec][to]||0) + d[sec][id]; delete d[sec][id]; dch = true; } }
+    if(alias[d.legend]){ d.legend = alias[d.legend]; dch = true; }
+    if(alias[d.champ]){ d.champ = alias[d.champ]; dch = true; }
+  }
+  if(dch) saveDecks();
 }
 async function getJSON(url){
   const r = await fetch(url, {headers:{'Accept':'application/json'}});
@@ -572,6 +685,15 @@ function costKey(v){ if(v===null||v===undefined) return null; return v>=8 ? '8+'
 
 function matches(c){
   const tot = total(c.id);
+  if(EDIT){
+    const dk = curDeck(), L = dk && cardById(dk.legend);
+    if(c.type==='Token') return false;
+    if(!L){ if(c.type!=='Legend') return false; }
+    else {
+      if(c.type==='Legend' && !F.types.has('Legend')) return false;
+      if(F.legal && !legalFor(c, L)) return false;
+    }
+  }
   if(F.own==='mine'){ if(!tot) return false; }                 // karty z kolekce ukaž vždy, i alternativní verze
   else if(F.own==='theirs'){ if(!tot || mainTotal(c.id)) return false; }   // tahle kolekce má, moje ne
   else {
@@ -622,6 +744,7 @@ function apply(){
     $('grid').innerHTML = `<div class="empty" style="grid-column:1/-1">${msg}</div>`;
   }
   renderMore();
+  if(EDIT){ renderEditBar(); renderDeckPanel(); } else { $('editBar').hidden = true; }
   prefs.sort = $('sort').value; prefs.variants = $('variants').checked; prefs.quick = $('quick').checked; save(PREFS_KEY, prefs);
 }
 function updateCount(){
@@ -652,7 +775,8 @@ function tileHTML(c, i){
     ${flag && ($('variants').checked || F.own==='mine' || F.own==='theirs') ? `<span class="flag">${flag}</span>` : ''}
     <span class="own">${ownBadge(c.id)}</span>
    </button>
-   ${$('quick').checked ? qcHTML(c.id) : ''}
+   ${EDIT ? `<span class="indeck"${deckCount(curDeck(), c.id)?'':' hidden'}>${deckCount(curDeck(), c.id)?'×'+deckCount(curDeck(), c.id):''}</span><button type="button" class="infobtn" data-info="${i}" aria-label="Detail karty">i</button>` : ''}
+   ${$('quick').checked && !EDIT ? qcHTML(c.id) : ''}
   </div>`;
 }
 function paintCard(el){
@@ -671,14 +795,19 @@ new IntersectionObserver(e=>{ if(e[0].isIntersecting) renderMore(); }, {rootMarg
 $('grid').addEventListener('click', e=>{
   const a = e.target.closest('[data-act]');
   if(a){ setOwn(a.closest('.card').dataset.id, a.dataset.act[0], +a.dataset.act.slice(1)); return; }
-  const t = e.target.closest('.tile'); if(t) openDetail(+t.dataset.i);
+  const inf = e.target.closest('[data-info]'); if(inf){ openDetail(+inf.dataset.info); return; }
+  const t = e.target.closest('.tile'); if(!t) return;
+  if(EDIT){ const c = filtered[+t.dataset.i]; if(addToDeck(c)) pulse(t); return; }
+  openDetail(+t.dataset.i);
 });
+function pulse(el){ el.animate?.([{transform:'scale(.94)'},{transform:'scale(1)'}], {duration:180}); }
 
 /* ===== Detail karty ===== */
 let cur = -1, curCard = null;
 function baseName(n){ return n.replace(/\s*\([^)]*\)\s*$/,'').trim(); }
 function openDetail(i, card){
   cur = i; curCard = card || filtered[i]; const c = curCard; if(!c) return;
+  if(card && i<0){ const fi = filtered.indexOf(card); if(fi>=0) cur = fi; }
   const stat = (v,l) => `<div class="stat"><b>${v===null||v===undefined?'–':esc(v)}</b><span>${l}</span></div>`;
   const doms = c.dom.map(d=>`<span class="chip" style="pointer-events:none"><span class="dot" style="background:${DOMAIN_COLORS[d]||'#888'}"></span>${esc(d)}</span>`).join(' ');
   const versions = CARDS.filter(x=>baseName(x.name)===baseName(c.name)).sort(sorter('num'));
@@ -689,6 +818,7 @@ function openDetail(i, card){
       <h2>${esc(c.name)}</h2>
       <div class="typeline">${esc([c.sup,c.type].filter(Boolean).join(' '))}</div>
       <div class="chips">${doms}</div>
+      ${EDIT && curDeck() ? `<div class="ownbox"><div class="ownrow" style="grid-column:1/-1"><span>V balíčku „${esc(curDeck().name)}“</span><div class="stepper"><button type="button" id="dDeckMinus" aria-label="Odebrat z balíčku">−</button><b id="dDeckN">${deckCount(curDeck(), c.id)}</b><button type="button" id="dDeckPlus" aria-label="Přidat do balíčku">+</button></div></div></div>` : ''}
       <div class="ownbox">
         <div class="ownrow"><span>Mám kusů</span><div class="stepper"><button type="button" data-act="n-1" aria-label="Odebrat kus">−</button><b id="dN">${own(c.id).n}</b><button type="button" data-act="n+1" aria-label="Přidat kus">+</button></div></div>
         <div class="ownrow"><span>Foil ✦</span><div class="stepper"><button type="button" data-act="f-1" aria-label="Odebrat foil">−</button><b id="dF">${own(c.id).f}</b><button type="button" data-act="f+1" aria-label="Přidat foil">+</button></div></div>
@@ -712,6 +842,10 @@ function openDetail(i, card){
   $('dPrev').onclick = () => step(-1);
   $('dNext').onclick = () => step(1);
   $('dPrev').disabled = cur<=0; $('dNext').disabled = cur<0 || cur>=filtered.length-1;
+  if($('dDeckPlus')){
+    $('dDeckPlus').onclick = () => addToDeck(c);
+    $('dDeckMinus').onclick = () => { const dk = curDeck(), sec = sectionOf(c); if(sec==='legend') return removeFromDeck('legend'); if(TO_SIDE && dk.side[c.id]) removeFromDeck('side', c.id); else if(dk[sec][c.id]) removeFromDeck(sec, c.id); else if(dk.side[c.id]) removeFromDeck('side', c.id); };
+  }
   d.querySelectorAll('.ownbox [data-act]').forEach(b=>b.onclick=()=>setOwn(c.id, b.dataset.act[0], +b.dataset.act.slice(1)));
   d.querySelectorAll('.versions button').forEach(b=>b.onclick=()=>{
     const v = CARDS.find(x=>x.id===b.dataset.id); const fi = filtered.indexOf(v);
@@ -880,20 +1014,24 @@ $('importFile').addEventListener('change', async e=>{
 
 /* ===== Záložky a režimy ===== */
 function showView(v){
+  if(v!=='cards' && EDIT){ EDIT = null; prefs.editDeck = null; save(PREFS_KEY, prefs); document.body.classList.remove('editing'); $('deckPanel').classList.remove('expanded'); document.body.classList.remove('locked'); }
   $('viewCards').hidden = v!=='cards';
   $('viewColl').hidden = v!=='coll';
+  $('viewDecks').hidden = v!=='decks';
   $('filtersBtn').hidden = v!=='cards';
-  $('tabCards').setAttribute('aria-selected', v==='cards');
+  $('tabCards').setAttribute('aria-selected', v==='cards' && !EDIT);
   $('tabColl').setAttribute('aria-selected', v==='coll');
-  if(v==='coll') renderColl(); else apply();
+  $('tabDecks').setAttribute('aria-selected', v==='decks' || (v==='cards' && !!EDIT));
+  if(v==='coll') renderColl(); else if(v==='decks') renderDecks(); else apply();
   window.scrollTo(0,0);
 }
 function setOwnMode(m){
   F.own = m;
   $('ownSeg').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.own===m));
 }
-$('tabCards').onclick = () => showView('cards');
+$('tabCards').onclick = () => { if(EDIT) exitEdit(false); showView('cards'); };
 $('tabColl').onclick = () => showView('coll');
+$('tabDecks').onclick = () => showView('decks');
 $('ownSeg').addEventListener('click', e=>{ const b = e.target.closest('[data-own]'); if(b){ setOwnMode(b.dataset.own); apply(); } });
 $('quick').onchange = apply;
 $('q').addEventListener('focus', ()=>{ if($('viewCards').hidden) showView('cards'); });
@@ -910,6 +1048,440 @@ function closeFilters(){ $('filters').classList.remove('open'); document.body.cl
 $('filtersBtn').onclick = openFilters;
 $('closeFilters').onclick = $('closeFilters2').onclick = closeFilters;
 
+/* ===== Balíčky (deck builder) ===== */
+// Pravidla (riftbound.org, Tournament/Core Rules, říjen 2026): legenda, hlavní balíček přesně 40 karet včetně zvoleného championa,
+// max. 3 kopie jednoho jména (i se sideboardem), max. 3 signature karty, karty jen z domén legendy, 12 run, 3 battlefieldy s různými jmény, sideboard do 10 karet.
+const DECKS_KEY = 'rb_decks_v1';
+const RULES = {main:40, copies:3, sig:3, runes:12, bfs:3, side:10};
+let DECKS = load(DECKS_KEY);
+if(!DECKS || !DECKS.list) DECKS = {v:1, list:{}};
+let EDIT = null;              // id právě upravovaného balíčku
+let TO_SIDE = false;          // přidávat do sideboardu
+F.legal = true;
+function saveDecks(){ if(!save(DECKS_KEY, DECKS)) toast('Pozor: balíček se nepodařilo uložit.'); }
+function newDeck(name){ const id = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2,5); DECKS.list[id] = {id, name, legend:null, champ:null, main:{}, side:{}, runes:{}, bfs:{}, created:Date.now(), updated:Date.now()}; saveDecks(); return id; }
+const curDeck = () => EDIT && DECKS.list[EDIT];
+let BYID = null, BYID_SRC = null;
+function cardById(id){ if(BYID_SRC !== CARDS){ BYID = new Map(CARDS.map(c=>[c.id,c])); BYID_SRC = CARDS; } return id ? BYID.get(id) : undefined; }
+const nameKey = n => baseName(String(n||'')).toLowerCase().replace(/[^a-z0-9]/g,'');
+const sumObj = o => Object.values(o||{}).reduce((a,b)=>a+b,0);
+const anyNumber = c => /any number of cards named/i.test(c?.text||'');
+const isSig = c => /Signature/i.test(c?.sup||'');
+const isChampUnit = c => c && c.sup==='Champion' && /Unit/.test(c.type);
+function domainOK(c, L){ if(!L) return true; return (c.dom||[]).filter(x=>x!=='Colorless').every(x=>L.dom.includes(x)); }
+function tagMatch(c, L){ return !!L && (c.tags||[]).some(t=>L.tags.includes(t)); }
+function legalFor(c, L){
+  if(c.type==='Token') return false;
+  if(c.type==='Battlefield' || c.type==='Legend') return true;
+  if(isSig(c) && !tagMatch(c, L)) return false;
+  return domainOK(c, L);
+}
+function deckCount(d, id){ return (d.main[id]||0) + (d.side[id]||0) + (d.runes[id]||0) + (d.bfs[id]||0) + (d.legend===id?1:0); }
+function nameCopies(d, key){ let n=0; for(const sec of ['main','side']) for(const id in d[sec]){ const c = cardById(id); if(c && nameKey(c.name)===key) n += d[sec][id]; } return n; }
+function sigCount(d){ let n=0; for(const sec of ['main','side']) for(const id in d[sec]){ if(isSig(cardById(id))) n += d[sec][id]; } return n; }
+function sectionOf(c){ return c.type==='Legend' ? 'legend' : c.type==='Battlefield' ? 'bfs' : c.type==='Rune' ? 'runes' : 'main'; }
+
+function addToDeck(c, forceSide){
+  const d = curDeck(); if(!d || !c) return false;
+  const L = cardById(d.legend);
+  const side = forceSide ?? TO_SIDE;
+  const sec = sectionOf(c);
+  if(c.type==='Token'){ toast('Tokeny do balíčku nepatří.'); return false; }
+  if(sec==='legend'){
+    if(d.legend===c.id){ toast('Tahle legenda už je vybraná.'); return false; }
+    d.legend = c.id;
+    const champ = cardById(d.champ); if(champ && !tagMatch(champ, c)) d.champ = null;
+    autoChamp(d); touch(d); toast(`Legenda: ${c.name}`); apply(); return true;
+  }
+  if(!L){ toast('Nejdřív vyber legendu.'); return false; }
+  if(sec==='bfs'){
+    if(sumObj(d.bfs) >= RULES.bfs){ toast(`Battlefieldy jsou jen ${RULES.bfs}.`); return false; }
+    if(Object.keys(d.bfs).some(id=>nameKey(cardById(id)?.name)===nameKey(c.name))){ toast('Battlefield se stejným jménem už v balíčku je.'); return false; }
+    d.bfs[c.id] = 1; touch(d); return true;
+  }
+  if(sec==='runes'){
+    if(sumObj(d.runes) >= RULES.runes){ toast(`Run je max. ${RULES.runes}.`); return false; }
+    if(!domainOK(c, L)) toast(`Pozor: ${c.name} není z domén legendy.`);
+    d.runes[c.id] = (d.runes[c.id]||0) + 1; touch(d); return true;
+  }
+  // běžná karta (hlavní balíček nebo sideboard)
+  const key = nameKey(c.name);
+  if(!anyNumber(c) && nameCopies(d, key) >= RULES.copies){ toast(`Max. ${RULES.copies} kopie karty ${baseName(c.name)} (včetně sideboardu).`); return false; }
+  if(isSig(c) && sigCount(d) >= RULES.sig){ toast(`Signature karty jsou max. ${RULES.sig}.`); return false; }
+  if(side){
+    if(sumObj(d.side) >= RULES.side){ toast(`Sideboard má max. ${RULES.side} karet.`); return false; }
+    d.side[c.id] = (d.side[c.id]||0) + 1;
+  } else {
+    if(sumObj(d.main) >= RULES.main){ toast(`Hlavní balíček má přesně ${RULES.main} karet. Přepni na Sideboard, nebo nějakou kartu odeber.`); return false; }
+    d.main[c.id] = (d.main[c.id]||0) + 1;
+    if(!d.champ && isChampUnit(c) && tagMatch(c, L)){ d.champ = c.id; toast(`Zvolený champion: ${c.name}`); }
+  }
+  if(!legalFor(c, L)) toast(`Pozor: ${c.name} do tohoto balíčku podle pravidel nepatří.`);
+  touch(d); return true;
+}
+function removeFromDeck(sec, id){
+  const d = curDeck(); if(!d) return;
+  if(sec==='legend'){ d.legend = null; d.champ = null; touch(d); apply(); return; }
+  if(!d[sec][id]) return;
+  d[sec][id]--; if(d[sec][id] <= 0) delete d[sec][id];
+  if(sec==='main' && d.champ===id && !d.main[id]){ d.champ = null; autoChamp(d); }
+  touch(d);
+}
+function autoChamp(d){
+  if(d.champ) return; const L = cardById(d.legend); if(!L) return;
+  const id = Object.keys(d.main).find(id=>{ const c = cardById(id); return isChampUnit(c) && tagMatch(c, L); });
+  if(id) d.champ = id;
+}
+function touch(d){ d.updated = Date.now(); saveDecks(); refreshDeckUI(); }
+
+/* --- Kontrola pravidel --- */
+function validate(d){
+  const L = cardById(d.legend), out = [];
+  const main = sumObj(d.main), runes = sumObj(d.runes), bfs = sumObj(d.bfs), side = sumObj(d.side);
+  const ok = (good, text) => out.push({good, text});
+  ok(!!L, L ? `Legenda: ${L.name}` : 'Vyber legendu');
+  ok(main===RULES.main, `Hlavní balíček ${main}/${RULES.main}`);
+  const C = cardById(d.champ);
+  if(L){
+    const champOk = C && isChampUnit(C) && tagMatch(C, L) && d.main[d.champ];
+    ok(!!champOk, champOk ? `Zvolený champion: ${C.name}` : `Chybí zvolený champion – přidej jednotku ${L.tags.join('/')} (Champion)`);
+  }
+  ok(runes===RULES.runes, `Runy ${runes}/${RULES.runes}`);
+  ok(bfs===RULES.bfs, `Battlefieldy ${bfs}/${RULES.bfs}`);
+  if(side) ok(side<=RULES.side, `Sideboard ${side}/${RULES.side}`);
+  // kopie, signature, domény
+  const names = new Map(); const badDom = new Set(), badSig = new Set(), tokens = new Set();
+  for(const sec of ['main','side','runes']) for(const id in d[sec]){
+    const c = cardById(id); if(!c) continue;
+    if(c.type==='Token') tokens.add(c.name);
+    if(sec!=='runes'){ const k = nameKey(c.name); const e = names.get(k) || {n:0, name:baseName(c.name), any:anyNumber(c)}; e.n += d[sec][id]; names.set(k, e); }
+    if(L && !domainOK(c, L)) badDom.add(baseName(c.name));
+    if(L && isSig(c) && !tagMatch(c, L)) badSig.add(baseName(c.name));
+  }
+  const over = [...names.values()].filter(e=>!e.any && e.n>RULES.copies).map(e=>`${e.name} (${e.n}×)`);
+  if(over.length) ok(false, `Víc než ${RULES.copies} kopie: ${over.join(', ')}`);
+  const sc = sigCount(d); if(sc>RULES.sig) ok(false, `Signature karet je ${sc}, max. ${RULES.sig}`);
+  if(badSig.size) ok(false, `Signature jiného championa: ${[...badSig].join(', ')}`);
+  if(badDom.size) ok(false, `Mimo domény legendy: ${[...badDom].join(', ')}`);
+  if(tokens.size) ok(false, `Tokeny do balíčku nepatří: ${[...tokens].join(', ')}`);
+  const bfNames = Object.keys(d.bfs).map(id=>nameKey(cardById(id)?.name)); if(new Set(bfNames).size !== bfNames.length) ok(false, 'Battlefieldy musí mít různá jména');
+  return {checks: out, legal: out.every(x=>x.good), main, runes, bfs, side};
+}
+/* --- Porovnání s kolekcí (podle jména, počítají se všechny verze karty) --- */
+function ownedByName(){
+  const m = new Map(), coll = MAIN();
+  for(const id in coll){ const c = cardById(id); if(!c) continue; const k = nameKey(c.name); m.set(k, (m.get(k)||0) + (coll[id].n||0) + (coll[id].f||0)); }
+  return m;
+}
+function missingFor(d){
+  const need = new Map();
+  const addNeed = (id, n) => { const c = cardById(id); if(!c) return; const k = nameKey(c.name); const e = need.get(k) || {n:0, name:baseName(c.name), id}; e.n += n; need.set(k, e); };
+  if(d.legend) addNeed(d.legend, 1);
+  for(const sec of ['main','side','runes','bfs']) for(const id in d[sec]) addNeed(id, d[sec][id]);
+  const own = ownedByName(), miss = [];
+  for(const [k, e] of need){ const have = own.get(k)||0; if(have < e.n) miss.push({...e, have, lack:e.n-have}); }
+  return miss.sort((a,b)=>b.lack-a.lack || a.name.localeCompare(b.name));
+}
+
+/* --- Deck kódy (formát Piltover Archive) --- */
+const CODE_RE = /^([a-z0-9]+)-(sp|r)?(\d+)([a-z*]?)(?:-\d+)?$/i;
+function cardCode(c){
+  if(!c || !c.rid) return null;
+  const m = CODE_RE.exec(c.rid); if(!m) return null;
+  const set = m[1].toUpperCase(); if(!(set in RBCodes.SET_MAP)) return null;
+  const pre = (m[2]||'').toUpperCase(), dig = m[3];
+  const num = pre==='SP' ? String(+dig) : pre==='R' ? 'R' + String(+dig).padStart(2,'0') : String(+dig).padStart(3,'0');
+  let v = (m[4]||'').toLowerCase(); if(v==='s') v = '*';
+  if(v && !(v in RBCodes.VARIANT_MAP)) return null;
+  return `${set}-${num}${v}`;
+}
+function normCode(k){ const m = /^([A-Z0-9]+)-(SP|R)?(\d+)([A-Z*]?)$/i.exec(String(k).trim()); if(!m) return String(k).toUpperCase(); const pre = (m[2]||'').toUpperCase(); const num = pre==='SP' ? String(+m[3]) : pre==='R' ? 'R'+String(+m[3]).padStart(2,'0') : String(+m[3]).padStart(3,'0'); let v = (m[4]||'').toLowerCase(); if(v==='s') v='*'; return `${m[1].toUpperCase()}-${num}${v}`; }
+let CODEIDX = null, CODEIDX_SRC = null;
+function codeIndex(){
+  if(CODEIDX_SRC === CARDS) return CODEIDX;
+  CODEIDX = new Map(); CODEIDX_SRC = CARDS;
+  for(const c of CARDS){ const k = cardCode(c); if(k && !CODEIDX.has(k)) CODEIDX.set(k, c); }
+  return CODEIDX;
+}
+// kód karty pro export; propagační tisky bez vlastního kódu nahradí základní verze se stejným jménem
+function exportCode(c){
+  const k = cardCode(c); if(k) return k;
+  const key = nameKey(c.name);
+  const alt = CARDS.filter(x=>nameKey(x.name)===key && x.type===c.type && cardCode(x)).sort((a,b)=>(isVariant(a)-isVariant(b)) || setIdx(a.set)-setIdx(b.set))[0];
+  return alt ? cardCode(alt) : null;
+}
+function deckToCode(d){
+  const main = new Map(), side = new Map(), lost = [];
+  const put = (m, id, n) => { const c = cardById(id); const k = c && exportCode(c); if(!k){ lost.push(c?.name||id); return; } m.set(k, (m.get(k)||0) + n); };
+  if(d.legend) put(main, d.legend, 1);
+  for(const sec of ['main','runes','bfs']) for(const id in d[sec]) put(main, id, d[sec][id]);
+  for(const id in d.side) put(side, id, d.side[id]);
+  const arr = m => [...m].map(([cardCode, count])=>({cardCode, count}));
+  if(!main.size) return {code:'', lost};
+  const champ = d.champ ? exportCode(cardById(d.champ)) : undefined;
+  return {code: RBCodes.getCodeFromDeck(arr(main), arr(side), champ || undefined), lost};
+}
+function deckToText(d){
+  const L = cardById(d.legend), C = cardById(d.champ), lines = [];
+  const row = (id, n) => { const c = cardById(id); if(!c) return; const k = exportCode(c); lines.push(`${n} ${baseName(c.name)}${k?` (${k})`:''}`); };
+  const block = (title, obj) => { if(!sumObj(obj)) return; lines.push('', title + ':'); sortIds(Object.keys(obj)).forEach(id=>row(id, obj[id])); };
+  lines.push(d.name);
+  if(L){ lines.push('', 'Legend:'); row(L.id, 1); }
+  if(C){ lines.push('', 'Champion:'); row(C.id, 1); }
+  block('Main Deck', d.main); block('Battlefields', d.bfs); block('Runes', d.runes); block('Sideboard', d.side);
+  return lines.join('\n').trim();
+}
+function sortIds(ids){ return ids.map(cardById).filter(Boolean).sort(sorter('energy')).map(c=>c.id); }
+function importDeck(text, name){
+  text = String(text||'').trim();
+  const d = {main:{}, side:{}, runes:{}, bfs:{}, legend:null, champ:null}, unknown = [];
+  const place = (c, n, toSide) => {
+    if(!c) return;
+    const sec = sectionOf(c);
+    if(sec==='legend'){ if(!d.legend) d.legend = c.id; return; }
+    const t = toSide && sec==='main' ? 'side' : sec;
+    d[t][c.id] = (d[t][c.id]||0) + n;
+  };
+  const token = text.replace(/\s+/g,'');
+  if(/^[A-Z2-7]{16,}$/i.test(token) && !/\n/.test(text.trim())){
+    let dec;
+    try{ dec = RBCodes.getDeckFromCode(token.toUpperCase(), {signedSuffix:'*'}); }
+    catch(e){ return {error:'Deck kód se nepodařilo přečíst. Zkontroluj, že je zkopírovaný celý.'}; }
+    const idx = codeIndex();
+    const find = code => { code = normCode(code); return idx.get(code) || idx.get(code.replace(/[a-z*]$/,'')); };
+    for(const x of dec.mainDeck){ const c = find(x.cardCode); if(c) place(c, x.count, false); else unknown.push(`${x.count}× ${x.cardCode}`); }
+    for(const x of dec.sideboard){ const c = find(x.cardCode); if(c) place(c, x.count, true); else unknown.push(`${x.count}× ${x.cardCode} (sideboard)`); }
+    if(dec.chosenChampion){ const c = find(dec.chosenChampion); if(c) d.champ = c.id; }
+  } else {
+    // textový seznam: „3 Název karty“, „3x Název (OGN-001)“, sekce „Sideboard:“
+    const idx = codeIndex(); const byName = new Map();
+    for(const c of CARDS){ if(c.type==='Token') continue; const k = nameKey(c.name); const prev = byName.get(k); if(!prev || (isVariant(prev) && !isVariant(c))) byName.set(k, c); }
+    let toSide = false, champNext = false;
+    for(const raw of text.split(/\r?\n/)){
+      const line = raw.trim(); if(!line) continue;
+      const head = line.replace(/:$/,'').toLowerCase();
+      if(/^(sideboard|side)$/.test(head)){ toSide = true; continue; }
+      if(/^(main deck|main|deck|legend|battlefields?|runes?|rune deck)$/.test(head)){ toSide = false; champNext = false; continue; }
+      if(/^(champion|chosen champion)$/.test(head)){ champNext = true; toSide = false; continue; }
+      const m = /^(\d+)\s*x?\s+(.+?)\s*(?:\((([A-Z0-9]+)-[A-Z0-9*]+)\))?\s*$/i.exec(line);
+      if(!m){ continue; }
+      const n = +m[1], nm = m[2], code = m[3] ? normCode(m[3]) : null;
+      const c = (code && (idx.get(code) || idx.get(code.replace(/[a-z*]$/,'')))) || byName.get(nameKey(nm));
+      if(!c){ unknown.push(`${n}× ${nm}`); continue; }
+      if(champNext){ d.champ = c.id; champNext = false; continue; }   // champion je zároveň v hlavním balíčku
+      place(c, n, toSide);
+    }
+  }
+  if(d.champ && !d.main[d.champ]) d.main[d.champ] = 1;
+  const total = sumObj(d.main)+sumObj(d.side)+sumObj(d.runes)+sumObj(d.bfs)+(d.legend?1:0);
+  if(!total) return {error:'V textu jsem nenašel žádné karty. Vlož deck kód nebo seznam ve tvaru „3 Název karty“.'};
+  const id = newDeck(name || (cardById(d.legend) ? baseName(cardById(d.legend).name) : 'Importovaný balíček'));
+  Object.assign(DECKS.list[id], d); autoChamp(DECKS.list[id]); saveDecks();
+  return {id, unknown};
+}
+
+/* --- Rozhraní: seznam balíčků --- */
+function legendThumb(c, cls='lthumb'){ return c && c.img ? `<img class="${cls}" src="${esc(c.img)}" alt="" loading="lazy">` : `<div class="${cls} ph"></div>`; }
+function renderDecks(){
+  const ids = Object.keys(DECKS.list).sort((a,b)=>DECKS.list[b].updated-DECKS.list[a].updated);
+  $('viewDecks').innerHTML = `
+    <div class="deckshead">
+      <h2>Balíčky</h2>
+      <div class="acts" style="margin:0">
+        <button type="button" class="btn main" id="newDeckBtn">Nový balíček</button>
+        <button type="button" class="btn" id="impDeckBtn">Importovat deck kód / seznam</button>
+      </div>
+    </div>
+    ${ids.length ? '' : `<div class="empty">Zatím nemáš žádný balíček. Vytvoř nový – nejdřív vybereš legendu a pak klepáním na karty skládáš balíček.</div>`}
+    <div class="decks">${ids.map(id=>{ const d = DECKS.list[id], L = cardById(d.legend), v = validate(d), miss = missingFor(d).reduce((a,b)=>a+b.lack,0); return `
+      <button type="button" class="deckcard" data-deck="${esc(id)}">
+        ${legendThumb(L)}
+        <span class="dc-body">
+          <b>${esc(d.name)}</b>
+          <small>${L ? esc(L.name) : 'bez legendy'}</small>
+          <span class="dc-dom">${(L?.dom||[]).map(x=>`<span class="dot" style="background:${DOMAIN_COLORS[x]||'#888'}"></span>${esc(x)}`).join(' ')}</span>
+          <span class="dc-stat ${v.legal?'good':'warn'}">${v.legal ? '✓ Připravený' : '! Neúplný'} · ${v.main}/${RULES.main}</span>
+          <span class="dc-stat ${miss?'warn':'good'}">${miss ? `Chybí ti ${miss} ${plural(miss,'karta','karty','karet')}` : '✓ Máš všechny karty'}</span>
+        </span>
+      </button>`; }).join('')}</div>`;
+  $('newDeckBtn').onclick = () => {
+    const nm = prompt('Název balíčku:', `Balíček ${ids.length+1}`); if(!nm || !nm.trim()) return;
+    enterEdit(newDeck(nm.trim().slice(0,40)));
+  };
+  $('impDeckBtn').onclick = openImport;
+  $('viewDecks').querySelectorAll('[data-deck]').forEach(b=>b.onclick=()=>enterEdit(b.dataset.deck));
+}
+
+/* --- Režim úprav: mřížka karet + panel balíčku --- */
+function enterEdit(id){
+  if(!DECKS.list[id]) return;
+  EDIT = id; TO_SIDE = false; prefs.editDeck = id; save(PREFS_KEY, prefs);
+  document.body.classList.add('editing');
+  $('sort').value = 'energy';
+  showView('cards');
+}
+function exitEdit(goDecks=true){
+  EDIT = null; prefs.editDeck = null; save(PREFS_KEY, prefs);
+  document.body.classList.remove('editing'); $('deckPanel').classList.remove('expanded'); document.body.classList.remove('locked');
+  if(goDecks) showView('decks');
+}
+function refreshDeckUI(){
+  if(!EDIT) return;
+  renderDeckPanel();
+  document.querySelectorAll('#grid .card').forEach(el=>{
+    const n = deckCount(curDeck(), el.dataset.id), b = el.querySelector('.indeck');
+    if(b){ b.textContent = n ? `×${n}` : ''; b.hidden = !n; }
+  });
+  if($('detail').open && curCard && $('dDeckN')) $('dDeckN').textContent = deckCount(curDeck(), curCard.id);
+}
+function renderEditBar(){
+  const d = curDeck(), bar = $('editBar');
+  if(!d){ bar.hidden = true; return; }
+  const L = cardById(d.legend);
+  bar.hidden = false;
+  bar.innerHTML = L
+    ? `<span>Upravuješ <b>${esc(d.name)}</b> – klepnutím na kartu ji přidáš, <span class="ib">i</span> = detail karty.</span>
+       <label><input type="checkbox" id="legalOnly" ${F.legal?'checked':''}> Jen karty pro ${esc(baseName(L.name))}</label>
+       <button type="button" id="editDone">Hotovo</button>`
+    : `<span><b>${esc(d.name)}:</b> nejdřív vyber legendu – klepni na ni.</span><button type="button" id="editDone">Hotovo</button>`;
+  $('editDone').onclick = () => exitEdit(true);
+  if($('legalOnly')) $('legalOnly').onchange = e => { F.legal = e.target.checked; apply(); };
+}
+function curveHTML(d){
+  const bins = [0,0,0,0,0,0,0,0];
+  for(const id in d.main){ const c = cardById(id); if(!c || c.e==null) continue; bins[Math.min(7, c.e)] += d.main[id]; }
+  const max = Math.max(1, ...bins);
+  return `<div class="curve" role="img" aria-label="Křivka cen: ${bins.map((n,i)=>`${i===7?'7+':i}: ${n}`).join(', ')}">
+    ${bins.map((n,i)=>`<div class="cbar" title="Cena ${i===7?'7 a víc':i}: ${n} ${plural(n,'karta','karty','karet')}"><b>${n||''}</b><i style="height:${Math.round(n/max*100)}%"></i><span>${i===7?'7+':i}</span></div>`).join('')}
+  </div>`;
+}
+function renderDeckPanel(){
+  const d = curDeck(), P = $('deckPanel');
+  if(!d){ P.hidden = true; return; }
+  P.hidden = false;
+  const L = cardById(d.legend), C = cardById(d.champ), v = validate(d), miss = missingFor(d), own = ownedByName();
+  const types = {}; for(const id in d.main){ const c = cardById(id); if(c) types[c.type] = (types[c.type]||0) + d.main[id]; }
+  const doms = {}; for(const id in d.main){ const c = cardById(id); if(c) (c.dom||[]).forEach(x=>doms[x]=(doms[x]||0)+d.main[id]); }
+  const need = new Map(); for(const sec of ['main','side']) for(const id in d[sec]){ const k = nameKey(cardById(id)?.name); need.set(k, (need.get(k)||0) + d[sec][id]); }
+  const row = (sec, id, n) => {
+    const c = cardById(id); if(!c) return '';
+    const k = nameKey(c.name), lack = (own.get(k)||0) < (sec==='main'||sec==='side' ? need.get(k) : n);
+    const champ = sec==='main' && isChampUnit(c) && tagMatch(c, L);
+    return `<div class="drow${lack?' lack':''}">
+      <span class="cost" title="Cena">${c.e==null?'·':c.e}</span>
+      <button type="button" class="nm" data-info="${esc(id)}" title="${esc(c.name)}">${d.champ===id?'<span class="star" title="Zvolený champion">★</span> ':''}${esc(baseName(c.name))}${lack?' <small>chybí</small>':''}</button>
+      <span class="ctr">${champ && d.champ!==id ? `<button type="button" data-champ="${esc(id)}" title="Nastavit jako zvoleného championa">☆</button>`:''}<button type="button" data-rm="${sec}|${esc(id)}" aria-label="Odebrat">−</button><b>${n}</b><button type="button" data-add="${sec}|${esc(id)}" aria-label="Přidat">+</button></span>
+    </div>`;
+  };
+  const block = (title, sec, max) => { const ids = sortIds(Object.keys(d[sec])); return `
+    <h4>${title} <small>${sumObj(d[sec])}${max?` / ${max}`:''}</small></h4>
+    ${ids.length ? ids.map(id=>row(sec, id, d[sec][id])).join('') : '<p class="muted">Zatím prázdné.</p>'}`; };
+  const missN = miss.reduce((a,b)=>a+b.lack,0);
+  P.innerHTML = `
+    <button type="button" class="dp-bar" id="dpBar" aria-label="Otevřít balíček">
+      ${legendThumb(L, 'mthumb')}
+      <span class="dp-bar-t"><b>${esc(d.name)}</b><small>Balíček ${v.main}/${RULES.main} · Runy ${v.runes}/${RULES.runes} · BF ${v.bfs}/${RULES.bfs}${v.side?` · SB ${v.side}`:''}</small></span>
+      <span class="dp-ok ${v.legal?'good':'warn'}">${v.legal?'✓':'!'}</span>
+      <span class="dp-open">▲</span>
+    </button>
+    <div class="dp-body">
+      <div class="dp-top">
+        <button type="button" class="dp-back" id="dpClose">‹ Zpět ke kartám</button>
+        <button type="button" class="btn main" id="dpDone">Hotovo</button>
+      </div>
+      <div class="dp-head">
+        ${legendThumb(L, 'bthumb')}
+        <div>
+          <h3 id="dpName" title="Přejmenovat">${esc(d.name)} <small>✎</small></h3>
+          <div class="muted">${L ? esc(L.name) : 'Legenda není vybraná'}${L?` <button type="button" class="link" data-rm="legend|">změnit</button>`:''}</div>
+          <div class="dc-dom">${(L?.dom||[]).map(x=>`<span class="dot" style="background:${DOMAIN_COLORS[x]||'#888'}"></span>${esc(x)}`).join(' ')}</div>
+          ${C ? `<div class="muted">★ Champion: ${esc(baseName(C.name))}</div>` : ''}
+        </div>
+      </div>
+      <div class="seg dp-seg"><button type="button" data-target="main" aria-pressed="${!TO_SIDE}">Přidávat do balíčku</button><button type="button" data-target="side" aria-pressed="${TO_SIDE}">Do sideboardu</button></div>
+      <ul class="checks">${v.checks.map(x=>`<li class="${x.good?'good':'warn'}"><span>${x.good?'✓':'!'}</span>${esc(x.text)}</li>`).join('')}</ul>
+      <h4>Křivka cen <small>hlavní balíček</small></h4>
+      ${curveHTML(d)}
+      <div class="dp-sum">
+        <span>${Object.entries(types).sort((a,b)=>b[1]-a[1]).map(([t,n])=>`${esc(t)} ${n}`).join(' · ') || '–'}</span>
+        <span>${Object.entries(doms).map(([x,n])=>`<span class="dot" style="background:${DOMAIN_COLORS[x]||'#888'}"></span>${esc(x)} ${n}`).join(' ')}</span>
+      </div>
+      ${block('Hlavní balíček', 'main', RULES.main)}
+      ${block('Battlefieldy', 'bfs', RULES.bfs)}
+      ${block('Runy', 'runes', RULES.runes)}
+      ${block('Sideboard', 'side', RULES.side)}
+      <h4>Porovnání s kolekcí <small>${esc(collName(LIB.main))}</small></h4>
+      ${missN ? `<p class="muted">Chybí ti ${missN} ${plural(missN,'karta','karty','karet')}:</p><ul class="misslist">${miss.map(m=>`<li><b>${m.lack}×</b> ${esc(m.name)} <small>(máš ${m.have})</small></li>`).join('')}</ul>` : `<p class="good">✓ Všechny karty máš v kolekci – můžeš ho poskládat.</p>`}
+      <div class="acts">
+        <button type="button" class="btn main" id="dpExport">Deck kód / seznam</button>
+        <button type="button" class="btn" id="dpDup">Duplikovat</button>
+        <button type="button" class="btn danger" id="dpDel">Smazat</button>
+      </div>
+    </div>`;
+  $('dpBar').onclick = () => { P.classList.add('expanded'); P.scrollTop = 0; document.body.classList.add('locked'); };
+  $('dpClose').onclick = () => { P.classList.remove('expanded'); document.body.classList.remove('locked'); };
+  $('dpDone').onclick = () => exitEdit(true);
+  $('dpName').onclick = () => { const nm = prompt('Název balíčku:', d.name); if(nm && nm.trim()){ d.name = nm.trim().slice(0,40); touch(d); renderEditBar(); } };
+  P.querySelectorAll('[data-target]').forEach(b=>b.onclick=()=>{ TO_SIDE = b.dataset.target==='side'; renderDeckPanel(); });
+  P.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{ const [sec,id] = b.dataset.rm.split('|'); removeFromDeck(sec, id); if(sec==='legend') renderEditBar(); });
+  P.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{ const [sec,id] = b.dataset.add.split('|'); addToDeck(cardById(id), sec==='side'); });
+  P.querySelectorAll('[data-champ]').forEach(b=>b.onclick=()=>{ d.champ = b.dataset.champ; touch(d); });
+  P.querySelectorAll('[data-info]').forEach(b=>b.onclick=()=>openDetail(-1, cardById(b.dataset.info)));
+  $('dpExport').onclick = () => openExport(d);
+  $('dpDup').onclick = () => { const id = newDeck(d.name + ' (kopie)'); Object.assign(DECKS.list[id], JSON.parse(JSON.stringify({legend:d.legend, champ:d.champ, main:d.main, side:d.side, runes:d.runes, bfs:d.bfs}))); saveDecks(); enterEdit(id); toast('Balíček zduplikován.'); };
+  $('dpDel').onclick = () => { if(!confirm(`Smazat balíček „${d.name}“?`)) return; delete DECKS.list[d.id]; saveDecks(); exitEdit(true); toast('Balíček smazán.'); };
+}
+
+/* --- Import / export dialog --- */
+function copyText(t, okMsg){
+  const done = () => toast(okMsg);
+  if(navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(done, ()=>fallback());
+  else fallback();
+  function fallback(){ const ta = document.createElement('textarea'); ta.value = t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); done(); }catch(e){ toast('Kopírování se nepovedlo – označ text a zkopíruj ho ručně.'); } ta.remove(); }
+}
+function openExport(d){
+  const {code, lost} = deckToCode(d), text = deckToText(d), dlg = $('deckIO');
+  dlg.innerHTML = `<div class="io">
+    <h2>Sdílet balíček</h2>
+    <p class="muted">Deck kód vložíš na <b>Piltover Archive</b> (Deckbuilder → Import) nebo do jiné aplikace, která deck kódy podporuje.</p>
+    <label class="iolbl">Deck kód</label>
+    <textarea readonly rows="3" id="ioCode">${esc(code || '')}</textarea>
+    <div class="acts"><button type="button" class="btn main" id="ioCopyCode" ${code?'':'disabled'}>Kopírovat kód</button><a class="btn" href="https://piltoverarchive.com/deckbuilder" target="_blank" rel="noopener">Otevřít Piltover Archive</a></div>
+    ${lost.length ? `<p class="warnp">Tyhle karty nemají deck kód a v kódu chybí: ${esc(lost.join(', '))}</p>` : ''}
+    <label class="iolbl">Seznam karet (text)</label>
+    <textarea readonly rows="10" id="ioText">${esc(text)}</textarea>
+    <div class="acts"><button type="button" class="btn" id="ioCopyText">Kopírovat seznam</button><button type="button" class="btn" id="ioClose">Zavřít</button></div>
+  </div>`;
+  $('ioCopyCode').onclick = () => copyText(code, 'Deck kód zkopírován.');
+  $('ioCopyText').onclick = () => copyText(text, 'Seznam zkopírován.');
+  $('ioClose').onclick = () => dlg.close();
+  dlg.showModal(); document.body.classList.add('locked');
+}
+function openImport(){
+  const dlg = $('deckIO');
+  dlg.innerHTML = `<div class="io">
+    <h2>Importovat balíček</h2>
+    <p class="muted">Vlož <b>deck kód</b> (třeba zkopírovaný z Piltover Archive) nebo seznam karet ve tvaru „3 Název karty“.</p>
+    <label class="iolbl" for="ioIn">Deck kód nebo seznam</label>
+    <textarea rows="8" id="ioIn" placeholder="CIAAAAAAAAAQCAAA…"></textarea>
+    <label class="iolbl" for="ioName">Název (nepovinné)</label>
+    <input id="ioName" type="text" placeholder="Podle legendy">
+    <p class="warnp" id="ioErr" hidden></p>
+    <div class="acts"><button type="button" class="btn main" id="ioGo">Importovat</button><button type="button" class="btn" id="ioClose">Zrušit</button></div>
+  </div>`;
+  $('ioClose').onclick = () => dlg.close();
+  $('ioGo').onclick = () => {
+    if(!CARDS.length){ $('ioErr').hidden=false; $('ioErr').textContent='Databáze karet se ještě načítá, zkus to za chvilku.'; return; }
+    const r = importDeck($('ioIn').value, $('ioName').value.trim().slice(0,40));
+    if(r.error){ $('ioErr').hidden=false; $('ioErr').textContent=r.error; return; }
+    dlg.close(); enterEdit(r.id);
+    toast(r.unknown.length ? `Importováno. Nenašel jsem: ${r.unknown.slice(0,4).join(', ')}${r.unknown.length>4?'…':''}` : 'Balíček importován.');
+  };
+  dlg.showModal(); document.body.classList.add('locked');
+}
+$('deckIO').addEventListener('close', ()=>document.body.classList.remove('locked'));
+$('deckIO').addEventListener('click', e=>{ if(e.target===$('deckIO')) $('deckIO').close(); });
+
 /* ===== Start ===== */
 if(prefs.sort) $('sort').value = prefs.sort;
 $('variants').checked = !!prefs.variants;
@@ -917,7 +1489,9 @@ $('quick').checked = !!prefs.quick;
 renderCollUI();
 const cached = load(CARDS_KEY);
 if(cached && Array.isArray(cached.cards) && cached.cards.length){
-  CARDS = cached.cards.map(norm); EXTRA = cached.extra || EXTRA; migrateColl(cached.alias); setupFilters(); apply(); updateInfo(cached.at);
+  CARDS = cached.cards.map(norm); EXTRA = cached.extra || EXTRA; migrateColl(cached.alias); setupFilters();
+  if(prefs.editDeck && DECKS.list[prefs.editDeck]) enterEdit(prefs.editDeck); else apply();
+  updateInfo(cached.at);
   if(cached.v !== DB_VERSION || Date.now() - (cached.at||0) > REFRESH_DAYS*864e5) refreshDB(true);   // tichá aktualizace na pozadí
 } else {
   refreshDB(false);
