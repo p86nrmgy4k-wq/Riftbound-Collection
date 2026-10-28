@@ -2,7 +2,7 @@
 <html lang="cs">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>Riftbound knihovna</title>
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -41,6 +41,8 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0}
+html{touch-action:manipulation;-webkit-text-size-adjust:100%}
+button,.tile,.chip,.card{touch-action:manipulation}
 body{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);background:var(--bg);color:var(--text);font:16px/1.45 var(--body);
   padding-bottom:env(safe-area-inset-bottom,0px)}
 button,input,select{font:inherit;color:inherit}
@@ -85,8 +87,18 @@ button{cursor:pointer}
 /* Rozvržení */
 .layout{--fw:270px;--pw:360px;display:grid;grid-template-columns:var(--fw) minmax(0,1fr);gap:0;max-width:1600px;margin:0 auto}
 #filters{grid-column:1;grid-row:1} main{grid-column:2;grid-row:1} .deckpanel{grid-column:3;grid-row:1}
-body.nofilters .layout{--fw:0px}
-body.nofilters #filters{display:none}
+body.nofilters .layout{--fw:52px}
+body.nofilters #filters{padding:8px 6px;overflow:hidden}
+body.nofilters #filters > *:not(.f-mini){display:none}
+#filters{position:relative}
+.f-collapse{position:absolute;top:10px;right:10px;z-index:2;width:32px;height:32px;padding:0;border:1px solid var(--line);background:var(--panel2);border-radius:50%;font-size:1rem;line-height:1}
+#filters .fgroup:first-of-type{padding-right:38px}
+.f-mini{display:none}
+body.nofilters #filters .f-mini{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;border:0;background:none;padding:6px 0;color:var(--text);cursor:pointer}
+.f-mini i{font-style:normal;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--accentText);display:flex;align-items:center;justify-content:center;font-weight:700}
+.f-mini span{writing-mode:vertical-rl;transform:rotate(180deg);font:600 .9rem/1 var(--body);color:var(--muted);white-space:nowrap}
+.f-mini b{min-width:22px;height:22px;border-radius:99px;background:var(--accent);color:var(--accentText);font:700 .8rem/22px var(--body);text-align:center;padding:0 5px}
+.f-mini b:empty{display:none}
 body.nopanel .layout{--pw:52px}
 .coltoggle{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 10px;font-size:.9rem;white-space:nowrap}
 .dp-mini{display:none}
@@ -100,6 +112,11 @@ body.nopanel .deckpanel .dp-mini{display:flex;flex-direction:column;align-items:
 .dp-head{padding-right:34px}
 #hoverPrev{position:fixed;z-index:70;pointer-events:none;width:250px;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.55);display:none}
 #hoverPrev.show{display:block}
+#hoverPrev.rot{transform:rotate(90deg)}
+.tile img.rot{position:absolute;left:50%;top:50%;width:71.6%;height:71.6%;object-fit:fill;transform:translate(-50%,-50%) rotate(90deg);background:none}
+.rotbox{position:relative;flex:0 0 auto;width:100%;max-width:min(100%,640px);aspect-ratio:1039/744;margin:auto}
+.dimg .rotbox img{display:block;width:100%;height:100%;object-fit:contain;max-height:none}
+.dimg .rotbox img.rot{position:absolute;left:50%;top:50%;width:71.6%;height:139.6%;max-width:none;max-height:none;object-fit:fill;transform:translate(-50%,-50%) rotate(90deg);border-radius:14px}
 #filters{position:sticky;top:64px;align-self:start;max-height:calc(100vh - 64px);overflow:auto;
   padding:16px;border-right:1px solid var(--line)}
 main{padding:16px;min-width:0}
@@ -226,7 +243,7 @@ body.editing .tile .flag{display:none}
 body.editing .deckpanel{display:block}
 body.editing .layout{grid-template-columns:var(--fw) minmax(0,1fr) var(--pw)}
 body.editing .layout{--fw:250px}
-body.editing.nofilters .layout{--fw:0px}
+body.editing.nofilters .layout{--fw:52px}
 .deckpanel{position:sticky;top:64px;align-self:start;max-height:calc(100vh - 64px);overflow:auto;border-left:1px solid var(--line);padding:16px;background:var(--panel)}
 .dp-bar,.dp-top{display:none}
 .dp-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
@@ -339,7 +356,9 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
   #themeBtn{display:none}
 }
 @media (max-width:820px) and (orientation:portrait), (max-width:600px){
-  .coltoggle,.dp-collapse{display:none}
+  .coltoggle,.dp-collapse,.f-collapse,body.nofilters #filters .f-mini{display:none !important}
+  body.nofilters #filters > *:not(.f-mini){display:revert}
+  body.nofilters #filters{padding:calc(20px + env(safe-area-inset-top,0px)) 16px calc(110px + env(safe-area-inset-bottom,0px))}
   #filters,main,.deckpanel{grid-column:auto;grid-row:auto}
   body.nofilters #filters.open{display:block}
   body.nopanel .deckpanel .dp-mini{display:none}
@@ -393,7 +412,7 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
   .search input{padding:7px 36px 7px 10px}
   .layout{--fw:200px;--pw:270px}
   body.editing .layout{--fw:190px}
-  body.nofilters .layout,body.editing.nofilters .layout{--fw:0px}
+  body.nofilters .layout,body.editing.nofilters .layout{--fw:48px}
   body.nopanel .layout{--pw:48px}
   #filters,.deckpanel{top:52px;max-height:calc(100vh - 52px)}
   #filters{padding:10px}
@@ -436,6 +455,8 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
 
 <div class="layout" id="viewCards">
   <aside id="filters" aria-label="Filtry">
+    <button type="button" class="f-collapse" id="fCollapse" title="Schovat filtry do strany" aria-label="Schovat filtry do strany">«</button>
+    <button type="button" class="f-mini" id="fMini" title="Ukázat filtry" aria-label="Ukázat filtry"><i>»</i><b id="fMiniN"></b><span>Filtry</span></button>
     <div class="fhead"><h2>Filtry</h2><button type="button" id="closeFilters2" aria-label="Zavřít filtry">×</button></div>
     <div class="fgroup"><h3>Set</h3><div class="chips" id="fSet"></div></div>
     <div class="fgroup"><h3>Doména</h3><div class="chips" id="fDom"></div></div>
@@ -455,7 +476,6 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
     <div class="editbar" id="editBar" hidden></div>
     <div class="banner" id="otherBanner" hidden></div>
     <div class="toolbar">
-      <button type="button" class="coltoggle" id="colToggle" title="Skrýt/ukázat filtry"></button>
       <div class="count" id="count"></div>
       <div class="collbar"><label for="collSel" style="color:var(--muted)">Kolekce</label><select id="collSel" aria-label="Kolekce"></select></div>
       <div class="seg" id="ownSeg" aria-label="Které karty zobrazit">
@@ -495,7 +515,7 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
 </footer>
 
 <dialog id="detail" aria-label="Detail karty"></dialog>
-<img id="hoverPrev" alt="">
+<img id="hoverPrev" alt="" onload="if(this.naturalHeight>this.naturalWidth && cardById(this.dataset.id)?.land) this.classList.add('rot')">
 <dialog id="deckIO" aria-label="Import a export balíčku"></dialog>
 <script>
 /* RiftboundDeckCodes 1.5.0 – (c) 2025 PiltoverArchive, Apache License 2.0 – https://github.com/Piltover-Archive/RiftboundDeckCodes */
@@ -823,6 +843,7 @@ function apply(){
   filtered = CARDS.filter(matches).sort(sorter($('sort').value));
   const active = F.sets.size+F.doms.size+F.types.size+F.rars.size+F.energy.size+F.might.size+(F.tag?1:0);
   $('fbadge').textContent = active || '';
+  $('fMiniN').textContent = active || '';
   updateCount();
   $('grid').innerHTML = ''; shown = 0;
   if(CARDS.length && !filtered.length){
@@ -859,7 +880,7 @@ function tileHTML(c, i){
   const dim = !total(c.id);
   return `<div class="card${EDIT && curDeck() && isMaxed(curDeck(), c) ? ' maxed' : ''}" data-id="${esc(c.id)}">
    <button class="tile${dim?' unowned':''}" type="button" data-i="${i}" aria-label="${esc(c.name)}">
-    ${c.img ? `<img src="${esc(c.img)}" alt="${esc(c.name)}" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ph',innerHTML:this.alt}))">`
+    ${c.img ? `<img src="${esc(c.img)}" alt="${esc(c.name)}" loading="lazy"${c.land?' onload="fixRot(this)"':''} onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ph',innerHTML:this.alt}))">`
             : `<div class="ph">${esc(c.name)}<span>${esc(c.type)}</span></div>`}
     ${flag && ($('variants').checked || F.own==='mine' || F.own==='theirs') ? `<span class="flag">${flag}</span>` : ''}
     <span class="own">${ownBadge(c.id)}</span>
@@ -902,7 +923,7 @@ function openDetail(i, card){
   const versions = CARDS.filter(x=>baseName(x.name)===baseName(c.name)).sort(sorter('num'));
   const d = $('detail');
   d.innerHTML = `<div class="dwrap">
-    <div class="dimg${c.land?' land':''}">${c.img?`<img src="${esc(c.img)}" alt="${esc(c.name)}">`:`<div class="ph" style="position:static;min-height:240px;width:100%">${esc(c.name)}</div>`}
+    <div class="dimg${c.land?' land':''}">${c.img?(c.land?`<div class="rotbox"><img src="${esc(c.img)}" alt="${esc(c.name)}" onload="fixRot(this)"></div>`:`<img src="${esc(c.img)}" alt="${esc(c.name)}">`):`<div class="ph" style="position:static;min-height:240px;width:100%">${esc(c.name)}</div>`}
       <button type="button" class="navzone prev" id="dPrev" aria-label="Předchozí karta"><span>‹</span></button>
       <button type="button" class="navzone next" id="dNext" aria-label="Další karta"><span>›</span></button>
     </div>
@@ -1413,7 +1434,7 @@ function renderDecks(){
     ${ids.length ? '' : `<div class="empty">Zatím nemáš žádný balíček. Vytvoř nový – nejdřív vybereš legendu a pak klepáním na karty skládáš balíček.</div>`}
     <div class="decks">${ids.map(id=>{ const d = DECKS.list[id], L = cardById(d.legend), v = validate(d), miss = missingFor(d).reduce((a,b)=>a+b.lack,0); return `
       <div class="deckcard${v.legal?'':' invalid'}" data-deck="${esc(id)}" role="button" tabindex="0" aria-label="Upravit balíček ${esc(d.name)}">
-        <span class="rowbtns deckbtns"><button type="button" data-dren="${esc(id)}" aria-label="Přejmenovat balíček" title="Přejmenovat">✎</button><button type="button" data-ddel="${esc(id)}" class="danger" aria-label="Smazat balíček" title="Smazat">🗑</button></span>
+        <span class="rowbtns deckbtns"><button type="button" data-dren="${esc(id)}" aria-label="Přejmenovat balíček" title="Přejmenovat">✎</button><button type="button" data-ddup="${esc(id)}" aria-label="Duplikovat balíček" title="Duplikovat">⧉</button><button type="button" data-ddel="${esc(id)}" class="danger" aria-label="Smazat balíček" title="Smazat">🗑</button></span>
         ${legendThumb(L)}
         <span class="dc-body">
           <b>${v.legal?'':'<span class="badbadge" title="Balíček porušuje pravidla nebo není kompletní">!</span> '}${esc(d.name)}</b>
@@ -1434,6 +1455,7 @@ function renderDecks(){
     b.onkeydown = e => { if((e.key==='Enter'||e.key===' ') && e.target===b){ e.preventDefault(); enterEdit(b.dataset.deck); } };
   });
   $('viewDecks').querySelectorAll('[data-dren]').forEach(b=>b.onclick=()=>{ const d = DECKS.list[b.dataset.dren]; const nm = prompt('Nový název balíčku:', d.name); if(nm && nm.trim()){ d.name = nm.trim().slice(0,40); d.updated = Date.now(); saveDecks(); renderDecks(); } });
+  $('viewDecks').querySelectorAll('[data-ddup]').forEach(b=>b.onclick=()=>{ const d = DECKS.list[b.dataset.ddup]; const id = newDeck(d.name + ' (kopie)'); const copy = JSON.parse(JSON.stringify(d)); Object.assign(DECKS.list[id], {coll:copy.coll, legend:copy.legend, champ:copy.champ, main:copy.main, side:copy.side, runes:copy.runes, bfs:copy.bfs, updated:Date.now()}); saveDecks(); renderDecks(); toast(`Vytvořena kopie „${DECKS.list[id].name}“.`); });
   $('viewDecks').querySelectorAll('[data-ddel]').forEach(b=>b.onclick=()=>{ const d = DECKS.list[b.dataset.ddel]; if(!confirm(`Smazat balíček „${d.name}“? Tohle nejde vrátit.`)) return; delete DECKS.list[d.id]; saveDecks(); renderDecks(); toast('Balíček smazán.'); });
 }
 
@@ -1651,20 +1673,25 @@ function openImport(){
 $('deckIO').addEventListener('close', ()=>document.body.classList.remove('locked'));
 $('deckIO').addEventListener('click', e=>{ if(e.target===$('deckIO')) $('deckIO').close(); });
 
+/* ===== Battlefieldy, jejichž obrázek je v datech otočený na výšku, otočíme na šířku ===== */
+function fixRot(img){ if(img.naturalHeight > img.naturalWidth){ img.classList.add('rot'); img.closest('.rotbox')?.classList.add('isrot'); } }
 /* ===== Skládací sloupce a náhled karty ===== */
-function setFilters(open){ document.body.classList.toggle('nofilters', !open); prefs.filtersOpen = open; save(PREFS_KEY, prefs); $('colToggle').textContent = open ? '⇤ Skrýt filtry' : 'Filtry ⇥'; }
+function setFilters(open){ document.body.classList.toggle('nofilters', !open); prefs.filtersOpen = open; save(PREFS_KEY, prefs); }
 function setPanel(open){ document.body.classList.toggle('nopanel', !open); prefs.panelOpen = open; save(PREFS_KEY, prefs); }
-$('colToggle').onclick = () => setFilters(document.body.classList.contains('nofilters'));
+$('fCollapse').onclick = () => setFilters(false);
+$('fMini').onclick = () => setFilters(true);
 // Najetí myší na kartu v seznamu balíčku ukáže celý obrázek (jen zařízení s myší)
 (()=>{
   const hp = $('hoverPrev'); if(!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
   $('deckPanel').addEventListener('mouseover', e=>{
     const r = e.target.closest('.drow'); if(!r){ hp.classList.remove('show'); return; }
     const c = cardById(r.querySelector('[data-info]')?.dataset.info); if(!c || !c.img){ hp.classList.remove('show'); return; }
-    if(hp.dataset.id !== c.id){ hp.src = c.img; hp.dataset.id = c.id; }
+    if(hp.dataset.id !== c.id){ hp.classList.remove('rot'); hp.src = c.img; hp.dataset.id = c.id; }
     const pr = $('deckPanel').getBoundingClientRect(), rr = r.getBoundingClientRect();
-    const w = c.land ? 340 : 250, h = c.land ? 244 : 349; hp.style.width = w + 'px';
-    hp.style.left = Math.max(8, pr.left - w - 12) + 'px';
+    const w = c.land ? 340 : 250, h = c.land ? 244 : 349;
+    // otočený obrázek: element má rozměry na výšku a CSS ho otočí, vizuálně má w × h
+    hp.style.width = (c.land && hp.classList.contains('rot') ? h : w) + 'px';
+    hp.style.left = Math.max(8, pr.left - w - 12 + (c.land && hp.classList.contains('rot') ? (w-h)/2 : 0)) + 'px';
     hp.style.top = Math.min(window.innerHeight - h - 8, Math.max(8, rr.top + rr.height/2 - h/2)) + 'px';
     hp.classList.add('show');
   });
