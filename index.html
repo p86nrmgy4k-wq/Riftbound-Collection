@@ -272,7 +272,14 @@ body.editing.nofilters .layout{--fw:52px}
 .cbar span{position:absolute;bottom:-20px;font:600 .82rem/1 var(--body);color:var(--muted)}
 .dp-sum{display:flex;flex-direction:column;gap:4px;margin-top:28px;font-size:.88rem;color:var(--muted)}
 .drow{display:grid;grid-template-columns:26px 46px minmax(0,1fr) auto;align-items:center;gap:8px;padding:4px 6px;border-radius:8px;background:var(--panel2);margin-bottom:4px}
-.drow.lack{box-shadow:inset 3px 0 0 #c9822a}
+:root{--miss:#d22d2d;--miss-bg:rgba(210,45,45,.10)}
+:root[data-theme="dark"]{--miss:#ff5a5a;--miss-bg:rgba(255,90,90,.14)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--miss:#ff5a5a;--miss-bg:rgba(255,90,90,.14)}}
+.drow.lack{box-shadow:inset 4px 0 0 var(--miss);background:var(--miss-bg)}
+.tw{position:relative;display:block}
+.mdot{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--miss);color:#fff;font:700 .68rem/16px var(--body);text-align:center;box-shadow:0 0 0 2px var(--panel2)}
+.drow .nm .mtag{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:6px;background:var(--miss);color:#fff;font:700 .7rem/1.4 var(--body);font-style:normal;vertical-align:1px}
+.dp-miss{color:var(--miss);font-weight:700}
 .cost{width:26px;height:26px;border-radius:50%;background:#2b5ea8;color:#fff;display:flex;align-items:center;justify-content:center;font:700 .95rem/1 var(--display)}
 .drow .nm{border:0;background:none;padding:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.93rem}
 :root{--t-champ:#b45309;--t-spell:#1d5fbf;--t-gear:#7c5130;--t-sig:#9333ea;--t-unit:var(--text)}
@@ -1636,12 +1643,12 @@ function renderDeckPanel(){
   const need = new Map(); for(const sec of ['main','side']) for(const id in d[sec]){ const k = nameKey(cardById(id)?.name); need.set(k, (need.get(k)||0) + d[sec][id]); }
   const row = (sec, id, n) => {
     const c = cardById(id); if(!c) return '';
-    const k = nameKey(c.name), lack = (own.get(k)||0) < (sec==='main'||sec==='side' ? need.get(k) : n);
+    const k = nameKey(c.name), want = (sec==='main'||sec==='side' ? need.get(k) : n), lackN = Math.max(0, want - (own.get(k)||0)), lack = lackN > 0;
     const champ = sec==='main' && isChampUnit(c) && tagMatch(c, L);
     return `<div class="drow${lack?' lack':''}">
       <span class="cost" title="Cena">${c.e==null?'·':c.e}</span>
-      ${c.img ? `<img class="thumb" src="${esc(c.img)}" alt="" loading="lazy">` : '<span class="thumb"></span>'}
-      <button type="button" class="nm ${typeClass(c)}" data-info="${esc(id)}" title="${esc(c.name)} – ${esc(typeLabel(c))}">${d.champ===id?'<span class="star" title="Zvolený champion">★</span> ':''}${esc(baseName(c.name))}${lack?' <small>chybí</small>':''}</button>
+      <span class="tw">${c.img ? `<img class="thumb" src="${esc(c.img)}" alt="" loading="lazy">` : '<span class="thumb"></span>'}${lack?`<span class="mdot" title="Chybí ti ${lackN} ${plural(lackN,'kus','kusy','kusů')}">${lackN}</span>`:''}</span>
+      <button type="button" class="nm ${typeClass(c)}" data-info="${esc(id)}" title="${esc(c.name)} – ${esc(typeLabel(c))}${lack?` – chybí ${lackN}`:''}">${d.champ===id?'<span class="star" title="Zvolený champion">★</span> ':''}${esc(baseName(c.name))}${lack?`<small class="mtag">chybí ${lackN}</small>`:''}</button>
       <span class="ctr">${champ && d.champ!==id ? `<button type="button" data-champ="${esc(id)}" title="Nastavit jako zvoleného championa">☆</button>`:''}<button type="button" data-rm="${sec}|${esc(id)}" aria-label="Odebrat">−</button><b>${n}</b><button type="button" data-add="${sec}|${esc(id)}" aria-label="Přidat">+</button></span>
     </div>`;
   };
@@ -1652,7 +1659,7 @@ function renderDeckPanel(){
   P.innerHTML = `
     <button type="button" class="dp-bar" id="dpBar" aria-label="Otevřít balíček">
       ${legendThumb(L, 'mthumb')}
-      <span class="dp-bar-t"><b>${esc(d.name)}</b><small>Balíček ${v.main}/${RULES.main} · Runy ${v.runes}/${RULES.runes} · BF ${v.bfs}/${RULES.bfs}${v.side?` · SB ${v.side}`:''}</small></span>
+      <span class="dp-bar-t"><b>${esc(d.name)}</b><small>Balíček ${v.main}/${RULES.main} · Runy ${v.runes}/${RULES.runes} · BF ${v.bfs}/${RULES.bfs}${v.side?` · SB ${v.side}`:''}${missN?` · <span class="dp-miss">chybí ${missN}</span>`:''}</small></span>
       <span class="dp-ok ${v.legal?'good':'warn'}">${v.legal?'✓':'!'}</span>
       <span class="dp-open">▲</span>
     </button>
