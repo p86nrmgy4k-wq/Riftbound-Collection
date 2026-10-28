@@ -1648,7 +1648,7 @@ function renderDeckPanel(){
     return `<div class="drow${lack?' lack':''}">
       <span class="cost" title="Cena">${c.e==null?'·':c.e}</span>
       <span class="tw">${c.img ? `<img class="thumb" src="${esc(c.img)}" alt="" loading="lazy">` : '<span class="thumb"></span>'}${lack?`<span class="mdot" title="Chybí ti ${lackN} ${plural(lackN,'kus','kusy','kusů')}">${lackN}</span>`:''}</span>
-      <button type="button" class="nm ${typeClass(c)}" data-info="${esc(id)}" title="${esc(c.name)} – ${esc(typeLabel(c))}${lack?` – chybí ${lackN}`:''}">${d.champ===id?'<span class="star" title="Zvolený champion">★</span> ':''}${esc(baseName(c.name))}${lack?`<small class="mtag">chybí ${lackN}</small>`:''}</button>
+      <button type="button" class="nm ${typeClass(c)}" data-info="${esc(id)}" title="${esc(c.name)} – ${esc(typeLabel(c))}${lack?` – chybí ${lackN}`:''}">${d.champ===id?'<span class="star" title="Zvolený champion">★</span> ':''}${esc(baseName(c.name))}</button>
       <span class="ctr">${champ && d.champ!==id ? `<button type="button" data-champ="${esc(id)}" title="Nastavit jako zvoleného championa">☆</button>`:''}<button type="button" data-rm="${sec}|${esc(id)}" aria-label="Odebrat">−</button><b>${n}</b><button type="button" data-add="${sec}|${esc(id)}" aria-label="Přidat">+</button></span>
     </div>`;
   };
