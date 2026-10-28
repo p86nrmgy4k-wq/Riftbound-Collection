@@ -54,6 +54,20 @@ jobs:
               await wait(300);
             }while(p <= tp);
           }
+          // Tokeny (Gold, Buff, Shadow Clone, Tentacle…) ze všech setů – Riftcodex jich má jen pár
+          {
+            const have = new Set(raw.map(v => v.id));
+            let p = 1, tp = 1;
+            do{
+              const j = await get(`${B}/cards?limit=100&page=${p}&supertypes=Token`);
+              for(const v of j.data || []){
+                if(v.card?.super !== 'Token' || !v.set?.prefix || /-NN$/.test(v.set.prefix) || have.has(v.id)) continue;
+                raw.push(v); have.add(v.id);
+              }
+              tp = j.pagination?.totalPages || 1; p++;
+              await wait(300);
+            }while(p <= tp);
+          }
           const noCost = ['Legend','Battlefield','Rune'];
           const cards = raw.map(v => {
             const c = v.card || {}, t = v.variantType || 'Standard', type = c.type || 'Jiné', unit = /Unit/.test(type);
@@ -81,7 +95,7 @@ jobs:
             console.log('Beze změny:', cards.length, 'karet'); process.exit(0);
           }
           fs.writeFileSync('piltover.json', JSON.stringify({source:'piltoverarchive.com', generated:new Date().toISOString(), sets:setsOut, cards}));
-          console.log('Uloženo:', cards.length, 'karet ze setů', setsOut.map(s => s.id).join(', '));
+          console.log('Uloženo:', cards.length, 'karet ze setů', setsOut.map(s => s.id).join(', '), '+ tokeny:', cards.filter(c => c.sup === 'Token').length);
           EOF
           node /tmp/stahni.mjs
 
