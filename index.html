@@ -161,11 +161,14 @@ dialog::backdrop{background:rgba(8,10,20,.72)}
 .dimg img{max-width:100%;max-height:calc(92vh - 36px);border-radius:14px;display:block}
 .dimg.land img{transform:none}
 .dimg{position:relative}
-.navzone{position:absolute;top:0;bottom:0;width:32%;border:0;background:none;padding:0 6px;display:flex;align-items:center;cursor:pointer;color:#fff;-webkit-tap-highlight-color:transparent}
+.navzone{position:absolute;top:33.33%;height:33.34%;width:50%;border:0;background:none;padding:0 8px;display:flex;align-items:center;cursor:pointer;color:#fff;z-index:2;-webkit-tap-highlight-color:transparent}
 .navzone.prev{left:0;justify-content:flex-start}
 .navzone.next{right:0;justify-content:flex-end}
-.navzone span{width:30px;height:30px;border-radius:50%;background:rgba(10,14,28,.55);display:flex;align-items:center;justify-content:center;font-size:1.2rem;line-height:1;opacity:.75;transition:opacity .15s}
-.navzone:hover span{opacity:1}
+.navzone span{width:44px;height:44px;border-radius:50%;background:rgba(10,14,28,.72);border:2px solid rgba(255,255,255,.85);box-shadow:0 2px 10px rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;font-size:1.7rem;font-weight:700;line-height:1;padding-bottom:3px;transition:transform .12s, background .12s}
+.navzone:hover span,.navzone:active span{background:var(--accent);color:var(--accentText);transform:scale(1.08)}
+.closezone{position:absolute;left:0;right:0;height:33.33%;border:0;background:none;padding:0;cursor:zoom-out;z-index:1;-webkit-tap-highlight-color:transparent}
+.closezone.top{top:0}.closezone.bottom{bottom:0}
+.navhint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:3;background:rgba(10,14,28,.85);color:#fff;font-size:.82rem;line-height:1.35;text-align:center;padding:7px 12px;border-radius:10px;width:max-content;max-width:90%;pointer-events:none}
 .navzone[disabled]{display:none}
 .dinfo{padding:22px 22px 18px;overflow:auto}
 .dinfo h2{margin:0 0 2px;font:700 2rem/1.05 var(--display)}
@@ -293,6 +296,20 @@ body.editing.nofilters .layout{--fw:52px}
 #deckIO{width:min(620px,96vw)}
 .io{padding:20px}
 .io h2{margin:0 0 6px;font:700 1.6rem/1.1 var(--display)}
+.mergesel{width:100%;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font:inherit}
+.mergeopt{display:flex;gap:10px;align-items:flex-start;margin:8px 0;cursor:pointer}
+.io .mergeopt input{margin-top:4px;flex:none;width:18px;height:18px;padding:0;accent-color:var(--accent)}
+.mergeopt>span{flex:1;min-width:0}
+#deckIO{overflow-y:auto}
+.mergeopt small{display:block;color:var(--muted);font-size:.85rem;margin-top:2px}
+.mergeprev{margin-top:14px}
+.mergetbl{max-height:240px;overflow:auto;border:1px solid var(--line);border-radius:10px}
+.mergetbl table{width:100%;border-collapse:collapse;font-size:.88rem}
+.mergetbl th,.mergetbl td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line)}
+.mergetbl th{position:sticky;top:0;background:var(--panel2);font-weight:600}
+.mergetbl th:not(:first-child){font-size:.75rem;max-width:90px;white-space:normal !important;line-height:1.2}
+.mergetbl td:first-child{width:50%}
+.mergetbl td:not(:first-child),.mergetbl th:not(:first-child){text-align:center;white-space:nowrap}
 .iolbl{display:block;margin:14px 0 6px;font-weight:600}
 .io textarea,.io input{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);font:500 .92rem/1.4 ui-monospace,Menlo,Consolas,monospace}
 .io input{font-family:var(--body)}
@@ -328,7 +345,7 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
 .qc small{color:var(--muted);font:500 .75rem var(--body)}
 
 /* Vlastnictví v detailu */
-.ownbox{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.ownbox{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,215px),1fr));gap:8px;margin:14px 0}
 .ownrow{background:var(--panel2);border-radius:10px;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .ownrow span{font-size:.85rem;color:var(--muted)}
 .stepper{display:flex;align-items:center;gap:6px}
@@ -452,6 +469,26 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
   .dimg img{max-height:calc(94vh - 36px)}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* Šipky mimo okno detailu (počítač, tablet, mobil na šířku) */
+#detail{width:min(980px,calc(100vw - 150px))}
+.navzone,.closezone,.outnav{outline:none !important}
+.navzone span{display:none}
+.outnav{position:fixed;top:50%;transform:translateY(-50%);z-index:5;width:52px;height:52px;border-radius:50%;border:2px solid rgba(255,255,255,.85);background:rgba(10,14,28,.72);color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.5);font-size:1.9rem;font-weight:700;line-height:1;padding:0 0 4px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .12s,transform .12s;-webkit-tap-highlight-color:transparent}
+.outnav:hover{background:var(--accent);color:var(--accentText);transform:translateY(-50%) scale(1.08)}
+.outnav.prev{left:calc((100vw - min(980px,calc(100vw - 150px)))/2 - 64px)}
+.outnav.next{right:calc((100vw - min(980px,calc(100vw - 150px)))/2 - 64px)}
+.outnav[disabled]{display:none}
+/* Mobil na výšku: okno přes celou obrazovku, šipky zůstávají na obrázku */
+@media (orientation:landscape) and (max-height:520px){
+  #detail{width:calc(100vw - 104px)}
+  .outnav{width:42px;height:42px;font-size:1.6rem}
+  .outnav.prev{left:6px}.outnav.next{right:6px}
+}
+@media (max-width:820px) and (orientation:portrait), (max-width:600px){
+  #detail{width:100%}
+  .outnav{display:none}
+  .navzone span{display:flex}
+}
 </style>
 </head>
 <body>
@@ -956,8 +993,12 @@ function openDetail(i, card){
   const doms = c.dom.map(d=>`<span class="chip" style="pointer-events:none"><span class="dot" style="background:${DOMAIN_COLORS[d]||'#888'}"></span>${esc(d)}</span>`).join(' ');
   const versions = CARDS.filter(x=>baseName(x.name)===baseName(c.name)).sort(sorter('num'));
   const d = $('detail');
-  d.innerHTML = `<div class="dwrap">
+  d.innerHTML = `<button type="button" class="outnav prev" id="dPrevOut" aria-label="Předchozí karta">‹</button>
+  <button type="button" class="outnav next" id="dNextOut" aria-label="Další karta">›</button>
+  <div class="dwrap">
     <div class="dimg${c.land?' land':''}">${c.img?(c.land?`<div class="rotbox"><img src="${esc(c.img)}" alt="${esc(c.name)}" onload="fixRot(this)"></div>`:`<img src="${esc(c.img)}" alt="${esc(c.name)}">`):`<div class="ph" style="position:static;min-height:240px;width:100%">${esc(c.name)}</div>`}
+      <button type="button" class="closezone top" data-close aria-label="Zpět na všechny karty"></button>
+      <button type="button" class="closezone bottom" data-close aria-label="Zpět na všechny karty"></button>
       <button type="button" class="navzone prev" id="dPrev" aria-label="Předchozí karta"><span>‹</span></button>
       <button type="button" class="navzone next" id="dNext" aria-label="Další karta"><span>›</span></button>
     </div>
@@ -985,9 +1026,11 @@ function openDetail(i, card){
     </div></div>
     <button class="dclose" type="button" id="dClose" aria-label="Zavřít">×</button>`;
   $('dClose').onclick = $('dClose2').onclick = () => d.close();
-  $('dPrev').onclick = () => step(-1);
-  $('dNext').onclick = () => step(1);
-  $('dPrev').disabled = cur<=0; $('dNext').disabled = cur<0 || cur>=filtered.length-1;
+  d.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>d.close());
+  if(!prefs.navHint){ const h = document.createElement('div'); h.className='navhint'; h.textContent='‹ › = další karta · ťuknutí nahoře nebo dole na kartu = zpět ke kartám'; d.querySelector('.dimg').appendChild(h); prefs.navHint = 1; save(PREFS_KEY, prefs); setTimeout(()=>h.remove(), 5000); }
+  $('dPrev').onclick = $('dPrevOut').onclick = () => step(-1);
+  $('dNext').onclick = $('dNextOut').onclick = () => step(1);
+  $('dPrev').disabled = $('dPrevOut').disabled = cur<=0; $('dNext').disabled = $('dNextOut').disabled = cur<0 || cur>=filtered.length-1;
   if($('dDeckPlus')){
     $('dDeckPlus').onclick = () => addToDeck(c);
     $('dDeckMinus').onclick = () => { const dk = curDeck(), sec = sectionOf(c); if(sec==='legend') return removeFromDeck('legend'); if(TO_SIDE && dk.side[c.id]) removeFromDeck('side', c.id); else if(dk[sec][c.id]) removeFromDeck(sec, c.id); else if(dk.side[c.id]) removeFromDeck('side', c.id); };
@@ -1057,6 +1100,7 @@ function renderColl(){
       <div class="acts">
         <button type="button" class="btn main" id="impNewBtn">Nahrát kolekci ze souboru jako novou</button>
         <button type="button" class="btn" id="newCollBtn">Nová prázdná kolekce</button>
+        ${ids.length > 1 ? '<button type="button" class="btn" id="mergeBtn">Sloučit dvě kolekce</button>' : ''}
       </div>
     </div>
     <h2>${esc(collName(LIB.active))}</h2>
@@ -1120,6 +1164,7 @@ function renderColl(){
     toast(`Vytvořena kolekce „${collName(id)}“.`);
   };
   $('impNewBtn').onclick = () => pickFile('new');
+  if($('mergeBtn')) $('mergeBtn').onclick = () => openMerge();
   $('impBtn').onclick = () => pickFile('replace');
   $('expBtn').onclick = exportColl;
   $('clrBtn').onclick = () => {
@@ -1171,6 +1216,7 @@ $('importFile').addEventListener('change', async e=>{
     const id = newCollId(); LIB.list[id] = {name:nm.trim().slice(0,40), cards:next}; saveLib();
     switchColl(id); renderColl();
     toast(`Nahráno jako „${collName(id)}“: ${cnt} ${plural(cnt,'karta','karty','karet')}.` + note);
+    if(id!==LIB.main && confirm(`Je „${collName(id)}“ jiná verze tvé kolekce (třeba z jiného zařízení)?\n\nOK = rovnou ji sloučit s tvou kolekcí „${collName(LIB.main)}“ (ukáže se náhled, nic se hned nezmění).\nZrušit = nechat jako samostatnou kolekci.`)) openMerge({from:id, into:LIB.main});
   } else {
     if(!confirm(`Soubor obsahuje ${cnt} různých karet.\n\nImport NAHRADÍ kolekci „${collName(LIB.active)}“ (${Object.keys(COLL).length} různých karet). Ostatní kolekce zůstanou. Pokračovat?`)) return;
     COLL = next; saveColl(); renderColl();
@@ -1664,6 +1710,71 @@ function renderDeckPanel(){
   $('dpDel').onclick = () => { if(!confirm(`Smazat balíček „${d.name}“?`)) return; delete DECKS.list[d.id]; saveDecks(); exitEdit(true); toast('Balíček smazán.'); };
 }
 
+/* --- Sloučení dvou kolekcí --- */
+function mergeCards(a, b, mode){
+  const out = {}, diff = [];
+  for(const id of new Set([...Object.keys(a), ...Object.keys(b)])){
+    const x = a[id] || {n:0,f:0}, y = b[id] || {n:0,f:0};
+    const xn = x.n||0, xf = x.f||0, yn = y.n||0, yf = y.f||0;
+    const n = mode==='sum' ? Math.min(99, xn+yn) : Math.max(xn, yn);
+    const f = mode==='sum' ? Math.min(99, xf+yf) : Math.max(xf, yf);
+    if(n || f) out[id] = {n, f};
+    if(xn!==yn || xf!==yf) diff.push({id, xn, xf, yn, yf, n, f});
+  }
+  return {out, diff};
+}
+function openMerge(pre){
+  const dlg = $('deckIO'), ids = Object.keys(LIB.list);
+  const opts = sel => ids.map(id=>`<option value="${esc(id)}"${id===sel?' selected':''}>${esc(collName(id))}${id===LIB.main?' (moje)':''}</option>`).join('');
+  const into0 = pre?.into || LIB.main, from0 = pre?.from || ids.find(id=>id!==into0);
+  dlg.innerHTML = `<div class="io">
+    <h2>Sloučit dvě kolekce</h2>
+    <p class="muted">Hodí se, když jsi stejnou kolekci upravoval na dvou zařízeních. Nahraj si tu druhou verzi ze souboru jako novou kolekci a pak ji tady slouč se svou.</p>
+    <label class="iolbl" for="mFrom">Tuhle kolekci…</label>
+    <select id="mFrom" class="mergesel">${opts(from0)}</select>
+    <label class="iolbl" for="mInto">…přidat do téhle (ta zůstane)</label>
+    <select id="mInto" class="mergesel">${opts(into0)}</select>
+    <label class="iolbl">Jak počítat kusy</label>
+    <label class="mergeopt"><input type="radio" name="mMode" value="max" checked> <span><b>Stejná kolekce ze dvou zařízení</b><small>U každé karty se vezme vyšší počet (2 a 3 kusy → 3). Normální a foil zvlášť.</small></span></label>
+    <label class="mergeopt"><input type="radio" name="mMode" value="sum"> <span><b>Dvě různé sbírky dohromady</b><small>Počty se sečtou (2 a 3 kusy → 5).</small></span></label>
+    <label class="mergeopt"><input type="checkbox" id="mDel" checked> <span><b>Po sloučení první kolekci smazat</b><small>Zůstane jedna čistá kolekce. Balíčky postavené pro smazanou kolekci se přepnou na tu výslednou.</small></span></label>
+    <div id="mPrev" class="mergeprev"></div>
+    <div class="acts"><button type="button" class="btn main" id="mGo">Sloučit</button><button type="button" class="btn" id="mCancel">Zrušit</button></div>
+  </div>`;
+  const val = () => ({from:$('mFrom').value, into:$('mInto').value, mode:dlg.querySelector('input[name=mMode]:checked').value});
+  const prev = () => {
+    const {from, into, mode} = val();
+    if(from===into){ $('mPrev').innerHTML = '<p class="warnp">Vyber dvě různé kolekce.</p>'; $('mGo').disabled = true; return; }
+    $('mGo').disabled = false;
+    const {out, diff} = mergeCards(LIB.list[into].cards, LIB.list[from].cards, mode), st = collStats(out);
+    const nm = id => cardById(id)?.name || id;
+    const cell = (n,f) => n + (f ? ` + ${f}✦` : '');
+    const rows = diff.sort((p,q)=>nm(p.id).localeCompare(nm(q.id),'cs')).slice(0,200).map(d=>`<tr><td>${esc(nm(d.id))}</td><td>${cell(d.yn,d.yf)}</td><td>${cell(d.xn,d.xf)}</td><td><b>${cell(d.n,d.f)}</b></td></tr>`).join('');
+    $('mPrev').innerHTML = `<p>Výsledek: <b>${st.k} ${plural(st.k,'kus','kusy','kusů')}</b> · ${st.u} ${plural(st.u,'různá karta','různé karty','různých karet')}.</p>` +
+      (diff.length ? `<p class="muted">Liší se ${diff.length} ${plural(diff.length,'karta','karty','karet')}:</p>
+      <div class="mergetbl"><table><thead><tr><th>Karta</th><th>${esc(collName(from))}</th><th>${esc(collName(into))}</th><th>Výsledek</th></tr></thead><tbody>${rows}</tbody></table></div>
+      ${mode==='max' ? '<p class="muted" style="font-size:.85rem">Pozor: když jsi na jednom zařízení kartu <i>odebral</i>, sloučení ji vrátí (vezme vyšší počet). Případně ji pak uber ručně.</p>' : ''}`
+      : '<p class="muted">Obě kolekce jsou stejné – nic se nezmění.</p>');
+  };
+  dlg.querySelectorAll('select,input').forEach(e=>e.onchange = prev);
+  $('mCancel').onclick = () => dlg.close();
+  $('mGo').onclick = () => {
+    const {from, into, mode} = val(); if(from===into) return;
+    const del = $('mDel').checked && from!==LIB.main;
+    const {out, diff} = mergeCards(LIB.list[into].cards, LIB.list[from].cards, mode);
+    const fromName = collName(from);
+    LIB.list[into].cards = out;
+    if(del){
+      for(const k in DECKS.list) if(DECKS.list[k].coll===from) DECKS.list[k].coll = into;
+      saveDecks(); delete LIB.list[from];
+    }
+    LIB.active = into; COLL = LIB.list[into].cards; saveLib();
+    dlg.close(); renderCollUI(); renderColl();
+    toast(`Sloučeno do „${collName(into)}“ (změněno ${diff.length} ${plural(diff.length,'karta','karty','karet')})` + (del ? `, kolekce „${fromName}“ smazána.` : '.') + ' Nezapomeň si ji stáhnout a nahrát i na druhé zařízení.');
+  };
+  prev();
+  dlg.showModal(); document.body.classList.add('locked');
+}
 /* --- Import / export dialog --- */
 function copyText(t, okMsg){
   const done = () => toast(okMsg);
