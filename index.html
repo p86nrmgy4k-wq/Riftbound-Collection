@@ -298,7 +298,7 @@ body.editing.nofilters .layout{--fw:52px}
 .star{color:var(--gold)}
 .ctr{display:flex;align-items:center;gap:4px}
 .ctr button{width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:var(--panel);line-height:1}
-.ctr b{min-width:1.2em;text-align:center;font:700 1rem/1 var(--display)}
+.ctr b.qty{min-width:28px;height:28px;padding:0 6px;border-radius:14px;background:#fff;color:#111;border:1px solid rgba(0,0,0,.18);box-shadow:0 1px 3px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;font:700 1rem/1 var(--display)}
 .misslist{margin:4px 0 0;padding-left:18px;font-size:.92rem}
 .misslist small{color:var(--muted)}
 .dpcoll{margin-left:4px;padding:4px 8px;border:1px solid var(--line);border-radius:7px;background:var(--panel2)}
@@ -1670,7 +1670,7 @@ function renderDeckPanel(){
       <span class="cost" title="Cena">${c.e==null?'·':c.e}</span>
       <span class="tw" data-info="${esc(id)}" title="Detail karty">${c.img ? `<img class="thumb" src="${esc(c.img)}" alt="" loading="lazy">` : '<span class="thumb"></span>'}${lack?`<span class="mdot" title="Chybí ti ${lackN} ${plural(lackN,'kus','kusy','kusů')}">${lackN}</span>`:''}</span>
       <button type="button" class="nm ${typeClass(c)}" data-rmone="${sec}|${esc(id)}" data-id="${esc(id)}" title="${esc(c.name)} – ${esc(typeLabel(c))}${lack?` – chybí ${lackN}`:''} · kliknutím odebereš 1 kus">${d.champ===id?'<span class="star" title="Zvolený champion">★</span> ':''}${esc(baseName(c.name))}</button>
-      <span class="ctr">${champ && d.champ!==id ? `<button type="button" data-champ="${esc(id)}" title="Nastavit jako zvoleného championa">☆</button>`:''}<button type="button" data-rm="${sec}|${esc(id)}" aria-label="Odebrat">−</button><b>${n}</b><button type="button" data-add="${sec}|${esc(id)}" aria-label="Přidat">+</button></span>
+      <span class="ctr">${champ && d.champ!==id ? `<button type="button" data-champ="${esc(id)}" title="Nastavit jako zvoleného championa">☆</button>`:''}<b class="qty" title="Počet v balíčku">${n}</b></span>
     </div>`;
   };
   const block = (title, sec, max, hideEmpty) => { const ids = sortIds(Object.keys(d[sec])); if(hideEmpty && !ids.length) return ''; const n = sumObj(d[sec]); return `
