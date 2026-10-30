@@ -1014,14 +1014,14 @@ $('grid').addEventListener('click', e=>{
   if(a){ setOwn(a.closest('.card').dataset.id, a.dataset.act[0], +a.dataset.act.slice(1)); return; }
   const inf = e.target.closest('[data-info]'); if(inf){ openDetail(+inf.dataset.info); return; }
   const t = e.target.closest('.tile'); if(!t) return;
-  if(EDIT && (!MOUSE || e.ctrlKey || e.metaKey)){ const c = filtered[+t.dataset.i]; if(addToDeck(c)) pulse(t); return; }
+  if(EDIT && !(MOUSE && (e.ctrlKey || e.metaKey))){ const c = filtered[+t.dataset.i]; if(addToDeck(c)) pulse(t); return; }
   openDetail(+t.dataset.i);
 });
-// Na Macu Ctrl + klik vyvolá místo kliknutí kontextové menu – při stavění balíčku ho použijeme jako „přidat“
+// Při stavění balíčku: Ctrl/⌘ + klik (na Macu Ctrl + klik vyvolá kontextové menu) nebo pravé tlačítko otevře detail
 $('grid').addEventListener('contextmenu', e=>{
   if(!EDIT || !MOUSE) return;
   const t = e.target.closest('.tile'); if(!t) return;
-  e.preventDefault(); const c = filtered[+t.dataset.i]; if(addToDeck(c)) pulse(t);
+  e.preventDefault(); openDetail(+t.dataset.i);
 });
 function pulse(el){ el.animate?.([{transform:'scale(.94)'},{transform:'scale(1)'}], {duration:180}); }
 
