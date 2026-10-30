@@ -110,6 +110,18 @@ body.nopanel .deckpanel .dp-mini{display:flex;flex-direction:column;align-items:
 .dp-mini i{font-style:normal;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--accentText);display:flex;align-items:center;justify-content:center;font-weight:700}
 .dp-collapse{position:absolute;top:10px;right:10px;z-index:2;width:32px;height:32px;padding:0;border:1px solid var(--line);background:var(--panel2);border-radius:50%;font-size:1rem;line-height:1}
 .dp-head{padding-right:34px}
+
+/* Pevná hlavička balíčku v pravém sloupci */
+.dp-sticky{position:sticky;top:-16px;z-index:5;background:var(--panel);margin:-16px -16px 12px;padding:12px 16px 10px;border-bottom:1px solid var(--line)}
+.dp-srow{display:flex;gap:8px;align-items:stretch}
+.dp-srow .status{margin:0;flex:1;padding:7px 10px}
+.dp-sticky .dp-collapse{position:static;flex:none;align-self:center}
+.dp-sacts{display:flex;gap:8px;margin-top:8px}
+.dp-sacts .btn{flex:1;padding:8px 10px;white-space:nowrap}
+.dp-scount{margin-top:7px;font-size:.82rem;color:var(--muted)}
+.dp-scount b{color:var(--text)}
+.dp-head{padding-right:0}
+body.editing .editbar{display:none}
 #hoverPrev{position:fixed;z-index:70;pointer-events:none;width:250px;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.55);display:none}
 #hoverPrev.show{display:block}
 #hoverPrev.rot{transform:rotate(90deg)}
@@ -241,6 +253,7 @@ button.status{cursor:pointer}
 .indeck{position:absolute;left:6px;bottom:6px;background:var(--accent);color:var(--accentText);font:700 1rem/1 var(--display);padding:5px 9px;border-radius:99px;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.35)}
 .infobtn{position:absolute;right:6px;top:6px;width:32px;height:32px;border-radius:50%;border:0;background:rgba(10,14,28,.82);color:#fff;font:700 .95rem/1 var(--body);display:none}
 body.editing .infobtn{display:flex;align-items:center;justify-content:center}
+.mouse body.editing .infobtn{display:none}
 body.editing .tile .flag{display:none}
 .deckpanel{display:none}
 body.editing .deckpanel{display:block}
@@ -423,6 +436,11 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
   body.nopanel .deckpanel.expanded{overflow-y:auto;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(28px + env(safe-area-inset-bottom,0px))}
   body.nopanel .deckpanel.expanded .dp-body{display:block}
   .dp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .dp-sticky{top:calc(-16px - env(safe-area-inset-top,0px));margin:calc(-16px - env(safe-area-inset-top,0px)) -16px 12px;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 10px}
+  .dp-sticky .dp-top{margin-bottom:10px}
+  .dp-desk{display:none}
+  .dp-sticky .dp-collapse{display:none}
+  body.editing .editbar{display:flex}
   .dp-back{border:1px solid var(--line);background:var(--panel2);border-radius:10px;padding:10px 14px;font-weight:600}
   body.editing main{padding-bottom:110px}
   body.editing .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
@@ -466,6 +484,7 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
   .indeck{font-size:.85rem;padding:3px 6px}
   .infobtn{width:26px;height:26px}
   .deckpanel{padding:10px}
+  .dp-sticky{top:-10px;margin:-10px -10px 10px;padding:10px}
   .bthumb{width:52px}
   .dp-head .muted{font-size:.82rem}
   .dp-head h3{font-size:1.15rem}
@@ -550,7 +569,8 @@ a.btn{text-decoration:none;color:inherit;display:inline-block}
         <button type="button" data-own="missing" aria-pressed="false">Chybí</button>
         <button type="button" data-own="theirs" aria-pressed="false" hidden>Má, já ne</button>
       </div>
-      <label><input type="checkbox" id="quick"> Rychlé zadávání</label>
+      <label id="quickLbl"><input type="checkbox" id="quick"> Rychlé zadávání</label>
+      <label id="legalLbl" hidden title="Ukázat jen karty, které do balíčku s touto legendou patří"><input type="checkbox" id="legalOnly"> Jen pro legendu</label>
       <label><input type="checkbox" id="variants"> Alternativní verze</label>
       <select id="sort" aria-label="Řazení">
         <option value="num">Řadit: číslo karty</option>
@@ -921,6 +941,8 @@ function apply(){
   }
   renderMore();
   if(EDIT){ renderEditBar(); renderDeckPanel(); } else { $('editBar').hidden = true; }
+  $('quickLbl').hidden = !!EDIT; $('legalLbl').hidden = !EDIT;
+  if(EDIT){ const L = cardById(curDeck()?.legend); $('legalOnly').checked = !!F.legal; $('legalOnly').disabled = !L; $('legalLbl').style.opacity = L ? '' : '.5'; }
   prefs.sort = $('sort').value; prefs.variants = $('variants').checked; prefs.quick = $('quick').checked; save(PREFS_KEY, prefs);
 }
 function updateCount(){
@@ -992,13 +1014,21 @@ $('grid').addEventListener('click', e=>{
   if(a){ setOwn(a.closest('.card').dataset.id, a.dataset.act[0], +a.dataset.act.slice(1)); return; }
   const inf = e.target.closest('[data-info]'); if(inf){ openDetail(+inf.dataset.info); return; }
   const t = e.target.closest('.tile'); if(!t) return;
-  if(EDIT){ const c = filtered[+t.dataset.i]; if(addToDeck(c)) pulse(t); return; }
+  if(EDIT && (!MOUSE || e.ctrlKey || e.metaKey)){ const c = filtered[+t.dataset.i]; if(addToDeck(c)) pulse(t); return; }
   openDetail(+t.dataset.i);
+});
+// Na Macu Ctrl + klik vyvolá místo kliknutí kontextové menu – při stavění balíčku ho použijeme jako „přidat“
+$('grid').addEventListener('contextmenu', e=>{
+  if(!EDIT || !MOUSE) return;
+  const t = e.target.closest('.tile'); if(!t) return;
+  e.preventDefault(); const c = filtered[+t.dataset.i]; if(addToDeck(c)) pulse(t);
 });
 function pulse(el){ el.animate?.([{transform:'scale(.94)'},{transform:'scale(1)'}], {duration:180}); }
 
 /* ===== Detail karty ===== */
 let cur = -1, curCard = null;
+const MOUSE = matchMedia('(hover:hover) and (pointer:fine)').matches;
+if(MOUSE) document.documentElement.classList.add('mouse');
 function baseName(n){ return n.replace(/\s*\([^)]*\)\s*$/,'').trim(); }
 function openDetail(i, card){
   cur = i; curCard = card || filtered[i]; const c = curCard; if(!c) return;
@@ -1260,6 +1290,7 @@ $('tabColl').onclick = () => requestExit(()=>showView('coll'));
 $('tabDecks').onclick = () => requestExit(()=>showView('decks'));
 $('ownSeg').addEventListener('click', e=>{ const b = e.target.closest('[data-own]'); if(b){ setOwnMode(b.dataset.own); apply(); } });
 $('quick').onchange = apply;
+$('legalOnly').onchange = e => { F.legal = e.target.checked; apply(); };
 $('q').addEventListener('focus', ()=>{ if($('viewCards').hidden) showView('cards'); });
 
 /* ===== Ovládání ===== */
@@ -1638,11 +1669,9 @@ function renderEditBar(){
   bar.hidden = false;
   bar.innerHTML = L
     ? `<b class="eb-name">✎ ${esc(d.name)}</b>
-       <label title="Ukázat jen karty, které do balíčku s touto legendou patří"><input type="checkbox" id="legalOnly" ${F.legal?'checked':''}> Jen pro legendu</label>
        <button type="button" id="editDone">Hotovo</button>`
     : `<b class="eb-name">✎ ${esc(d.name)}</b><span>Vyber legendu</span><button type="button" id="editDone">Hotovo</button>`;
   $('editDone').onclick = () => requestExit(()=>showView('decks'));
-  if($('legalOnly')) $('legalOnly').onchange = e => { F.legal = e.target.checked; apply(); };
 }
 function curveHTML(d){
   const bins = [0,0,0,0,0,0,0,0];
@@ -1686,10 +1715,20 @@ function renderDeckPanel(){
     </button>
     <button type="button" class="dp-mini" id="dpMini" title="Rozbalit balíček"><i>«</i><b>${v.main}</b><span>${esc(d.name)} · ${v.main}/${RULES.main}</span><b class="${v.legal?'good':'warn'}">${v.legal?'✓':'!'}</b></button>
     <div class="dp-body">
-      <button type="button" class="dp-collapse" id="dpCollapse" title="Zabalit panel do strany" aria-label="Zabalit panel do strany">»</button>
-      <div class="dp-top">
-        <button type="button" class="dp-back" id="dpClose">‹ Zpět ke kartám</button>
-        <button type="button" class="btn main" id="dpDone">Hotovo</button>
+      <div class="dp-sticky">
+        <div class="dp-top">
+          <button type="button" class="dp-back" id="dpClose">‹ Zpět ke kartám</button>
+          <button type="button" class="btn main" id="dpDone">Hotovo</button>
+        </div>
+        <div class="dp-srow">
+          ${bad.length ? `<button type="button" class="status warn" id="dpToChecks">! Nekompletní / porušuje pravidla (${bad.length})</button>` : `<div class="status good">✓ Balíček je podle pravidel</div>`}
+          <button type="button" class="dp-collapse" id="dpCollapse" title="Zabalit panel do strany" aria-label="Zabalit panel do strany">»</button>
+        </div>
+        <div class="dp-sacts">
+          <button type="button" class="btn" id="dpCopyCode" ${v.main||L ? '' : 'disabled'}>⧉ Kopírovat kód</button>
+          <button type="button" class="btn main dp-desk" id="dpDone2">Hotovo</button>
+        </div>
+        <div class="dp-scount">Balíček <b>${v.main}/${RULES.main}</b> · Runy <b>${v.runes}/${RULES.runes}</b> · BF <b>${v.bfs}/${RULES.bfs}</b>${v.side?` · SB <b>${v.side}</b>`:''}${missN?` · <span class="dp-miss">chybí ${missN}</span>`:''}</div>
       </div>
       <div class="dp-head">
         ${legendThumb(L, 'bthumb')}
@@ -1700,7 +1739,6 @@ function renderDeckPanel(){
           ${C ? `<div class="muted">★ Champion: ${esc(baseName(C.name))}</div>` : ''}
         </div>
       </div>
-      ${bad.length ? `<button type="button" class="status warn" id="dpToChecks">! Porušuje pravidla nebo není kompletní (${bad.length}) – zobrazit</button>` : `<div class="status good">✓ Balíček je podle pravidel</div>`}
       <div class="seg dp-seg"><button type="button" data-target="main" aria-pressed="${!TO_SIDE}">Přidávat do balíčku</button><button type="button" data-target="side" aria-pressed="${TO_SIDE}">Do sideboardu</button></div>
       <div class="tlegend"><span class="t-champ">Champion</span><span class="t-unit">Unit</span><span class="t-spell">Spell</span><span class="t-gear">Gear</span><span class="t-sig">Signature</span></div>
       ${block('Hlavní balíček', 'main', RULES.main)}
@@ -1730,6 +1768,8 @@ function renderDeckPanel(){
   $('dpBar').onclick = () => { P.classList.add('expanded'); P.scrollTop = 0; document.body.classList.add('locked'); };
   $('dpClose').onclick = () => { P.classList.remove('expanded'); document.body.classList.remove('locked'); };
   $('dpDone').onclick = () => requestExit(()=>showView('decks'));
+  $('dpDone2').onclick = () => requestExit(()=>showView('decks'));
+  $('dpCopyCode').onclick = () => { const {code, lost} = deckToCode(d); if(!code){ toast('Balíček je zatím prázdný.'); return; } copyText(code, lost.length ? `Deck kód zkopírován – chybí v něm: ${lost.join(', ')}` : 'Deck kód zkopírován.'); };
   if($('dpToChecks')) $('dpToChecks').onclick = () => $('dpChecks').scrollIntoView({behavior:'smooth', block:'start'});
   $('dpName').onclick = () => { const nm = prompt('Název balíčku:', d.name); if(nm && nm.trim()){ d.name = nm.trim().slice(0,40); touch(d); renderEditBar(); } };
   P.querySelectorAll('[data-target]').forEach(b=>b.onclick=()=>{ TO_SIDE = b.dataset.target==='side'; renderDeckPanel(); });
