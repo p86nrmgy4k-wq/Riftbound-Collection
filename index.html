@@ -1514,7 +1514,10 @@ function deckToText(d){
   lines.push(d.name);
   if(L){ lines.push('', 'Legend:'); row(L.id, 1); }
   if(C){ lines.push('', 'Champion:'); row(C.id, 1); }
-  block('Main Deck', d.main); block('Battlefields', d.bfs); block('Runes', d.runes); block('Sideboard', d.side);
+  // Zvolený champion je jedna ze 40 karet balíčku – v seznamu ho nepočítáme dvakrát.
+  const rest = {...d.main};
+  if(C){ const cid = rest[C.id] ? C.id : Object.keys(rest).find(id=>nameKey(cardById(id)?.name)===nameKey(C.name)); if(cid && --rest[cid] <= 0) delete rest[cid]; }
+  block('Main Deck', rest); block('Battlefields', d.bfs); block('Runes', d.runes); block('Sideboard', d.side);
   return lines.join('\n').trim();
 }
 function sortIds(ids){ return ids.map(cardById).filter(Boolean).sort(sorter('energy')).map(c=>c.id); }
@@ -1529,7 +1532,7 @@ function importDeck(text, name){
     d[t][c.id] = (d[t][c.id]||0) + n;
   };
   const token = text.replace(/\s+/g,'');
-  if(/^[A-Z2-7]{16,}$/i.test(token) && !/\n/.test(text.trim())){
+  if(/^[A-Z2-7]{16,}$/i.test(token)){
     let dec;
     try{ dec = RBCodes.getDeckFromCode(token.toUpperCase(), {signedSuffix:'*'}); }
     catch(e){ return {error:'Deck kód se nepodařilo přečíst. Zkontroluj, že je zkopírovaný celý.'}; }
@@ -1538,27 +1541,45 @@ function importDeck(text, name){
     for(const x of dec.mainDeck){ const c = find(x.cardCode); if(c) place(c, x.count, false); else unknown.push(`${x.count}× ${x.cardCode}`); }
     for(const x of dec.sideboard){ const c = find(x.cardCode); if(c) place(c, x.count, true); else unknown.push(`${x.count}× ${x.cardCode} (sideboard)`); }
     if(dec.chosenChampion){ const c = find(dec.chosenChampion); if(c) d.champ = c.id; }
+    if(d.champ && !d.main[d.champ]) d.main[d.champ] = 1;   // v deck kódu je champion součástí hlavního balíčku
   } else {
     // textový seznam: „3 Název karty“, „3x Název (OGN-001)“, sekce „Sideboard:“
     const idx = codeIndex(); const byName = new Map();
     for(const c of CARDS){ if(c.type==='Token') continue; const k = nameKey(c.name); const prev = byName.get(k); if(!prev || (isVariant(prev) && !isVariant(c))) byName.set(k, c); }
-    let toSide = false, champNext = false;
+    let toSide = false, champNext = false, champN = 0, first = true;
     for(const raw of text.split(/\r?\n/)){
       const line = raw.trim(); if(!line) continue;
-      const head = line.replace(/:$/,'').toLowerCase();
-      if(/^(sideboard|side)$/.test(head)){ toSide = true; continue; }
-      if(/^(main deck|main|deck|legend|battlefields?|runes?|rune deck)$/.test(head)){ toSide = false; champNext = false; continue; }
-      if(/^(champion|chosen champion)$/.test(head)){ champNext = true; toSide = false; continue; }
-      const m = /^(\d+)\s*x?\s+(.+?)\s*(?:\((([A-Z0-9]+)-[A-Z0-9*]+)\))?\s*$/i.exec(line);
-      if(!m){ continue; }
-      const n = +m[1], nm = m[2], code = m[3] ? normCode(m[3]) : null;
+      const isFirst = first; first = false;
+      // nadpis sekce – i s počtem nebo ozdobami: „Sideboard (8):“, „## Main Deck - 40“, „RUNES 12“
+      const head = line.toLowerCase().replace(/^[#*=_\-\s]+/,'').replace(/[:*=_\-\s]+$/,'')
+        .replace(/\s*[(\[]\s*\d+(?:\s*\/\s*\d+)?\s*(?:cards?|karet|karty)?\s*[)\]]$/,'')
+        .replace(/\s*[-–—:]?\s*\d+(?:\s*(?:cards?|karet|karty))?$/,'').replace(/[:\s]+$/,'');
+      if(/^(sideboard|side ?board|side|side ?deck)$/.test(head)){ toSide = true; champNext = false; continue; }
+      if(/^(main ?deck|main|deck|deck ?list|cards?|units?|spells?|gears?|champions?|champion units?|signatures?|legends?|legenda|battlefields?|runes?|rune ?deck|runy|hlavní balíček)$/.test(head) && head!=='champion'){ toSide = false; champNext = false; continue; }
+      if(/^(champion|chosen champion|zvolený champion)$/.test(head)){ champNext = true; toSide = false; continue; }
+      // řádek s kartou: „3 Název“, „3x Název“, „x3 Název“, „Název x3“, volitelně s kódem „(OGN-001)“
+      const cm = /\s*\(([A-Z0-9]+-[A-Z0-9*]+)\)\s*$/i.exec(line);
+      const body = (cm ? line.slice(0, cm.index) : line).replace(/^[-•*]\s*/,'');
+      let n, nm, m = /^[x×]?\s*(\d+)\s*[x×]?\s+(.+)$/i.exec(body);
+      if(m){ n = +m[1]; nm = m[2]; }
+      else if((m = /^(.+?)\s*[x×]\s*(\d+)$/i.exec(body))){ n = +m[2]; nm = m[1]; }
+      else { if(!isFirst) unknown.push(line); continue; }   // první řádek je obvykle název balíčku
+      const code = cm ? normCode(cm[1]) : null;
       const c = (code && (idx.get(code) || idx.get(code.replace(/[a-z*]$/,'')))) || byName.get(nameKey(nm));
       if(!c){ unknown.push(`${n}× ${nm}`); continue; }
-      if(champNext){ d.champ = c.id; champNext = false; continue; }   // champion je zároveň v hlavním balíčku
+      if(champNext){ d.champ = c.id; champN = n; champNext = false; continue; }
       place(c, n, toSide);
     }
+    // Sekce „Champion“: většina seznamů (i tenhle) ho uvádí zvlášť, takže ho do balíčku přičteme.
+    // Starší exporty ho měly i v hlavním balíčku – poznáme to podle plných 40 karet nebo limitu kopií.
+    if(d.champ){
+      const key = nameKey(cardById(d.champ).name);
+      const sameIds = Object.keys(d.main).filter(id=>nameKey(cardById(id)?.name)===key);
+      const copies = sameIds.reduce((a,id)=>a+d.main[id],0);
+      if(sumObj(d.main) < RULES.main && copies < RULES.copies) d.main[d.champ] = (d.main[d.champ]||0) + Math.max(champN,1);
+      else if(!d.main[d.champ]){ if(sameIds.length) d.champ = sameIds[0]; else d.main[d.champ] = 1; }
+    }
   }
-  if(d.champ && !d.main[d.champ]) d.main[d.champ] = 1;
   const total = sumObj(d.main)+sumObj(d.side)+sumObj(d.runes)+sumObj(d.bfs)+(d.legend?1:0);
   if(!total) return {error:'V textu jsem nenašel žádné karty. Vlož deck kód nebo seznam ve tvaru „3 Název karty“.'};
   const id = newDeck(name || (cardById(d.legend) ? baseName(cardById(d.legend).name) : 'Importovaný balíček'));
